@@ -28,8 +28,9 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;
   -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
-  -webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;tap-highlight-color:transparent}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:var(--paper);color-scheme:light;overflow-x:hidden;width:100%}
+  -webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;tap-highlight-color:transparent;
+  touch-action:manipulation}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:var(--paper);color-scheme:light;overflow-x:hidden;width:100%;touch-action:manipulation}
 body{background:var(--paper);color:var(--ink);font-family:var(--display);-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100svh;width:100%;max-width:100vw;position:relative}
 body.noscroll{overflow:hidden}
 a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
@@ -65,50 +66,62 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .cart-btn .badge.bump{transform:scale(1.35)}
 
 /* ===== CART DRAWER ===== */
-.cart-backdrop{position:fixed;inset:0;background:rgba(15,13,11,.42);z-index:120;opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}
+.cart-backdrop{position:fixed;inset:0;background:rgba(15,13,11,.46);z-index:120;opacity:0;pointer-events:none;transition:opacity .3s var(--ease);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
 .cart-backdrop.open{opacity:1;pointer-events:auto}
 .cart-drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:var(--paper);z-index:121;
-  display:flex;flex-direction:column;transform:translateX(100%);transition:transform .38s var(--ease);
-  box-shadow:-18px 0 40px rgba(15,13,11,.18)}
+  display:flex;flex-direction:column;transform:translateX(100%);transition:transform .42s cubic-bezier(.16,.9,.2,1);
+  box-shadow:-18px 0 50px rgba(15,13,11,.22)}
 .cart-drawer.open{transform:translateX(0)}
-.cart-head{display:flex;align-items:center;justify-content:space-between;padding:calc(1.2rem + env(safe-area-inset-top)) calc(var(--pad) + env(safe-area-inset-right)) .9rem var(--pad);border-bottom:1px solid var(--line)}
-.cart-head h2{font-size:1.02rem;font-weight:800;letter-spacing:.01em}
-.cart-head .count{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);margin-left:.5rem}
-.cart-close{background:none;border:none;cursor:pointer;font-size:1.4rem;line-height:1;color:var(--ink);min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
+.cart-head{display:flex;align-items:center;justify-content:space-between;padding:calc(1.3rem + env(safe-area-inset-top)) calc(var(--pad) + env(safe-area-inset-right)) 1rem var(--pad);border-bottom:1.5px solid var(--ink)}
+.cart-head h2{font-size:1.15rem;font-weight:900;letter-spacing:-.02em}
+.cart-head .count{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);margin-left:.5rem;letter-spacing:.04em}
+.cart-close{background:none;border:none;cursor:pointer;font-size:1.4rem;line-height:1;color:var(--ink);min-width:44px;min-height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .2s ease,transform .2s ease}
+.cart-close:active{background:var(--paper-2);transform:rotate(90deg)}
+@media(hover:hover){.cart-close:hover{background:var(--paper-2);transform:rotate(90deg)}}
 
-.cart-body{flex:1;overflow-y:auto;padding:.4rem var(--pad)}
-.cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;height:100%;text-align:center;color:var(--ink-soft)}
-.cart-empty p{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
-.cart-empty button{background:var(--ink);color:var(--paper);border:none;font-family:var(--mono);font-size:.7rem;
-  letter-spacing:.15em;text-transform:uppercase;padding:.8rem 1.5rem;cursor:pointer}
+.cart-body{flex:1;overflow-y:auto;padding:.7rem var(--pad)}
+.cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;height:100%;text-align:center;color:var(--ink-soft)}
+.cart-empty svg{width:38px;height:38px;opacity:.3}
+.cart-empty p{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+.cart-empty button{background:var(--ink);color:var(--paper);border:none;border-radius:999px;font-family:var(--mono);font-size:.7rem;
+  letter-spacing:.15em;text-transform:uppercase;padding:.85rem 1.7rem;cursor:pointer;transition:transform .15s ease}
+.cart-empty button:active{transform:scale(.96)}
 
-.cart-line{display:flex;gap:.8rem;padding:.95rem 0;border-bottom:1px solid var(--line)}
-.cart-line .thumb{width:60px;height:60px;flex-shrink:0;background:var(--paper-2);border-radius:2px;overflow:hidden;
+.cart-line{display:flex;gap:.9rem;padding:1.1rem 0;border-bottom:1px solid var(--line)}
+.cart-line .thumb{position:relative;width:68px;height:68px;flex-shrink:0;background:var(--tile);border-radius:14px;overflow:hidden;
   display:flex;align-items:center;justify-content:center}
-.cart-line .thumb img{width:60%;height:60%;object-fit:contain;opacity:.8}
-.cart-line .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:.25rem}
-.cart-line .name{font-size:.86rem;font-weight:700;line-height:1.2}
-.cart-line .price{font-family:var(--mono);font-size:.74rem;color:var(--ink-soft)}
-.cart-line .row{display:flex;align-items:center;justify-content:space-between;margin-top:.15rem}
-.qty-stepper{display:flex;align-items:center;border:1px solid var(--line);height:38px}
-.qty-stepper button{width:38px;height:100%;border:none;background:none;cursor:pointer;font-size:1.05rem;color:var(--ink);display:flex;align-items:center;justify-content:center}
+.cart-line .thumb img.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cart-line .thumb img.ph{width:42%;height:42%;object-fit:contain;opacity:.22}
+.cart-line .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:.3rem}
+.cart-line .name{font-size:.92rem;font-weight:700;line-height:1.2;letter-spacing:-.01em}
+.cart-line .price{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);letter-spacing:.02em}
+.cart-line .row{display:flex;align-items:center;justify-content:space-between;margin-top:.3rem}
+.qty-stepper{display:flex;align-items:center;border:1.5px solid var(--ink);border-radius:999px;height:36px;overflow:hidden}
+.qty-stepper button{width:34px;height:100%;border:none;background:none;cursor:pointer;font-size:1.05rem;color:var(--ink);display:flex;align-items:center;justify-content:center;transition:background .15s ease}
 .qty-stepper button:active{background:var(--paper-2)}
-.qty-stepper span{min-width:30px;text-align:center;font-family:var(--mono);font-size:.78rem}
-.cart-remove{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);
-  background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:.5rem 0;margin:-.5rem 0;display:inline-block}
-.cart-remove:hover{color:var(--pop)}
-.cart-line .linetotal{font-family:var(--mono);font-size:.78rem;font-weight:700}
+@media(hover:hover){.qty-stepper button:hover{background:var(--paper-2)}}
+.qty-stepper span{min-width:26px;text-align:center;font-family:var(--mono);font-size:.78rem;font-weight:700}
+.cart-remove{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+  background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:.5rem 0;margin:-.5rem 0;display:inline-block;transition:color .2s ease}
+.cart-remove:active{color:var(--pop)}
+@media(hover:hover){.cart-remove:hover{color:var(--pop)}}
+.cart-line .linetotal{font-family:var(--mono);font-size:.82rem;font-weight:800}
 
-.cart-foot{border-top:1px solid var(--line);padding:1rem var(--pad) calc(1.1rem + env(safe-area-inset-bottom));background:var(--paper)}
-.ship-note{font-family:var(--mono);font-size:.66rem;color:var(--ink-soft);text-align:center;margin-bottom:.7rem;letter-spacing:.02em}
-.cart-subtotal{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.85rem}
-.cart-subtotal .label{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
-.cart-subtotal .amt{font-size:1.15rem;font-weight:800}
-.checkout-btn{width:100%;background:var(--ink);color:var(--paper);border:none;font-family:var(--mono);font-weight:700;
-  font-size:.82rem;letter-spacing:.15em;text-transform:uppercase;padding:1rem;cursor:pointer;transition:transform .15s ease}
-.checkout-btn:active{transform:scale(.98)}
-.cart-trust{display:flex;align-items:center;justify-content:center;gap:.4rem;margin-top:.7rem;
-  font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;color:var(--ink-soft);text-transform:uppercase}
+.cart-foot{border-top:1.5px solid var(--ink);padding:1.2rem var(--pad) calc(1.3rem + env(safe-area-inset-bottom));background:var(--paper)}
+.ship-note{font-family:var(--mono);font-size:.66rem;color:var(--ink-soft);text-align:center;margin-bottom:.9rem;letter-spacing:.03em;
+  padding:.55rem .8rem;background:var(--paper-2);border-radius:999px}
+.cart-subtotal{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1rem}
+.cart-subtotal .label{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.cart-subtotal .amt{font-size:1.35rem;font-weight:900;letter-spacing:-.02em}
+.checkout-btn{width:100%;background:var(--ink);color:var(--paper);border:none;border-radius:999px;font-family:var(--mono);font-weight:700;
+  font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;padding:1.1rem;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s ease}
+.checkout-btn::after{content:'';position:absolute;inset:0;background:var(--pop);border-radius:999px;transform:translateY(101%);transition:transform .35s var(--ease);z-index:0}
+.checkout-btn span{position:relative;z-index:1}
+.checkout-btn:active{transform:scale(.97)}
+@media(hover:hover){.checkout-btn:hover::after{transform:translateY(0)}}
+.checkout-btn:disabled{opacity:.6;cursor:default}
+.cart-trust{display:flex;align-items:center;justify-content:center;gap:.4rem;margin-top:.85rem;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;color:var(--ink-soft);text-transform:uppercase}
 .cart-trust svg{width:11px;height:11px;flex-shrink:0}
 
 @media (max-width:480px){
@@ -272,26 +285,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .modal-soldout .sold-flag{font-weight:700}
 .modal-soldout-note{font-size:.88rem;line-height:1.55;color:var(--ink-soft);margin-top:.5rem}
 
-/* ===== INFO SLIDESHOW (inside the reused .modal-card shell) ===== */
-.info-slides{position:relative;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;touch-action:pan-y}
-.info-track{display:flex;width:100%;height:100%;touch-action:pan-y;cursor:grab}
-.info-track.dragging{cursor:grabbing}
-.info-slide{flex:0 0 100%;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:2.4rem var(--pad) 3.2rem}
-.info-photo{width:100%;height:100%;border-radius:16px;overflow:hidden;background:var(--paper-2);
-  display:flex;align-items:center;justify-content:center;position:relative}
-.info-photo.ph{background:radial-gradient(120% 100% at 50% 18%,var(--paper) 0%,var(--paper-2) 52%,#D2CCBF 100%)}
-.info-photo img{max-width:34%;max-height:34%;width:auto;height:auto;object-fit:contain;opacity:.18}
-.info-arrow{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:none;
-  background:rgba(233,230,223,.88);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);
-  font-size:1.5rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;
-  transition:background .2s ease,opacity .2s ease}
-.info-arrow:hover{background:rgba(233,230,223,1)}
-.info-arrow-left{left:.7rem}
-.info-arrow-right{right:.7rem}
-.info-arrow:disabled{opacity:.3;cursor:default}
-.info-dots{position:absolute;bottom:1.1rem;left:0;right:0;display:flex;justify-content:center;gap:.5rem;z-index:3}
-.info-dot{width:7px;height:7px;border-radius:50%;background:var(--ink-soft);opacity:.35;cursor:pointer;transition:opacity .2s ease,transform .2s ease}
-.info-dot.active{opacity:1;transform:scale(1.25)}
 .modal-actions{display:flex;gap:.7rem;margin-top:1.7rem}
 .btn-buy,.btn-cart{flex:1;font-family:var(--mono);font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;padding:1.05rem;border-radius:13px;cursor:pointer;transition:background .25s ease,color .25s ease,transform .15s ease}
 .btn-buy{background:var(--ink);color:var(--paper);border:1.5px solid var(--ink)}
@@ -304,7 +297,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 }
 
 /* FOOTER */
-.foot{padding:4.5rem var(--pad) calc(2.4rem + env(safe-area-inset-bottom));margin-top:3.5rem;border-top:1.5px solid var(--ink);display:flex;flex-direction:column;gap:1.6rem}
+.foot{padding:2.4rem var(--pad) calc(1.4rem + env(safe-area-inset-bottom));margin-top:2rem;border-top:1.5px solid var(--ink);display:flex;flex-direction:column;gap:1rem}
 .foot-brand{display:flex;align-items:center;gap:.55rem;font-weight:900;font-size:1.5rem;letter-spacing:-.03em}
 .foot-brand img{height:30px;width:auto}
 .foot-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
@@ -327,7 +320,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .drop-photo{aspect-ratio:32/9;max-height:55vh}
   .drop-photo-inner.ph img{width:13%}
   .drop-title{font-size:clamp(3.5rem,7vw,6.5rem)}
-  .foot{flex-direction:row;justify-content:space-between;align-items:flex-end;max-width:1320px;margin:3.5rem auto 0}
+  .foot{flex-direction:row;justify-content:space-between;align-items:flex-end;max-width:1320px;margin:2rem auto 0}
   .hero-logo{margin-bottom:1.9rem}
   .modal{align-items:center;padding:2rem}
   .modal-card{flex-direction:row;border-radius:24px;max-width:920px;max-height:86vh;transform:translateY(22px) scale(.97);opacity:0;transition:transform .42s var(--ease),opacity .35s ease;box-shadow:0 30px 80px rgba(0,0,0,.3)}
@@ -335,8 +328,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .modal-img{width:50%;aspect-ratio:auto;align-self:stretch;min-height:420px;max-height:none;flex:0 0 50%}
   .modal-body{width:50%;justify-content:center;padding:2.8rem 2.4rem}
   .modal-desc{margin-top:1.1rem}
-  #infoModal .modal-card{width:min(680px,92vw);max-width:680px;aspect-ratio:4/5;max-height:80vh}
-  #infoModal .info-slide{padding:2.6rem}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -391,13 +382,13 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 </header>
 
 <div class="story-row">
-  <button class="story-box" onclick="openInfo()">
+  <a class="story-box" href="our-story.html">
     <div class="story-box-inner" id="storyBoxPhoto1"></div>
     <div class="scrim"></div>
     <div class="cap">
       <span class="story-box-title">Our Story</span>
     </div>
-  </button>
+  </a>
   <button class="story-box" type="button">
     <div class="story-box-inner" id="storyBoxPhoto2"></div>
     <div class="scrim"></div>
@@ -436,27 +427,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   </div>
 </div>
 
-<!-- INFO / ABOUT MODAL (slideshow) -->
-<div class="modal" id="infoModal" aria-hidden="true">
-  <div class="modal-backdrop" onclick="closeInfo()"></div>
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="infoSlideTitle">
-    <button class="modal-close" id="infoClose" aria-label="Close" onclick="closeInfo()">&times;</button>
-    <div class="info-slides" id="infoSlides">
-      <div class="info-track" id="infoTrack">
-        <div class="info-slide"><div class="info-photo ph"><img class="info-ph-img" alt=""></div></div>
-        <div class="info-slide"><div class="info-photo ph"><img class="info-ph-img" alt=""></div></div>
-        <div class="info-slide"><div class="info-photo ph"><img class="info-ph-img" alt=""></div></div>
-      </div>
-      <button class="info-arrow info-arrow-left" aria-label="Previous" onclick="infoGo(-1)">&#8249;</button>
-      <button class="info-arrow info-arrow-right" aria-label="Next" onclick="infoGo(1)">&#8250;</button>
-      <div class="info-dots" id="infoDots">
-        <span class="info-dot" data-i="0" onclick="infoGoTo(0)"></span>
-        <span class="info-dot" data-i="1" onclick="infoGoTo(1)"></span>
-        <span class="info-dot" data-i="2" onclick="infoGoTo(2)"></span>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- CART DRAWER -->
 <div class="cart-backdrop" id="cartBackdrop" onclick="closeCart()"></div>
@@ -469,7 +439,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   <div class="cart-foot" id="cartFoot" style="display:none">
     <div class="ship-note" id="shipNote"></div>
     <div class="cart-subtotal"><span class="label">Subtotal</span><span class="amt" id="cartSubtotal">$0</span></div>
-    <button class="checkout-btn" id="checkoutBtn" onclick="goToCheckout()">Checkout</button>
+    <button class="checkout-btn" id="checkoutBtn" onclick="goToCheckout()"><span>Checkout</span></button>
     <div class="cart-trust">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
       <span>Secure checkout</span>
@@ -486,7 +456,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
       <a href="legal/privacy.html">Privacy</a>
       <a href="legal/terms.html">Terms</a>
       <a href="legal/shipping.html">Shipping &amp; Returns</a>
-      <a href="#top">Top</a>
     </nav>
     <div class="foot-copy">&copy; 2026</div>
   </div>
@@ -648,97 +617,8 @@ function closeModal(){
   document.body.classList.remove('noscroll');
 }
 
-/* ===== INFO MODAL (slideshow) ===== */
-const INFO_SLIDE_COUNT = 3;
-let infoIndex = 0;
-let infoDragStartX = null, infoDragDeltaX = 0, infoDragging = false;
-
-function infoSetPlaceholderImages(){
-  document.querySelectorAll('#infoTrack .info-ph-img').forEach(img=>{
-    if(!img.src) img.src = LOGO;
-  });
-}
-
-function infoUpdateUI(animate){
-  const track = document.getElementById('infoTrack');
-  track.style.transition = animate===false ? 'none' : 'transform .42s var(--ease)';
-  track.style.transform = `translateX(${-infoIndex*100}%)`;
-  document.querySelectorAll('#infoDots .info-dot').forEach((d,i)=>{
-    d.classList.toggle('active', i===infoIndex);
-  });
-  const left = document.querySelector('.info-arrow-left');
-  const right = document.querySelector('.info-arrow-right');
-  if(left) left.disabled = infoIndex === 0;
-  if(right) right.disabled = infoIndex === INFO_SLIDE_COUNT - 1;
-}
-
-function infoGo(delta){
-  infoIndex = Math.max(0, Math.min(INFO_SLIDE_COUNT-1, infoIndex+delta));
-  infoUpdateUI(true);
-}
-function infoGoTo(i){
-  infoIndex = Math.max(0, Math.min(INFO_SLIDE_COUNT-1, i));
-  infoUpdateUI(true);
-}
-
-function openInfo(){
-  infoSetPlaceholderImages();
-  infoIndex = 0;
-  infoUpdateUI(false);
-  const modal=document.getElementById('infoModal');
-  modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
-  document.body.classList.add('noscroll');
-  document.getElementById('infoClose').focus();
-}
-function closeInfo(){
-  const modal=document.getElementById('infoModal');
-  modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
-  document.body.classList.remove('noscroll');
-}
-
-/* Drag / swipe support for the slideshow track */
-(function setupInfoDrag(){
-  const track = document.getElementById('infoTrack');
-  if(!track) return;
-
-  function start(x){
-    infoDragging = true; infoDragStartX = x; infoDragDeltaX = 0;
-    track.classList.add('dragging');
-    track.style.transition = 'none';
-  }
-  function move(x){
-    if(!infoDragging) return;
-    infoDragDeltaX = x - infoDragStartX;
-    // Resist dragging past the first/last slide
-    let resist = 1;
-    if((infoIndex===0 && infoDragDeltaX>0) || (infoIndex===INFO_SLIDE_COUNT-1 && infoDragDeltaX<0)) resist = 0.35;
-    const pct = (infoDragDeltaX*resist) / track.clientWidth * 100;
-    track.style.transform = `translateX(${-infoIndex*100 + pct}%)`;
-  }
-  function end(){
-    if(!infoDragging) return;
-    infoDragging = false;
-    track.classList.remove('dragging');
-    const threshold = track.clientWidth * 0.18;
-    if(infoDragDeltaX > threshold) infoGo(-1);
-    else if(infoDragDeltaX < -threshold) infoGo(1);
-    else infoUpdateUI(true);
-    infoDragStartX = null; infoDragDeltaX = 0;
-  }
-
-  track.addEventListener('pointerdown', e=>{ start(e.clientX); track.setPointerCapture(e.pointerId); });
-  track.addEventListener('pointermove', e=>{ move(e.clientX); });
-  track.addEventListener('pointerup', end);
-  track.addEventListener('pointercancel', end);
-})();
-
 document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){ closeModal(); closeCart(); closeInfo(); }
-  const infoOpen = document.getElementById('infoModal').classList.contains('open');
-  if(infoOpen){
-    if(e.key==='ArrowLeft') infoGo(-1);
-    if(e.key==='ArrowRight') infoGo(1);
-  }
+  if(e.key==='Escape'){ closeModal(); closeCart(); }
 });
 
 function scrollToLatest(){
@@ -875,7 +755,9 @@ function lineHTML(id, qty){
   const it = ITEMS_BY_ID[id];
   const unit = priceToNumber(it.price);
   const lineTotal = unit*qty;
-  const imgTag = it.img ? `<img src="${it.img}" alt="">` : `<img src="${LOGO}" alt="">`;
+  const imgTag = it.img
+    ? `<img class="cover" src="${it.img}" alt="">`
+    : `<img class="ph" src="${LOGO}" alt="">`;
   return `<div class="cart-line" data-id="${id}">
       <div class="thumb">${imgTag}</div>
       <div class="info">
@@ -900,6 +782,7 @@ function renderCartBody(){
   const ids = Object.keys(CART);
   if(ids.length === 0){
     body.innerHTML = `<div class="cart-empty">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6h15l-1.5 9h-12L6 6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 6 5 3H2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="9.5" cy="19" r="1.4" fill="currentColor"/><circle cx="17" cy="19" r="1.4" fill="currentColor"/></svg>
         <p>Your cart is empty</p>
         <button onclick="closeCart()">Continue Shopping</button>
       </div>`;
@@ -938,7 +821,7 @@ async function goToCheckout(){
   if(cartCount() === 0) return;
   const btn = document.getElementById('checkoutBtn');
   btn.disabled = true;
-  btn.textContent = 'Redirecting…';
+  btn.innerHTML = '<span>Redirecting…</span>';
   try{
     const res = await fetch('/api/create-checkout-session', {
       method: 'POST',
@@ -955,7 +838,7 @@ async function goToCheckout(){
   } catch(err){
     console.error(err);
     btn.disabled = false;
-    btn.textContent = 'Checkout';
+    btn.innerHTML = '<span>Checkout</span>';
     alert('Something went wrong starting checkout. Please try again.');
   }
 }
@@ -971,7 +854,7 @@ async function goToCheckout(){
 window.addEventListener('pageshow', (event) => {
   if(event.persisted){
     const btn = document.getElementById('checkoutBtn');
-    if(btn){ btn.disabled = false; btn.textContent = 'Checkout'; }
+    if(btn){ btn.disabled = false; btn.innerHTML = '<span>Checkout</span>'; }
     renderCartBadge(false);
     renderCartBody();
   }
@@ -987,6 +870,20 @@ document.getElementById('storyBoxPhoto2').style.backgroundImage = `url('${SERIES
    drag content out of the page through normal interaction. */
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('dragstart', e => e.preventDefault());
+
+/* Belt-and-suspenders against double-tap-to-zoom: touch-action:manipulation
+   (set globally above) is the standards-based fix, but some mobile
+   browsers and in-app WebViews don't fully honor it for the zoom
+   gesture specifically. This catches a second tap landing within the
+   normal double-tap window and prevents the default (zoom) without
+   blocking the click each tap still generates, so buttons/links keep
+   working normally — only the zoom-in behavior is suppressed. */
+let lastTapTime = 0;
+document.addEventListener('touchend', e => {
+  const now = Date.now();
+  if(now - lastTapTime < 350){ e.preventDefault(); }
+  lastTapTime = now;
+}, {passive:false});
 
 /* :active alone doesn't reliably show the press-down animation on all
    mobile browsers (iOS Safari in particular won't paint :active on an
