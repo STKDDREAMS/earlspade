@@ -344,13 +344,21 @@ img{display:block;max-width:100%}
 
 .hero-logo-spin{display:inline-block;cursor:pointer;touch-action:manipulation}
 
-/* Stops Edge/Bing's Visual Search hover icon from appearing over the
-   logo/flower images. Edge only shows that icon on plain <img> elements
-   it can hover-detect; pointer-events:none removes the image from hit
-   testing so the icon never triggers. Any of these images that sit
-   inside a clickable wrapper (a, button, span with onclick) still work
-   fine, since the click lands on that parent element instead. */
-.no-vs{pointer-events:none}
+/* Suppresses the long-press "save/share image" highlight some in-app
+   browsers show (e.g. Instagram's WebView) and discourages Edge/Bing's
+   Visual Search hover icon on the logo/flower images. We intentionally
+   do NOT use pointer-events:none here: removing an image from hit-testing
+   makes some mobile WebViews highlight whatever sits underneath it
+   instead (the link/button wrapper), which is the opposite of what we
+   want. Setting these properties directly on the <img> — rather than
+   relying only on inheritance from the global * rule — keeps it
+   working reliably across browsers that handle inherited non-standard
+   properties inconsistently. */
+.no-vs{
+  -webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;
+  -ms-user-select:none;user-select:none;-webkit-user-drag:none;
+  user-drag:none;-khtml-user-drag:none;-moz-user-drag:none;-o-user-drag:none;
+}
 </style>
 </head>
 <body>
