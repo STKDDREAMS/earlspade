@@ -28,12 +28,18 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;
   -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
-  -webkit-touch-callout:none}
+  -webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;tap-highlight-color:transparent}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:var(--paper);color-scheme:light;overflow-x:hidden;width:100%}
 body{background:var(--paper);color:var(--ink);font-family:var(--display);-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100svh;width:100%;max-width:100vw;position:relative}
 body.noscroll{overflow:hidden}
 a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
 img{display:block;max-width:100%}
+/* Remove the default tap/click focus box on touch (the black/blue
+   outline some mobile browsers draw on whatever element registers the
+   touch — e.g. the flower image or its wrapper) while keeping a visible
+   outline for people actually navigating by keyboard, via :focus-visible. */
+a:focus,button:focus,img:focus,span:focus,[tabindex]:focus{outline:none}
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 ::selection{background:var(--ink);color:var(--paper)}
 
 /* fly-down flower */
