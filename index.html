@@ -216,10 +216,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .wordmark{font-weight:900;font-size:clamp(2.2rem,13.5vw,10rem);line-height:.85;letter-spacing:-.055em;display:flex;flex-wrap:nowrap;max-width:100%}
 .wordmark span{display:inline-block;opacity:0;transform:translateY(40px);animation:rise .7s var(--ease) forwards}
 .hero-meta{font-family:var(--mono);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft);margin-top:1.4rem;opacity:0;animation:rise .8s .55s var(--ease) forwards}
-.shop-btn{margin-top:2.4rem;display:inline-flex;align-items:center;gap:.75rem;background:#fff;color:var(--ink);font-family:var(--mono);font-weight:700;font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;padding:.9rem 1.75rem;border:none;border-radius:999px;cursor:pointer;position:relative;overflow:visible;isolation:isolate;
+.shop-btn{margin-top:2.4rem;display:inline-flex;align-items:center;gap:.7rem;background:#fff;color:var(--ink);font-family:var(--mono);font-weight:400;font-size:.66rem;letter-spacing:.34em;text-transform:uppercase;padding:.9rem 1.85rem;border:none;border-radius:999px;cursor:pointer;position:relative;overflow:hidden;isolation:isolate;
   box-shadow:0 10px 22px -8px rgba(0,16,28,.5),0 2px 6px rgba(0,16,28,.35),0 0 0 1px rgba(255,255,255,.4),0 0 0 0 var(--pink-glow);
   opacity:0;animation:rise .8s .7s var(--ease) forwards,shopPulse 2.6s 1.6s ease-in-out infinite;
-  transition:transform .3s var(--ease),box-shadow .3s var(--ease),letter-spacing .3s var(--ease),color .3s ease}
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease),color .3s ease}
 .shop-btn span.t,.shop-btn .arr{position:relative;z-index:2}
 .shop-btn .arr{display:inline-flex;font-size:.95em;animation:nudge 1.8s ease-in-out infinite}
 /* clipped layer holds the glimmer sweep so the pill's rounded corners stay
@@ -232,14 +232,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   background:linear-gradient(135deg,var(--pink-2),var(--pink));transform:translateY(101%);transition:transform .4s var(--ease)}
 .shop-btn:active{transform:scale(.96);animation-play-state:running,paused}
 @media(hover:hover){
-  .shop-btn:hover{transform:translateY(-3px);letter-spacing:.27em;color:#fff;animation-play-state:running,paused;
+  .shop-btn:hover{transform:translateY(-3px);color:#fff;animation-play-state:running,paused;
     box-shadow:0 20px 40px -14px rgba(191,118,137,.6),0 4px 12px rgba(0,16,28,.4),0 0 0 1px rgba(255,255,255,.45),0 0 26px 2px var(--pink-glow)}
   .shop-btn:hover::after{transform:translateY(0)}
 }
-/* gentle "tap me" breathing: a soft scale lift paired with a blooming pink glow ring */
+/* gentle "tap me" breathing: a blooming pink glow ring (no scale, so the text stays still) */
 @keyframes shopPulse{
-  0%,100%{box-shadow:0 10px 22px -8px rgba(0,16,28,.5),0 2px 6px rgba(0,16,28,.35),0 0 0 1px rgba(255,255,255,.4),0 0 0 0 var(--pink-glow);transform:scale(1)}
-  50%{box-shadow:0 14px 26px -8px rgba(0,16,28,.5),0 2px 6px rgba(0,16,28,.35),0 0 0 1px rgba(255,255,255,.4),0 0 24px 7px var(--pink-glow);transform:scale(1.045)}
+  0%,100%{box-shadow:0 10px 22px -8px rgba(0,16,28,.5),0 2px 6px rgba(0,16,28,.35),0 0 0 1px rgba(255,255,255,.4),0 0 0 0 var(--pink-glow)}
+  50%{box-shadow:0 12px 24px -8px rgba(0,16,28,.5),0 2px 6px rgba(0,16,28,.35),0 0 0 1px rgba(255,255,255,.4),0 0 24px 7px var(--pink-glow)}
 }
 @keyframes shopGlimmer{0%{background-position:-60% 0}22%{background-position:160% 0}100%{background-position:160% 0}}
 .scrollcue{position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.58rem;letter-spacing:.3em;color:var(--ink-soft);text-transform:uppercase;opacity:0;animation:fade 1s 1.1s forwards}
@@ -483,7 +483,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   <span class="hero-logo-spin" id="heroLogoSpin"><span class="hero-logo no-vs" id="heroLogo" role="img" aria-label="earlspade flower"></span></span>
   <h1 class="wordmark" id="wordmark" aria-label="earlspade"></h1>
   <p class="hero-meta">Malibu, California</p>
-  <button class="shop-btn" onclick="onShop()"><span class="t">Shop</span><span class="arr">&darr;</span></button>
+  <button class="shop-btn" onclick="onShop()"><span class="t">shop</span><span class="arr">&darr;</span></button>
 </header>
 
 <div class="story-row">
