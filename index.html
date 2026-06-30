@@ -195,8 +195,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* HERO */
 .hero{min-height:100vh;min-height:100svh;max-height:100vh;max-height:100svh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 1.2rem 4.5rem;position:relative}
 .hero{background:#0c2636;isolation:isolate}
-.hero::before{content:"";position:absolute;inset:0;z-index:-2;background-color:#0c2636;background-image:url("hero.jpg");background-size:cover;background-position:center;background-repeat:no-repeat;}
-.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(8,28,42,.34) 0%,rgba(8,26,40,.12) 36%,rgba(5,18,30,.6) 100%);}
+.hero::before{content:"";position:absolute;inset:0;z-index:-2;background-color:#0c2636;background-image:url("hero.jpg");background-size:cover;background-position:left center;background-repeat:no-repeat;}
 .hero>*{position:relative;z-index:1}
 /* bubble layer lives between the scrim and the flower/text, so click-bubbles
    rise out from BEHIND the flower's edges. Minimalist illustrated bubbles:
