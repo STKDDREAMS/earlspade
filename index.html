@@ -184,7 +184,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    scroll on first load, on landscape phones, short/split-screen windows,
    or any other unusual aspect ratio. */
 @media (max-height:560px) {
-  .hero{padding:2.4rem 1.2rem;min-height:100vh;min-height:100lvh}
+  .hero-stage{padding:2.4rem 1.2rem;min-height:100svh;min-height:100lvh}
   .hero-logo{width:clamp(48px,10vw,72px);margin-bottom:.6rem;animation:pop .9s .05s var(--ease) forwards}
   .wordmark{font-size:clamp(1.8rem,7vw,3.5rem)}
   .hero-meta{margin-top:.6rem}
@@ -192,21 +192,21 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .scrollcue{display:none}
 }
 
-/* HERO */
-.hero{min-height:100vh;min-height:100lvh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 1.2rem 4.5rem;position:relative}
-.hero{background:#0c2636;isolation:isolate}
-.hero::before{content:"";position:absolute;inset:0;z-index:-2;background-color:#0c2636;background-image:url("hero.jpg");background-size:cover;background-position:left center;background-repeat:no-repeat;}
-.hero>*{position:relative;z-index:1}
-/* Phones: keep the photo filling the whole frame in every aspect ratio
-   (cover never leaves gaps), anchored a touch high so the subject sits
-   below the title/Enter button. */
-@media (max-width:600px){
-  .hero::before{background-size:cover;background-position:center 28%}
-}
+/* HERO — full-bleed background you scroll through (turtle -> water -> whale).
+   The composite fills the viewport WIDTH edge-to-edge and runs tall; you
+   scroll straight down through it. aspect-ratio matches the photo exactly so
+   the whole image shows with no crop and no side bars, and the logo / title /
+   Enter button sit on the first screen via .hero-stage. */
+.hero{position:relative;width:100%;aspect-ratio:1700/7372;overflow:hidden;background:#0c2636;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:0;z-index:0;
+  background:#0c2636 url("hero.jpg") center top/cover no-repeat}
+.hero-stage{position:relative;z-index:2;width:100%;min-height:100svh;min-height:100lvh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  padding:6rem 1.2rem 4.5rem;box-sizing:border-box}
 /* bubble layer lives between the scrim and the flower/text, so click-bubbles
    rise out from BEHIND the flower's edges. Minimalist illustrated bubbles:
    a clean thin outline + a small shine dot. */
-.bubble-layer{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:visible}
+.bubble-layer{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:visible}
 .hbub{position:absolute;border-radius:50%;pointer-events:none;border:1.5px solid rgba(255,255,255,.7);background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.16),rgba(255,255,255,0) 58%)}
 .hbub::before{content:"";position:absolute;top:17%;left:21%;width:22%;height:22%;border-radius:50%;background:rgba(255,255,255,.85)}
 .hero .wordmark{color:var(--paper);text-shadow:0 2px 26px rgba(0,18,32,.55),0 1px 3px rgba(0,12,24,.45)}
@@ -255,22 +255,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 @keyframes rise{to{opacity:1;transform:translateY(0)}}
 @keyframes fade{to{opacity:1}}
 
-/* ===== TIDE: water photo that continues straight out of the hero =====
-   The hero photo is static (no parallax/transform/fixed-attachment), so this
-   just sits flush beneath it and the two scroll together as one continuous
-   surface — no motion-syncing needed. The grass/waterline was cropped off so
-   it's water-meeting-water, and a short tint at the very top (the hero's own
-   #0c2636 water tone) melts the seam so you can't tell where one photo ends
-   and the next begins. It's painted statically (no entrance animation) so the
-   join is seamless from the very first frame. */
-.tide{position:relative;width:100%;height:78vh;max-height:760px;
-  background:#0c2636 url("water.jpg") center top/cover no-repeat;z-index:1}
-.tide::before{content:"";position:absolute;left:0;right:0;top:0;height:86px;z-index:1;
-  background:linear-gradient(to bottom,#0c2636 0%,rgba(12,38,54,0) 100%);pointer-events:none}
-@media (min-width:760px){
-  .tide{height:60vh;max-height:720px}
-  .tide::before{height:120px}
-}
+/* ===== TIDE removed: the water photo is now baked into the hero composite. */
 @keyframes cue{0%,100%{transform:scaleY(.4);opacity:.4}50%{transform:scaleY(1);opacity:1}}
 
 /* DROP */
@@ -503,13 +488,13 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 </button>
 
 <header class="hero" id="top">
-  <span class="hero-logo-spin" id="heroLogoSpin"><span class="hero-logo no-vs" id="heroLogo" role="img" aria-label="earlspade flower"></span></span>
-  <h1 class="wordmark" id="wordmark" aria-label="earlspade"></h1>
-  <p class="hero-meta">Malibu, California</p>
-  <button class="shop-btn" onclick="onShop()"><span class="t">enter</span><span class="arr" aria-hidden="true">&rarr;</span></button>
+  <div class="hero-stage">
+    <span class="hero-logo-spin" id="heroLogoSpin"><span class="hero-logo no-vs" id="heroLogo" role="img" aria-label="earlspade flower"></span></span>
+    <h1 class="wordmark" id="wordmark" aria-label="earlspade"></h1>
+    <p class="hero-meta">Malibu, California</p>
+    <button class="shop-btn" onclick="onShop()"><span class="t">enter</span><span class="arr" aria-hidden="true">&rarr;</span></button>
+  </div>
 </header>
-
-<section class="tide" aria-hidden="true"></section>
 
 <div class="story-row">
   <a class="story-box" href="our-story.html">
