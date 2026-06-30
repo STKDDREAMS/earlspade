@@ -112,7 +112,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .cart-close:active{background:var(--paper-2);transform:rotate(90deg)}
 @media(hover:hover){.cart-close:hover{background:var(--paper-2);transform:rotate(90deg)}}
 
-.cart-body{flex:1;overflow-y:auto;padding:.7rem var(--pad)}
+.cart-body{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:.7rem var(--pad)}
 .cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.45rem;height:100%;text-align:center;padding:1.5rem;color:var(--ink)}
 .empty-scene{position:relative;width:200px;height:188px;margin-bottom:.6rem}
 .empty-skull{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);width:172px;height:172px;color:#B5895E}
@@ -184,20 +184,25 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    scroll on first load, on landscape phones, short/split-screen windows,
    or any other unusual aspect ratio. */
 @media (max-height:560px) {
-  .hero{padding:3.2rem 1.2rem 2.2rem;min-height:auto}
+  .hero{padding:2.4rem 1.2rem;min-height:100svh;min-height:100dvh}
   .hero-logo{width:clamp(48px,10vw,72px);margin-bottom:.6rem;animation:pop .9s .05s var(--ease) forwards}
   .wordmark{font-size:clamp(1.8rem,7vw,3.5rem)}
   .hero-meta{margin-top:.6rem}
-  .shop-btn{margin-top:1.1rem;padding:.8rem 1.8rem}
+  .shop-btn{margin-top:1.2rem;padding:.78rem 1.7rem;min-height:44px}
   .scrollcue{display:none}
 }
 
 /* HERO */
-.hero{min-height:100vh;min-height:100svh;max-height:100vh;max-height:100svh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 1.2rem 4.5rem;position:relative}
+.hero{min-height:100vh;min-height:100svh;min-height:100dvh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 1.2rem 4.5rem;position:relative}
 .hero{background:#0c2636;isolation:isolate}
-.hero::before{content:"";position:absolute;inset:0;z-index:-2;background:url("hero.jpg") center/cover;}
-.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(8,28,42,.34) 0%,rgba(8,26,40,.12) 36%,rgba(5,18,30,.6) 100%);}
+.hero::before{content:"";position:absolute;inset:0;z-index:-2;background-color:#0c2636;background-image:url("hero.jpg");background-size:cover;background-position:left center;background-repeat:no-repeat;}
 .hero>*{position:relative;z-index:1}
+/* Phones: keep the photo filling the whole frame in every aspect ratio
+   (cover never leaves gaps), anchored a touch high so the subject sits
+   below the title/Enter button. */
+@media (max-width:600px){
+  .hero::before{background-size:cover;background-position:center 28%}
+}
 /* bubble layer lives between the scrim and the flower/text, so click-bubbles
    rise out from BEHIND the flower's edges. Minimalist illustrated bubbles:
    a clean thin outline + a small shine dot. */
@@ -211,25 +216,44 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .wordmark{font-weight:900;font-size:clamp(2.2rem,13.5vw,10rem);line-height:.85;letter-spacing:-.055em;display:flex;flex-wrap:nowrap;max-width:100%}
 .wordmark span{display:inline-block;opacity:0;transform:translateY(40px);animation:rise .7s var(--ease) forwards}
 .hero-meta{font-family:var(--mono);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft);margin-top:1.4rem;opacity:0;animation:rise .8s .55s var(--ease) forwards}
-.shop-btn{margin-top:2.4rem;display:inline-flex;align-items:center;gap:.9rem;background:#fff;color:var(--ink);font-family:var(--mono);font-weight:700;font-size:.76rem;letter-spacing:.26em;text-transform:uppercase;padding:1.15rem 2.2rem;border:none;cursor:pointer;position:relative;overflow:hidden;isolation:isolate;box-shadow:0 12px 26px -6px rgba(0,16,28,.55),0 3px 8px rgba(0,16,28,.4),0 0 0 1px rgba(255,255,255,.4);opacity:0;animation:rise .8s .7s var(--ease) forwards;transition:transform .3s var(--ease),box-shadow .3s var(--ease),letter-spacing .3s var(--ease),color .3s ease}
-.shop-btn span.t,.shop-btn .arr{position:relative;z-index:2}
-.shop-btn .arr{display:inline-flex;font-size:.95em;animation:nudge 1.8s ease-in-out infinite}
-.shop-btn::before{content:'';position:absolute;top:-30%;left:-60%;width:38%;height:160%;
-  background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.06) 40%,rgba(255,255,255,.22) 50%,rgba(255,255,255,.06) 60%,transparent 100%);
-  transform:skewX(-18deg);z-index:1;pointer-events:none;animation:glimmer 5.5s ease-in-out infinite}
-.shop-btn::after{content:'';position:absolute;inset:0;z-index:0;background:var(--pop);transform:translateY(101%);transition:transform .4s var(--ease)}
-.shop-btn:active{transform:scale(.97)}
+.shop-btn{margin-top:2.6rem;display:inline-flex;align-items:center;gap:.6rem;
+  background:rgba(9,26,40,.28);color:#fff;
+  font-family:var(--mono);font-weight:700;font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;
+  padding:1rem 2.1rem;min-height:52px;
+  border:1.5px solid rgba(255,255,255,.62);border-radius:16px;
+  cursor:pointer;position:relative;isolation:isolate;-webkit-tap-highlight-color:transparent;
+  box-shadow:0 12px 30px -16px rgba(0,16,28,.7);
+  opacity:0;animation:enterIn .8s .7s var(--ease) forwards;
+  transition:transform .22s var(--ease),border-color .22s ease,background .22s ease,box-shadow .25s var(--ease)}
+.shop-btn .t,.shop-btn .arr{position:relative;z-index:2}
+.shop-btn .arr{display:inline-flex;font-size:1.05em;line-height:1;will-change:transform;animation:enterArrow 2.4s ease-in-out infinite}
+/* fill wash that rises on press/hover — scaleY from the bottom, so it
+   composites on the GPU, needs no overflow clip, and never repaints. */
+.shop-btn::before{content:'';position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;
+  background:rgba(255,255,255,.16);transform:scaleY(0);transform-origin:bottom;transition:transform .35s var(--ease)}
+/* gentle "tap me" breathing ring — animates transform + opacity only (cheap,
+   GPU); replaces the old box-shadow pulse that repainted every frame. */
+.shop-btn::after{content:'';position:absolute;inset:-1.5px;z-index:0;border-radius:inherit;pointer-events:none;
+  border:1.5px solid rgba(255,255,255,.5);opacity:0;will-change:transform,opacity;
+  animation:enterPulse 2.9s 1.8s ease-in-out infinite}
+.shop-btn:active{transform:scale(.97);border-color:#fff}
+.shop-btn:active::before{transform:scaleY(1)}
 @media(hover:hover){
-  .shop-btn:hover{transform:translateY(-3px);box-shadow:0 22px 44px -14px rgba(0,16,28,.6),0 4px 12px rgba(0,16,28,.45),0 0 0 1px rgba(255,255,255,.4);letter-spacing:.3em;color:var(--paper)}
-  .shop-btn:hover::after{transform:translateY(0)}
+  .shop-btn:hover{border-color:#fff;background:rgba(9,26,40,.4);box-shadow:0 18px 38px -18px rgba(0,16,28,.8)}
+  .shop-btn:hover::before{transform:scaleY(1)}
+  .shop-btn:hover .arr{animation:none;transform:translateX(4px)}
 }
+/* entrance uses `translate` (independent of `transform`) so press/hover
+   transforms never fight the finished entrance animation. */
+@keyframes enterIn{from{opacity:0;translate:0 18px}to{opacity:1;translate:0 0}}
+@keyframes enterArrow{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@keyframes enterPulse{0%{opacity:.55;transform:scale(1)}60%,100%{opacity:0;transform:scale(1.14)}}
 .scrollcue{position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.58rem;letter-spacing:.3em;color:var(--ink-soft);text-transform:uppercase;opacity:0;animation:fade 1s 1.1s forwards}
 .scrollcue i{width:1px;height:26px;background:var(--ink-soft);animation:cue 1.8s ease-in-out infinite;transform-origin:top}
 @keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
 @keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
 @keyframes rise{to{opacity:1;transform:translateY(0)}}
 @keyframes fade{to{opacity:1}}
-@keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
 @keyframes cue{0%,100%{transform:scaleY(.4);opacity:.4}50%{transform:scaleY(1);opacity:1}}
 
 /* DROP */
@@ -346,7 +370,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .modal-img.ph{background:radial-gradient(120% 100% at 50% 18%,var(--paper) 0%,var(--paper-2) 52%,#D2CCBF 100%);display:flex;align-items:center;justify-content:center}
 .modal-img.ph img{width:34%;max-width:150px;opacity:.18}
 .modal-body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:1.4rem var(--pad) calc(1.4rem + env(safe-area-inset-bottom))}
-.modal-scroll{flex:1 1 auto;min-height:0;overflow-y:auto}
+.modal-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .modal-foot{flex:0 0 auto}
 .modal-eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
 .modal-name{font-family:var(--mono);font-weight:700;font-size:clamp(1rem,3.6vw,1.3rem);letter-spacing:.1em;text-transform:uppercase;line-height:1.25;margin-top:.55rem}
@@ -418,7 +442,8 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
-  .hero-logo,.wordmark span,.hero-meta,.shop-btn,.scrollcue{opacity:1!important;transform:none!important}
+  .hero-logo,.wordmark span,.hero-meta,.shop-btn,.scrollcue{opacity:1!important;transform:none!important;translate:none!important}
+  .shop-btn .arr{transform:none!important}
   .r{opacity:1;transform:none}
   .drop-photo-inner{inset:0!important;transform:none!important;opacity:1!important}
   .drop-title{transform:none!important}
@@ -464,7 +489,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   <span class="hero-logo-spin" id="heroLogoSpin"><span class="hero-logo no-vs" id="heroLogo" role="img" aria-label="earlspade flower"></span></span>
   <h1 class="wordmark" id="wordmark" aria-label="earlspade"></h1>
   <p class="hero-meta">Malibu, California</p>
-  <button class="shop-btn" onclick="onShop()"><span class="t">Shop</span><span class="arr">&darr;</span></button>
+  <button class="shop-btn" onclick="onShop()"><span class="t">enter</span><span class="arr" aria-hidden="true">&rarr;</span></button>
 </header>
 
 <div class="story-row">
@@ -785,8 +810,16 @@ function onScroll(){
   }
 }
 const mark=document.getElementById('mark');
-window.addEventListener('scroll',()=>{onScroll();mark.classList.toggle('show',window.scrollY>window.innerHeight*0.72);},{passive:true});
-window.addEventListener('resize',onScroll,{passive:true});
+/* Cache the viewport height and only flip the corner-mark class when the
+   threshold is actually crossed, so each scroll frame stays cheap (no layout
+   read, no redundant classList writes) — keeps touch scrolling fluid. */
+let _vh=window.innerHeight,_markOn=false;
+function updateMark(){
+  const on=window.scrollY > _vh*0.72;
+  if(on!==_markOn){ _markOn=on; mark.classList.toggle('show',on); }
+}
+window.addEventListener('scroll',()=>{onScroll();updateMark();},{passive:true});
+window.addEventListener('resize',()=>{_vh=window.innerHeight;onScroll();updateMark();},{passive:true});
 
 /* ===== CART ====================================================
    State shape: { "<item-id>": <quantity>, ... }
