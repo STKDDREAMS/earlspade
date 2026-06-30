@@ -193,15 +193,11 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 }
 
 /* HERO */
-.hero{position:relative;width:100%;aspect-ratio:2574/3859;overflow:hidden}
+.hero{min-height:100vh;min-height:100svh;max-height:100vh;max-height:100svh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 1.2rem 4.5rem;position:relative}
 .hero{background:#0c2636;isolation:isolate}
 .hero::before{content:"";position:absolute;inset:0;z-index:-2;background-color:#0c2636;background-image:url("hero.jpg");background-size:cover;background-position:center;background-repeat:no-repeat;}
-.hero::after{content:"";position:absolute;left:0;right:0;top:0;height:100svh;z-index:-1;background:linear-gradient(180deg,rgba(8,28,42,.46) 0%,rgba(8,26,40,.3) 48%,rgba(8,26,40,.08) 82%,rgba(8,26,40,0) 100%);}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(8,28,42,.34) 0%,rgba(8,26,40,.12) 36%,rgba(5,18,30,.6) 100%);}
 .hero>*{position:relative;z-index:1}
-/* Text/CTA live in an inner block sized to the first screenful and pinned to
-   the top of the (taller) hero, so they sit over the upper part of the photo
-   while the rest of the image runs on below before the Our Story row. */
-.hero-inner{position:absolute;top:0;left:0;right:0;height:100svh;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 1.2rem 4.5rem;box-sizing:border-box}
 /* bubble layer lives between the scrim and the flower/text, so click-bubbles
    rise out from BEHIND the flower's edges. Minimalist illustrated bubbles:
    a clean thin outline + a small shine dot. */
@@ -465,12 +461,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 </button>
 
 <header class="hero" id="top">
-  <div class="hero-inner">
-    <span class="hero-logo-spin" id="heroLogoSpin"><span class="hero-logo no-vs" id="heroLogo" role="img" aria-label="earlspade flower"></span></span>
-    <h1 class="wordmark" id="wordmark" aria-label="earlspade"></h1>
-    <p class="hero-meta">Malibu, California</p>
-    <button class="shop-btn" onclick="onShop()"><span class="t">Shop</span><span class="arr">&darr;</span></button>
-  </div>
+  <span class="hero-logo-spin" id="heroLogoSpin"><span class="hero-logo no-vs" id="heroLogo" role="img" aria-label="earlspade flower"></span></span>
+  <h1 class="wordmark" id="wordmark" aria-label="earlspade"></h1>
+  <p class="hero-meta">Malibu, California</p>
+  <button class="shop-btn" onclick="onShop()"><span class="t">Shop</span><span class="arr">&darr;</span></button>
 </header>
 
 <div class="story-row">
