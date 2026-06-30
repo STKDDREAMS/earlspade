@@ -197,6 +197,12 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .hero{background:#0c2636;isolation:isolate}
 .hero::before{content:"";position:absolute;inset:0;z-index:-2;background-color:#0c2636;background-image:url("hero.jpg");background-size:cover;background-position:left center;background-repeat:no-repeat;}
 .hero>*{position:relative;z-index:1}
+/* Phones: the photo fills by height (no vertical slack), so to drop the turtle
+   below the Shop button we zoom in a touch and anchor to the top. Hero stays
+   the same 100svh size. */
+@media (max-width:600px){
+  .hero::before{background-size:auto 116%;background-position:center top}
+}
 /* bubble layer lives between the scrim and the flower/text, so click-bubbles
    rise out from BEHIND the flower's edges. Minimalist illustrated bubbles:
    a clean thin outline + a small shine dot. */
