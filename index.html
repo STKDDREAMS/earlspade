@@ -315,17 +315,28 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .story-soon .story-box-inner{background:radial-gradient(120% 100% at 50% 22%,#21495b 0%,#13303c 72%)}
 
 /* ARCHIVE — banner reuses .drop-photo so it reads exactly like a series
-   banner; the panel below it is a text card that unfolds on click. */
+   banner; clicking it fades the whole screen to black with the story
+   centered on it (see .archive-overlay). */
 .archive{padding-top:3.5rem}
 .archive-inner{background:radial-gradient(120% 100% at 50% 22%,#2b2723 0%,#15130f 78%)}
-.archive-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .65s var(--ease)}
-.archive-panel.open{grid-template-rows:1fr}
-.archive-clip{overflow:hidden}
-.archive-card{width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));margin:1.1rem auto 0;border:1.5px solid var(--line);border-radius:16px;background:var(--paper-2);padding:1.7rem var(--pad) 1.9rem}
-.archive-card p{font-size:.8rem;line-height:1.75;letter-spacing:.02em;color:var(--ink-soft);max-width:62ch}
-.archive-card p+p{margin-top:.95rem}
-.archive-card .archive-eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase}
-.archive-rule{font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,6vw,2.6rem);line-height:1;letter-spacing:-.03em;color:var(--ink);margin:.75rem 0 1.2rem}
+.archive-overlay{position:fixed;inset:0;z-index:220;display:flex;overflow-y:auto;overscroll-behavior:contain;cursor:pointer;
+  background:radial-gradient(130% 100% at 50% 28%,#191613 0%,#0b0a08 72%);
+  padding:calc(2.5rem + env(safe-area-inset-top)) var(--pad) calc(2.5rem + env(safe-area-inset-bottom));
+  opacity:0;visibility:hidden;transition:opacity .7s ease,visibility 0s linear .7s}
+.archive-overlay.open{opacity:1;visibility:visible;transition:opacity .7s ease}
+/* margin:auto (not flex centering) so long copy can still scroll on
+   short screens instead of clipping at the top */
+.archive-copy{margin:auto;max-width:56ch;text-align:center;
+  opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s var(--ease)}
+.archive-overlay.open .archive-copy{opacity:1;transform:translateY(0);transition-delay:.25s}
+.archive-copy p{font-size:.8rem;line-height:1.8;letter-spacing:.02em;color:rgba(233,230,223,.6)}
+.archive-copy p+p{margin-top:1rem}
+.archive-copy .archive-eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(233,230,223,.42)}
+.archive-rule{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,7vw,3.2rem);line-height:1.02;letter-spacing:-.03em;color:var(--paper);margin:.9rem 0 1.4rem}
+.archive-close{position:fixed;top:calc(.9rem + env(safe-area-inset-top));right:.9rem;z-index:2;width:44px;height:44px;border:none;border-radius:50%;
+  background:rgba(233,230,223,.12);color:var(--paper);font-size:1.4rem;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:transform .2s ease,background .2s ease}
+.archive-close:hover{transform:rotate(90deg);background:rgba(233,230,223,.22)}
 
 /* ITEMS */
 .items{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem .95rem;padding:1.7rem var(--pad) 0}
@@ -470,7 +481,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .drop-photo-inner{inset:0!important;transform:none!important;opacity:1!important}
   .drop-title{transform:none!important}
   .modal-card{transform:none!important;opacity:1!important}
-  .archive-panel{transition:none}
+  .archive-overlay,.archive-copy{transition:none;transform:none!important}
 }
 
 .hero-logo-spin{position:relative;display:inline-block;cursor:pointer;touch-action:manipulation}
@@ -539,24 +550,26 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
      grid below the banner: archived pieces are sold and gone, so there is
      nothing left to show. -->
 <section class="archive">
-  <button class="drop-photo archive-box" id="archiveBox" aria-expanded="false" aria-controls="archivePanel" onclick="toggleArchive()">
+  <button class="drop-photo archive-box" id="archiveBox" aria-haspopup="dialog" aria-controls="archiveOverlay" onclick="openArchive()">
     <div class="drop-photo-inner archive-inner"></div>
     <div class="drop-scrim"></div>
     <div class="top"><span class="drop-tag">Closed</span></div>
     <div class="cap"><h2 class="drop-title">The Archive</h2></div>
   </button>
-  <div class="archive-panel" id="archivePanel">
-    <div class="archive-clip">
-      <div class="archive-card">
-        <p class="archive-eyebrow">earlspade &mdash; the archive</p>
-        <h3 class="archive-rule">Once it&rsquo;s gone, it&rsquo;s gone forever.</h3>
-        <p>The Celestial Series was the first thing we ever made &mdash; a small, numbered run of pieces cast from star charts we sketched over one summer in Malibu. Every piece was stamped with its number, and the night the last one sold, we broke the molds.</p>
-        <p>That&rsquo;s when we decided the archive would be a rule, not an accident. Every earlspade series is a single pressing: one run, one season, and when it closes it moves here and never comes back. No reissues, no restocks, no &ldquo;back by popular demand.&rdquo;</p>
-        <p>You won&rsquo;t find photos in here, and that&rsquo;s on purpose. The jewelry is already sold and gone &mdash; the only place a Celestial piece exists now is with the person wearing it. If you missed it, you missed it. That&rsquo;s what makes the ones you catch worth keeping.</p>
-      </div>
-    </div>
-  </div>
 </section>
+
+<!-- ARCHIVE OVERLAY — clicking the banner fades the whole screen to black
+     with the story centered on it. Clicking anywhere closes it. -->
+<div class="archive-overlay" id="archiveOverlay" role="dialog" aria-modal="true" aria-label="The Archive" aria-hidden="true" onclick="closeArchive()">
+  <button class="archive-close" aria-label="Close archive" onclick="closeArchive()">&times;</button>
+  <div class="archive-copy">
+    <p class="archive-eyebrow">earlspade &mdash; the archive</p>
+    <h3 class="archive-rule">Once it&rsquo;s gone, it&rsquo;s gone forever.</h3>
+    <p>The Celestial Series was the first thing we ever made &mdash; a small, numbered run of pieces cast from star charts we sketched over one summer in Malibu. Every piece was stamped with its number, and the night the last one sold, we broke the molds.</p>
+    <p>That&rsquo;s when we decided the archive would be a rule, not an accident. Every earlspade series is a single pressing: one run, one season, and when it closes it moves here and never comes back. No reissues, no restocks, no &ldquo;back by popular demand.&rdquo;</p>
+    <p>You won&rsquo;t find photos in here, and that&rsquo;s on purpose. The jewelry is already sold and gone &mdash; the only place a Celestial piece exists now is with the person wearing it. If you missed it, you missed it. That&rsquo;s what makes the ones you catch worth keeping.</p>
+  </div>
+</div>
 
 <!-- PRODUCT MODAL -->
 <div class="modal" id="modal" aria-hidden="true">
@@ -715,14 +728,19 @@ function scrollToDrop(di){
 }
 
 /* The archive banner doesn't scroll to products (there are none) —
-   it unfolds the story card underneath instead. */
-function toggleArchive(){
-  const box = document.getElementById('archiveBox');
-  const panel = document.getElementById('archivePanel');
-  const open = !panel.classList.contains('open');
-  panel.classList.toggle('open', open);
-  box.setAttribute('aria-expanded', open ? 'true' : 'false');
-  if(open) setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}), 120);
+   the whole screen fades to black with the story centered on it. */
+function openArchive(){
+  const o = document.getElementById('archiveOverlay');
+  o.classList.add('open'); o.setAttribute('aria-hidden','false');
+  document.body.classList.add('noscroll');
+  o.querySelector('.archive-close').focus();
+}
+function closeArchive(){
+  const o = document.getElementById('archiveOverlay');
+  if(!o.classList.contains('open')) return; // Escape closes everything; don't steal focus if we weren't open
+  o.classList.remove('open'); o.setAttribute('aria-hidden','true');
+  document.body.classList.remove('noscroll');
+  document.getElementById('archiveBox').focus();
 }
 
 function renderDrops(){
@@ -836,7 +854,7 @@ function closeModal(){
 }
 
 document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){ closeModal(); closeCart(); }
+  if(e.key==='Escape'){ closeModal(); closeCart(); closeArchive(); }
 });
 
 function scrollToLatest(){
