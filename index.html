@@ -383,7 +383,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.05) 38%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.05) 62%,transparent 100%);
   transform:skewX(-18deg);animation:glimmer 3.4s ease-in-out infinite}
 .scratch-sheen.off{opacity:0}
-#scratchFlakes{position:fixed;inset:0;pointer-events:none;z-index:120}
 @media(min-width:541px){
   .scratch-card{align-self:stretch;aspect-ratio:auto;min-height:0}
 }
@@ -429,7 +428,12 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .zone-bg{position:absolute;inset:0;z-index:0;pointer-events:none;
   -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 90px,#000 calc(100% - 90px),transparent 100%);
   mask-image:linear-gradient(to bottom,transparent 0,#000 90px,#000 calc(100% - 90px),transparent 100%)}
-.zone-bg-frame{position:sticky;top:0;height:100vh;height:100lvh}
+/* Frame height is FROZEN (+buffer): 100lvh recomputes when in-app
+   browsers resize their WebView mid-scroll, visibly reframing the
+   cover crop — the "photo keeps switching" glitch. var(--vh100) is
+   pinned at load; the buffer keeps the taller chrome-collapsed
+   viewport covered. */
+.zone-bg-frame{position:sticky;top:0;height:100vh;height:calc(var(--vh100,100lvh) + 140px)}
 .zone-bg-img{position:absolute;inset:0;display:block;background-position:center;background-size:cover;background-repeat:no-repeat}
 /* While a series is open the frame crossfades to its open backdrop
    (series-bg-open.jpg); closing fades it back. */
@@ -734,9 +738,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     <p>You won&rsquo;t find photos in here, and that&rsquo;s on purpose. The jewelry is already sold and gone &mdash; the only place a Celestial piece exists now is with the person wearing it. If you missed it, you missed it. That&rsquo;s what makes the ones you catch worth keeping.</p>
   </div>
 </div>
-
-<!-- Full-screen, hit-test-transparent canvas for foil flakes falling off the scratcher -->
-<canvas id="scratchFlakes" aria-hidden="true"></canvas>
 
 <!-- PRODUCT MODAL -->
 <div class="modal" id="modal" aria-hidden="true">
@@ -1439,8 +1440,8 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
 
 /* ===== SERIES 3 SCRATCHER =======================================
    The foil is a canvas painted over the prize; scratching erases it
-   (destination-out) with foil flakes falling off and soft haptic
-   ticks. Once ~50% is cleared the foil fades and the hint types
+   (destination-out) with soft haptic ticks. Once ~50% is cleared
+   the foil fades and the hint types
    itself out before the vote button rises in. The card is flexible
    (it stretches to match Our Story's height), so a ResizeObserver
    repaints the foil until scratching starts. */
@@ -1493,66 +1494,11 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
   }
   paintFoil();
 
-  /* ---------- foil flakes ---------- */
-  const fCanvas=document.getElementById('scratchFlakes');
-  const fCtx=fCanvas.getContext('2d');
-  let flakes=[],rafId=null;
-
-  function sizeFlakes(){
-    const dpr=window.devicePixelRatio||1;
-    fCanvas.width=innerWidth*dpr;
-    fCanvas.height=innerHeight*dpr;
-    fCtx.setTransform(dpr,0,0,dpr,0,0);
-  }
-  sizeFlakes();
-  /* width-guarded: height-only resizes are in-app chrome moving */
-  let flakesW=innerWidth;
-  window.addEventListener('resize',()=>{if(innerWidth!==flakesW){flakesW=innerWidth;sizeFlakes();}},{passive:true});
-
-  function spawnFlakes(clientX,clientY){
-    if(reduce)return;
-    const shades=['#B4B2AD','#C9C7C2','#9E9C97'];
-    for(let i=0;i<3;i++){
-      flakes.push({
-        x:clientX+(Math.random()-.5)*BRUSH_RADIUS,
-        y:clientY+(Math.random()-.5)*BRUSH_RADIUS,
-        vx:(Math.random()-.5)*1.2,
-        vy:.5+Math.random()*1.2,
-        s:1.5+Math.random()*2.5,
-        r:Math.random()*Math.PI,
-        vr:(Math.random()-.5)*.2,
-        life:1,
-        c:shades[(Math.random()*shades.length)|0]
-      });
-    }
-    if(!rafId)rafId=requestAnimationFrame(tick);
-  }
-
-  function tick(){
-    fCtx.clearRect(0,0,innerWidth,innerHeight);
-    flakes=flakes.filter(f=>f.life>0);
-    for(const f of flakes){
-      f.vy+=.12;               /* gravity */
-      f.x+=f.vx;f.y+=f.vy;
-      f.r+=f.vr;
-      f.life-=.016;
-      fCtx.save();
-      fCtx.translate(f.x,f.y);
-      fCtx.rotate(f.r);
-      fCtx.globalAlpha=Math.max(f.life,0);
-      fCtx.fillStyle=f.c;
-      fCtx.fillRect(-f.s/2,-f.s/2,f.s,f.s*.7);
-      fCtx.restore();
-    }
-    if(flakes.length){rafId=requestAnimationFrame(tick);}
-    else{rafId=null;fCtx.clearRect(0,0,innerWidth,innerHeight);}
-  }
-
   /* ---------- scratching ---------- */
   function getPos(e){
     const rect=canvas.getBoundingClientRect();
     const p=e.touches?e.touches[0]:e;
-    return{x:p.clientX-rect.left,y:p.clientY-rect.top,cx:p.clientX,cy:p.clientY};
+    return{x:p.clientX-rect.left,y:p.clientY-rect.top};
   }
 
   let lastBuzz=0;
@@ -1570,8 +1516,6 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
     ctx.stroke();
     ctx.globalCompositeOperation='source-over';
     lastPos=pos;
-
-    spawnFlakes(pos.cx,pos.cy);
 
     /* soft haptic tick while scratching (Android/supported devices) */
     const now=Date.now();
