@@ -197,10 +197,13 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    content centered over it. */
 /* No fade at the bottom: the raised story sheet below overlaps the hero
    by --lift, so the photo runs raw right up under the sheet's edge. The
-   extra bottom padding keeps the hero content clear of the overlap. */
-.hero{min-height:100vh;min-height:var(--vh100,100lvh);
+   hero is extended by that same overlap (+4px rounding buffer) so the
+   sheet's top edge sits below the fold — the first screen is pure photo.
+   The matching bottom padding keeps the content centered in the first
+   screen. */
+.hero{min-height:calc(100vh + var(--lift) + 4px);min-height:calc(var(--vh100,100lvh) + var(--lift) + 4px);
   overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  padding:6rem 1.2rem calc(4.5rem + var(--lift));position:relative;background:#0c2636;isolation:isolate}
+  padding:6rem 1.2rem calc(4.5rem + var(--lift) + 4px);position:relative;background:#0c2636;isolation:isolate}
 .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:#0c2636 url("hero.jpg") center top/cover no-repeat}
 .hero>*{position:relative;z-index:1}
 /* bubble layer lives between the scrim and the flower/text, so click-bubbles
@@ -438,7 +441,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    visual gap between the sheet edge and the section head. The photo runs
    to the very bottom of the zone, meeting the footer's border. */
 .zone-series{position:relative;z-index:1;
-  padding-top:calc(clamp(3.2rem,9vw,5.5rem) + var(--lift));padding-bottom:3rem}
+  padding-top:calc(clamp(5rem,12vw,7rem) + var(--lift));padding-bottom:3rem}
 /* Labels that sit directly on a loaded backdrop lift to paper for
    contrast (has-bg is set by JS only when the photo really loads, so
    removing the file gracefully falls back to ink-on-paper). */
