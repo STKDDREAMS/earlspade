@@ -305,7 +305,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
 /* ===== STORY ROW: two short boxes above the first drop ===== */
 .story-row{display:flex;flex-direction:column;gap:.9rem;
-  width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));margin:clamp(2.5rem,7vw,4.5rem) auto 1.4rem}
+  width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));margin:0 auto}
 .story-box{position:relative;width:100%;aspect-ratio:32/9;overflow:hidden;border-radius:16px;
   background:var(--paper-2);border:none;padding:0;cursor:pointer;display:block;text-align:left;
   font-family:inherit;color:inherit;box-shadow:0 0 0 0 rgba(18,16,14,0);
@@ -419,20 +419,37 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    The raw images render as-is (cover, centered, no overlays).
    Without the files the zones simply stay paper. */
 .zone{position:relative}
-.zone::before,.zone::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
-  background-position:center;background-size:cover;background-repeat:no-repeat}
-.zone>*{position:relative;z-index:1}
-.zone-story::before{background-image:url('story-bg.jpg')}
-.zone-series::before{background-image:url('series-bg.jpg')}
-/* While a series is open the zone crossfades to its open backdrop
+/* The backdrop lives in a sticky, viewport-height frame: the photo stays
+   pinned to the screen at its natural crop while the section scrolls over
+   it — no matter how tall the zone grows when products unfold. A short
+   mask dissolves the top and bottom edges into the page. */
+/* NOTE: no overflow on .zone-bg — a hidden overflow would become the
+   sticky frame's scrollport and pin it dead; sticky is already
+   constrained to this box, nothing can escape it. */
+.zone-bg{position:absolute;inset:0;z-index:0;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 90px,#000 calc(100% - 90px),transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,#000 90px,#000 calc(100% - 90px),transparent 100%)}
+.zone-bg-frame{position:sticky;top:0;height:100vh;height:100lvh}
+.zone-bg-img{position:absolute;inset:0;display:block;background-position:center;background-size:cover;background-repeat:no-repeat}
+/* While a series is open the frame crossfades to its open backdrop
    (series-bg-open.jpg); closing fades it back. */
-.zone-series::after{background-image:url('series-bg-open.jpg');opacity:0;transition:opacity .9s ease}
-.zone-series.bg-open::after{opacity:1}
-.zone-series{padding-bottom:2.5rem}
+.zone-bg-img-open{opacity:0;transition:opacity .9s ease}
+.zone-series.bg-open .zone-bg-img-open{opacity:1}
+.zone>:not(.zone-bg){position:relative;z-index:1}
+.zone-story{padding:clamp(2.5rem,7vw,4.5rem) 0 1.6rem}
+.zone-series{padding-top:clamp(3.2rem,9vw,5.5rem);padding-bottom:2.5rem}
+/* Labels that sit directly on a loaded backdrop lift to paper for
+   contrast (has-bg is set by JS only when the photo really loads, so
+   removing the file gracefully falls back to ink-on-paper). */
+.zone-series.has-bg .sec-title{color:var(--paper);text-shadow:0 2px 18px rgba(8,14,22,.5),0 1px 2px rgba(8,14,22,.4)}
+.zone-series.has-bg .sec-eyebrow{color:rgba(233,230,223,.78);text-shadow:0 1px 8px rgba(8,14,22,.5)}
+.zone-series.has-bg .shop-head{border-bottom-color:rgba(233,230,223,.45)}
+.zone-series.has-bg .item-name{color:var(--paper);text-shadow:0 1px 8px rgba(8,14,22,.6)}
+.zone-series.has-bg .item-price{color:rgba(233,230,223,.85);text-shadow:0 1px 8px rgba(8,14,22,.6)}
 
 /* Section head above the series + archive */
 .shop-head{width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));
-  margin:clamp(3.2rem,9vw,5.5rem) auto 0;padding-bottom:1.1rem;border-bottom:1.5px solid var(--ink);
+  margin:0 auto;padding-bottom:1.1rem;border-bottom:1.5px solid var(--ink);
   scroll-margin-top:4.6rem} /* lands Enter below the fixed corner mark, with the .r reveal lift accounted for */
 .sec-eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
 .sec-title{font-family:var(--display);font-weight:800;font-size:clamp(2.1rem,8vw,3.8rem);letter-spacing:-.04em;line-height:.95;margin-top:.45rem}
@@ -586,7 +603,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .drop-title{transform:none!important}
   .modal-card{transform:none!important;opacity:1!important}
   .archive-overlay,.archive-copy{transition:none;transform:none!important}
-  .drop-items,.zone-series::after{transition:none}
+  .drop-items,.zone-bg-img-open{transition:none}
   .scratch-cursor,.vote-btn::before,.scratch-sheen::before{animation:none}
   .vote-btn::before{opacity:0}
   .scratch-sheen{display:none}
@@ -659,6 +676,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
      story-bg.jpg / series-bg.jpg (and series-bg-open.jpg for the open
      state) into the repo root and they render raw as the background. -->
 <section class="zone zone-story">
+<div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img" style="background-image:url('story-bg.jpg')"></span></div></div>
 <div class="story-row">
   <a class="story-box" href="our-story.html">
     <div class="story-box-inner" id="storyBoxPhoto1"></div>
@@ -683,6 +701,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 </section>
 
 <section class="zone zone-series" id="series">
+  <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img" style="background-image:url('series-bg.jpg')"></span><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg-open.jpg')"></span></div></div>
   <header class="shop-head r">
     <p class="sec-eyebrow">earlspade &mdash; collections</p>
     <h2 class="sec-title">The Series</h2>
@@ -866,9 +885,41 @@ function photoHTML(d,di){
   return `<button class="drop-photo" onclick="toggleDrop(${di})" aria-expanded="false" aria-label="Open ${d.title}">${inner}<div class="drop-scrim"></div>${top}<div class="cap"><h2 class="drop-title">${d.title}</h2></div>${note}</button>`;
 }
 
+/* Mark zones whose backdrop photo actually loaded, so on-photo text
+   styling only kicks in when there is really a photo behind it. */
+document.querySelectorAll('.zone').forEach(zone=>{
+  const img=zone.querySelector('.zone-bg-img');
+  if(!img) return;
+  const m=(img.style.backgroundImage||'').match(/url\(["']?([^"')]+)/);
+  if(!m) return;
+  const probe=new Image();
+  probe.onload=()=>zone.classList.add('has-bg');
+  probe.src=m[1];
+});
+
+/* Glide the page with the same clock and ease as the grid unfold, so
+   opening a series reads as one fluid motion. Any user wheel/touch
+   cancels the glide instantly. */
+let glideRAF=null;
+function cancelGlide(){ if(glideRAF){ cancelAnimationFrame(glideRAF); glideRAF=null; } }
+window.addEventListener('wheel',cancelGlide,{passive:true});
+window.addEventListener('touchstart',cancelGlide,{passive:true});
+function glideTo(targetY,duration){
+  cancelGlide();
+  const startY=window.scrollY, delta=targetY-startY;
+  if(Math.abs(delta)<2) return;
+  const t0=performance.now();
+  const ease=t=>1-Math.pow(1-t,4); /* same family as var(--ease) */
+  (function step(){
+    const t=Math.min((performance.now()-t0)/duration,1);
+    window.scrollTo({top:startY+delta*ease(t),left:0,behavior:'instant'});
+    glideRAF = t<1 ? requestAnimationFrame(step) : null;
+  })();
+}
+
 /* Pressing a series banner unfolds its products beneath it (and folds
-   them back on a second press). Opening scrolls the page to the
-   products and crossfades the zone to its open backdrop. */
+   them back on a second press). Opening glides the page to the
+   products in sync with the unfold and crossfades the zone backdrop. */
 function toggleDrop(di){
   const section = document.querySelectorAll('.drop')[di];
   if(!section) return;
@@ -879,10 +930,15 @@ function toggleDrop(di){
   const zone = document.getElementById('series');
   if(zone) zone.classList.toggle('bg-open', !!document.querySelector('.drop.open'));
   if(open){
-    setTimeout(()=>{
-      const items = section.querySelector('.items');
-      if(items) items.scrollIntoView({behavior:'smooth',block:'start'});
-    }, 300);
+    const items = section.querySelector('.items');
+    if(items){
+      const targetY = items.getBoundingClientRect().top + window.scrollY - 14;
+      if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        window.scrollTo({top:targetY,left:0,behavior:'instant'});
+      }else{
+        glideTo(targetY, 750);
+      }
+    }
   }
 }
 
