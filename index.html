@@ -353,6 +353,17 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .scratch-prize{position:absolute;inset:0;
   background:radial-gradient(circle at 50% 78%,var(--pink-glow),transparent 62%),var(--tile);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:1rem;text-align:center}
+/* What you glimpse under the foil until the reveal: spinning mystery
+   marks in the brand red — pops hard against the champagne foil. An
+   absolute overlay so hiding it at reveal shifts no layout. */
+.scratch-mystery{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:1.2rem;pointer-events:none}
+.scratch-mystery span{display:inline-block;font-family:var(--display);font-weight:900;
+  font-size:clamp(1.7rem,5.5vw,2.4rem);color:var(--pop);text-shadow:0 1px 0 rgba(255,255,255,.4);
+  animation:mysterySpin 2.2s linear infinite}
+.scratch-mystery span:nth-child(2){animation-delay:-.73s}
+.scratch-mystery span:nth-child(3){animation-delay:-1.46s}
+@keyframes mysterySpin{to{transform:rotateY(360deg)}}
+.scratch-mystery.off{display:none}
 .scratch-q{font-family:var(--display);font-weight:900;font-size:clamp(1.25rem,3vw,1.8rem);letter-spacing:-.04em;line-height:1;
   display:flex;align-items:baseline;min-height:1em;white-space:pre}
 .scratch-cursor{display:inline-block;width:.52em;height:.92em;background:var(--ink);transform:translateY(.08em);margin-left:.08em;
@@ -410,7 +421,9 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   background:radial-gradient(140% 160% at 50% 0%,#2b2723 0%,#15130f 78%);
   box-shadow:0 0 0 0 rgba(18,16,14,0);
   transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
-.archive-strip-title{font-family:var(--display);font-weight:800;font-size:clamp(1.25rem,5vw,1.75rem);letter-spacing:-.03em;line-height:1;color:#fff}
+.archive-strip-title{display:flex;align-items:center;gap:.85rem;font-family:var(--display);font-weight:800;font-size:clamp(1.25rem,5vw,1.75rem);letter-spacing:-.03em;line-height:1;color:#fff}
+/* the brand flower in monochrome so it sits quietly on the dark strip */
+.archive-flower{height:clamp(26px,6vw,34px);width:auto;flex:none;filter:grayscale(1) brightness(3.2);opacity:.96}
 @media(hover:hover){
   .archive-strip:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(18,16,14,.24)}
 }
@@ -649,6 +662,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .archive-overlay,.archive-copy{transition:none;transform:none!important}
   .drop-items,.zone-bg-img-open{transition:none}
   .drop-hint{animation:none;opacity:.85}
+  .scratch-mystery span{animation:none}
   .scratch-cursor,.vote-btn::before,.scratch-sheen::before{animation:none}
   .vote-btn::before{opacity:0}
   .scratch-sheen{display:none}
@@ -734,6 +748,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
        teaser box: scratch to reveal the hint typing out, then the vote. -->
   <div class="scratch-card" id="scratchCard" aria-label="Series 3 scratch card">
     <div class="scratch-prize">
+      <div class="scratch-mystery" id="scratchMystery" aria-hidden="true"><span>?</span><span>?</span><span>?</span></div>
       <div class="scratch-q" aria-hidden="true"><span id="scratchTyped"></span><span class="scratch-cursor" id="scratchCursor"></span></div>
       <span class="sr">sky. sea. what's next?</span>
       <button class="vote-btn" id="voteBtn"><span>Vote</span></button>
@@ -759,7 +774,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
      nothing left to show. -->
 <section class="archive">
   <button class="archive-strip r" id="archiveBox" aria-haspopup="dialog" aria-controls="archiveOverlay" onclick="openArchive()">
-    <h2 class="archive-strip-title">The Archive</h2>
+    <h2 class="archive-strip-title"><img class="archive-flower no-vs" src="logo.png" alt="" aria-hidden="true">The Archive</h2>
     <span class="drop-tag">Closed</span>
   </button>
 </section>
@@ -1649,6 +1664,8 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
     revealed=true;
     canvas.classList.add('revealed');
     sheen.classList.add('off');
+    const mystery=document.getElementById('scratchMystery');
+    if(mystery) mystery.classList.add('off');
     if(navigator.vibrate)navigator.vibrate([10,40,14]);
 
     if(reduce){
