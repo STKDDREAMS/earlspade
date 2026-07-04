@@ -291,7 +291,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .drop-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(18,16,14,.62) 0%,rgba(18,16,14,.12) 38%,transparent 62%)}
 .drop-photo .top{position:absolute;top:var(--pad);left:var(--pad);right:var(--pad);z-index:2;display:flex;justify-content:flex-end}
 .drop-tag{font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:.42rem .85rem;border:1.5px solid #fff;color:#fff;border-radius:999px}
-.drop-tag.live{background:rgba(20,18,15,.6);border:1px solid rgba(255,255,255,.28);color:#fff;display:inline-flex;align-items:center;gap:.45rem;padding:.32rem .68rem;font-size:.56rem;letter-spacing:.2em;box-shadow:0 4px 14px -6px rgba(0,0,0,.5)}
+.drop-tag.live{background:rgba(20,18,15,.6);border:1.5px solid rgba(255,255,255,.28);color:#fff;display:inline-flex;align-items:center;gap:.45rem;padding:.42rem .85rem;font-size:.64rem;letter-spacing:.18em;box-shadow:0 4px 14px -6px rgba(0,0,0,.5)}
 .drop-tag.live::before{content:"";width:6px;height:6px;border-radius:50%;background:#fff;flex:none;animation:liveDot 1.7s ease-in-out infinite}
 @keyframes liveDot{
   0%{transform:scale(.8);box-shadow:0 0 0 0 rgba(255,255,255,.6)}
@@ -414,18 +414,20 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
 /* ===== ZONES — user-placeable section backdrops =================
    Drop story-bg.jpg / series-bg.jpg into the repo root to give the
-   Our Story row and the series section a backdrop photo. A paper
-   veil keeps everything readable, and a mask melts each backdrop
-   into the page at its edges (same language as the hero fade).
+   Our Story row and the series section a backdrop photo, and
+   series-bg-open.jpg for the series zone while a series is open.
+   The raw images render as-is (cover, centered, no overlays).
    Without the files the zones simply stay paper. */
 .zone{position:relative}
-.zone::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
-  background-position:center;background-size:cover;background-repeat:no-repeat;
-  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 9%,#000 91%,transparent);
-  mask-image:linear-gradient(to bottom,transparent,#000 9%,#000 91%,transparent)}
+.zone::before,.zone::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-position:center;background-size:cover;background-repeat:no-repeat}
 .zone>*{position:relative;z-index:1}
-.zone-story::before{background-image:linear-gradient(rgba(233,230,223,.85),rgba(233,230,223,.85)),url('story-bg.jpg')}
-.zone-series::before{background-image:linear-gradient(rgba(233,230,223,.85),rgba(233,230,223,.85)),url('series-bg.jpg')}
+.zone-story::before{background-image:url('story-bg.jpg')}
+.zone-series::before{background-image:url('series-bg.jpg')}
+/* While a series is open the zone crossfades to its open backdrop
+   (series-bg-open.jpg); closing fades it back. */
+.zone-series::after{background-image:url('series-bg-open.jpg');opacity:0;transition:opacity .9s ease}
+.zone-series.bg-open::after{opacity:1}
 .zone-series{padding-bottom:2.5rem}
 
 /* Section head above the series + archive */
@@ -440,14 +442,8 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .drop-items{display:grid;grid-template-rows:0fr;transition:grid-template-rows .75s var(--ease)}
 .drop.open .drop-items{grid-template-rows:1fr}
 .drop-items-clip{overflow:hidden}
-.drop-toggle{width:34px;height:34px;flex:none;display:flex;align-items:center;justify-content:center;
-  border:1.5px solid rgba(255,255,255,.75);border-radius:50%;color:#fff;background:rgba(20,18,15,.35);
-  font-family:var(--mono);font-size:1.05rem;line-height:1;transition:transform .5s var(--ease)}
-.drop.open .drop-toggle{transform:rotate(45deg)}
-.drop-photo .top{gap:.55rem;align-items:center}
-
 /* ITEMS */
-.items{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem .95rem;padding:1.7rem var(--pad) 0}
+.items{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem .95rem;padding:1.7rem var(--pad) 0;scroll-margin-top:1rem}
 .item{display:block;cursor:pointer}
 .item-tile{position:relative;aspect-ratio:4/5;background:var(--tile);overflow:hidden;border-radius:16px;display:flex;align-items:center;justify-content:center;transition:background .4s ease,box-shadow .4s ease}
 .item-tile .ph{height:30%;max-height:74px;opacity:.16;transition:opacity .4s ease,transform .55s var(--ease)}
@@ -590,7 +586,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .drop-title{transform:none!important}
   .modal-card{transform:none!important;opacity:1!important}
   .archive-overlay,.archive-copy{transition:none;transform:none!important}
-  .drop-items,.drop-toggle{transition:none}
+  .drop-items,.zone-series::after{transition:none}
   .scratch-cursor,.vote-btn::before,.scratch-sheen::before{animation:none}
   .vote-btn::before{opacity:0}
   .scratch-sheen{display:none}
@@ -640,8 +636,8 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 </header>
 
 <!-- ZONES: each zone can carry a user-placeable backdrop photo — drop
-     story-bg.jpg / series-bg.jpg into the repo root and they appear,
-     veiled in paper and melted into the page at the edges. -->
+     story-bg.jpg / series-bg.jpg (and series-bg-open.jpg for the open
+     state) into the repo root and they render raw as the background. -->
 <section class="zone zone-story">
 <div class="story-row">
   <a class="story-box" href="our-story.html">
@@ -846,14 +842,14 @@ function photoHTML(d,di){
   const inner = d.photo
     ? `<div class="drop-photo-inner" style="background-image:url('${d.photo}')"></div>`
     : `<div class="drop-photo-inner ph"><img src="${LOGO}" alt=""></div>`;
-  const tag = d.tag ? `<span class="drop-tag${d.live?' live':''}">${d.tag}</span>` : '';
-  const top = `<div class="top">${tag}<span class="drop-toggle" aria-hidden="true">+</span></div>`;
+  const top = d.tag ? `<div class="top"><span class="drop-tag${d.live?' live':''}">${d.tag}</span></div>` : '';
   const note = d.photo ? '' : `<span class="ph-note">Campaign image</span>`;
   return `<button class="drop-photo" onclick="toggleDrop(${di})" aria-expanded="false" aria-label="Open ${d.title}">${inner}<div class="drop-scrim"></div>${top}<div class="cap"><h2 class="drop-title">${d.title}</h2></div>${note}</button>`;
 }
 
 /* Pressing a series banner unfolds its products beneath it (and folds
-   them back on a second press). */
+   them back on a second press). Opening scrolls the page to the
+   products and crossfades the zone to its open backdrop. */
 function toggleDrop(di){
   const section = document.querySelectorAll('.drop')[di];
   if(!section) return;
@@ -861,11 +857,13 @@ function toggleDrop(di){
   section.classList.toggle('open', open);
   const btn = section.querySelector('.drop-photo');
   if(btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  const zone = document.getElementById('series');
+  if(zone) zone.classList.toggle('bg-open', !!document.querySelector('.drop.open'));
   if(open){
     setTimeout(()=>{
       const items = section.querySelector('.items');
-      if(items) items.scrollIntoView({behavior:'smooth',block:'nearest'});
-    }, 280);
+      if(items) items.scrollIntoView({behavior:'smooth',block:'start'});
+    }, 300);
   }
 }
 
