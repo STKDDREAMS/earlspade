@@ -199,8 +199,8 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    extension, so on load (and anywhere in the hero) the photo is untouched —
    the morph into paper only appears as you scroll past it. The extra bottom
    padding keeps the content centered within the first screen. */
-.hero{--fadeh:clamp(160px,30vh,300px);
-  min-height:calc(100vh + var(--fadeh));min-height:calc(100lvh + var(--fadeh));
+.hero{--fadeh:clamp(160px,calc(var(--vh100,100lvh)*.3),300px);
+  min-height:calc(100vh + var(--fadeh));min-height:calc(var(--vh100,100lvh) + var(--fadeh));
   overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
   padding:6rem 1.2rem calc(4.5rem + var(--fadeh));position:relative;background:#0c2636;isolation:isolate}
 .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:#0c2636 url("hero.jpg") center top/cover no-repeat}
@@ -557,14 +557,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 @media(min-width:541px) and (max-width:759px){
   :root{--pad:1.6rem}
   .items{grid-template-columns:repeat(3,1fr);gap:1.6rem 1.1rem}
-  .drop-photo{aspect-ratio:16/9;max-height:62vh}
+  .drop-photo{aspect-ratio:16/9;max-height:calc(var(--vh100,100lvh)*.62)}
 }
 
 /* DESKTOP */
 @media(min-width:760px){
   :root{--pad:2.4rem}
   .items{grid-template-columns:repeat(4,1fr);gap:1.9rem 1.5rem;max-width:1320px;margin:0 auto;padding-top:2.2rem}
-  .drop-photo{aspect-ratio:32/9;max-height:55vh}
+  .drop-photo{aspect-ratio:32/9;max-height:calc(var(--vh100,100lvh)*.55)}
   .drop-photo-inner.ph img{width:13%}
   .drop-title{font-size:clamp(3.5rem,7vw,6.5rem)}
   .foot{flex-direction:row;justify-content:space-between;align-items:flex-end;max-width:1320px;margin:2rem auto 0}
@@ -611,6 +611,26 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   user-drag:none;-khtml-user-drag:none;-moz-user-drag:none;-o-user-drag:none;
 }
 </style>
+<script>
+/* In-app browsers (Instagram, TikTok, etc.) resize the whole WebView when
+   their top/bottom chrome collapses or expands during scroll. Anything
+   sized with vh/lvh/svh re-lays-out mid-scroll and the page visibly
+   jumps. Fix: freeze the viewport height into --vh100 (px) at load and
+   ignore height-only resizes — they ARE the chrome moving. Only a width
+   change (rotation, real window resize) re-measures. Runs in <head> so
+   the first layout already uses the frozen value. */
+(function(){
+  var w=window.innerWidth;
+  function set(){document.documentElement.style.setProperty('--vh100',window.innerHeight+'px');}
+  set();
+  window.addEventListener('resize',function(){
+    if(window.innerWidth!==w){w=window.innerWidth;set();}
+  },{passive:true});
+  window.addEventListener('orientationchange',function(){
+    setTimeout(function(){w=window.innerWidth;set();},300);
+  },{passive:true});
+})();
+</script>
 </head>
 <body>
 
@@ -1429,7 +1449,9 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
     fCtx.setTransform(dpr,0,0,dpr,0,0);
   }
   sizeFlakes();
-  window.addEventListener('resize',sizeFlakes,{passive:true});
+  /* width-guarded: height-only resizes are in-app chrome moving */
+  let flakesW=innerWidth;
+  window.addEventListener('resize',()=>{if(innerWidth!==flakesW){flakesW=innerWidth;sizeFlakes();}},{passive:true});
 
   function spawnFlakes(clientX,clientY){
     if(reduce)return;
