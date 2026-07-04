@@ -31,6 +31,7 @@
   --display:'Archivo',sans-serif;
   --mono:'Space Mono',monospace;
   --pad:1.15rem;
+  --lift:clamp(2.2rem,6vw,3.4rem); /* how far the raised story sheet overlaps the sections above/below */
   --ease:cubic-bezier(.2,.8,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0;
@@ -194,31 +195,13 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
 /* HERO — full-screen photo; fills the whole screen on load (iOS-safe),
    content centered over it. */
-/* The section extends --fadeh below the first screen: the photo fills the
-   whole thing, but the dissolve lives entirely in that below-the-fold
-   extension, so on load (and anywhere in the hero) the photo is untouched —
-   the morph into paper only appears as you scroll past it. The extra bottom
-   padding keeps the content centered within the first screen. */
-.hero{--fadeh:clamp(160px,calc(var(--vh100,100lvh)*.3),300px);
-  min-height:calc(100vh + var(--fadeh));min-height:calc(var(--vh100,100lvh) + var(--fadeh));
+/* No fade at the bottom: the raised story sheet below overlaps the hero
+   by --lift, so the photo runs raw right up under the sheet's edge. The
+   extra bottom padding keeps the hero content clear of the overlap. */
+.hero{min-height:100vh;min-height:var(--vh100,100lvh);
   overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  padding:6rem 1.2rem calc(4.5rem + var(--fadeh));position:relative;background:#0c2636;isolation:isolate}
+  padding:6rem 1.2rem calc(4.5rem + var(--lift));position:relative;background:#0c2636;isolation:isolate}
 .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:#0c2636 url("hero.jpg") center top/cover no-repeat}
-/* Dissolve the photo into the paper background — a smoothstep-eased
-   gradient (many gentle stops, not a hard linear band) so the hero reads
-   as morphing into the page rather than ending at an edge. Sits above the
-   photo (-2) but under the bubbles (0) and content (1). */
-.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:var(--fadeh);z-index:-1;pointer-events:none;
-  background:linear-gradient(to bottom,
-    rgba(233,230,223,0) 0%,
-    rgba(233,230,223,.03) 14%,
-    rgba(233,230,223,.10) 27%,
-    rgba(233,230,223,.22) 39%,
-    rgba(233,230,223,.38) 50%,
-    rgba(233,230,223,.56) 61%,
-    rgba(233,230,223,.74) 72%,
-    rgba(233,230,223,.89) 84%,
-    var(--paper) 100%)}
 .hero>*{position:relative;z-index:1}
 /* bubble layer lives between the scrim and the flower/text, so click-bubbles
    rise out from BEHIND the flower's edges. Minimalist illustrated bubbles:
@@ -422,12 +405,13 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    pinned to the screen at its natural crop while the section scrolls over
    it — no matter how tall the zone grows when products unfold. A short
    mask dissolves the top and bottom edges into the page. */
-/* NOTE: no overflow on .zone-bg — a hidden overflow would become the
-   sticky frame's scrollport and pin it dead; sticky is already
-   constrained to this box, nothing can escape it. */
-.zone-bg{position:absolute;inset:0;z-index:0;pointer-events:none;
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 90px,#000 calc(100% - 90px),transparent 100%);
-  mask-image:linear-gradient(to bottom,transparent 0,#000 90px,#000 calc(100% - 90px),transparent 100%)}
+/* overflow:clip (NEVER hidden — hidden becomes the sticky frame's
+   scrollport and pins it dead; clip does not create a scroll container)
+   so a frame taller than a closed zone can't overhang onto the footer.
+   contain:paint doubles as the clip on engines without overflow:clip.
+   No masks: photo edges are covered by the raised sheet above and the
+   footer border below, so the image renders fully raw. */
+.zone-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:clip;contain:paint}
 /* Frame height is FROZEN (+buffer): 100lvh recomputes when in-app
    browsers resize their WebView mid-scroll, visibly reframing the
    cover crop — the "photo keeps switching" glitch. var(--vh100) is
@@ -440,8 +424,21 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .zone-bg-img-open{opacity:0;transition:opacity .9s ease}
 .zone-series.bg-open .zone-bg-img-open{opacity:1}
 .zone>:not(.zone-bg){position:relative;z-index:1}
-.zone-story{padding:clamp(2.5rem,7vw,4.5rem) 0 1.6rem}
-.zone-series{padding-top:clamp(3.2rem,9vw,5.5rem);padding-bottom:2.5rem}
+/* The story row rides on a raised paper sheet: rounded, double-shadowed,
+   pulled up over the hero photo and down over the series photo by --lift,
+   so both photos visibly run UNDER it. overflow:clip keeps any future
+   story backdrop inside the rounded corners (clip, never hidden — hidden
+   would break the sticky backdrop frame). */
+.zone-story{position:relative;z-index:2;background:var(--paper);
+  margin:calc(-1*var(--lift)) 0;
+  padding:clamp(2.6rem,7vw,4rem) 0;
+  border-radius:24px;overflow:clip;
+  box-shadow:0 -16px 38px rgba(18,16,14,.20),0 26px 54px rgba(18,16,14,.32)}
+/* Series zone slides under the sheet; extra top padding restores the
+   visual gap between the sheet edge and the section head. The photo runs
+   to the very bottom of the zone, meeting the footer's border. */
+.zone-series{position:relative;z-index:1;
+  padding-top:calc(clamp(3.2rem,9vw,5.5rem) + var(--lift));padding-bottom:3rem}
 /* Labels that sit directly on a loaded backdrop lift to paper for
    contrast (has-bg is set by JS only when the photo really loads, so
    removing the file gracefully falls back to ink-on-paper). */
@@ -565,7 +562,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 }
 
 /* FOOTER */
-.foot{padding:2.4rem var(--pad) calc(1.4rem + env(safe-area-inset-bottom));margin-top:2rem;border-top:1.5px solid var(--ink);display:flex;flex-direction:column;gap:1rem}
+.foot{padding:2.4rem var(--pad) calc(1.4rem + env(safe-area-inset-bottom));border-top:1.5px solid var(--ink);display:flex;flex-direction:column;gap:1rem}
 .foot-brand{display:flex;align-items:center;gap:.55rem;font-weight:900;font-size:1.5rem;letter-spacing:-.03em}
 .foot-brand img{height:30px;width:auto}
 .foot-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
@@ -588,7 +585,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .drop-photo{aspect-ratio:32/9;max-height:calc(var(--vh100,100lvh)*.55)}
   .drop-photo-inner.ph img{width:13%}
   .drop-title{font-size:clamp(3.5rem,7vw,6.5rem)}
-  .foot{flex-direction:row;justify-content:space-between;align-items:flex-end;max-width:1320px;margin:2rem auto 0}
+  .foot{flex-direction:row;justify-content:space-between;align-items:flex-end;max-width:1320px;margin:0 auto}
   .hero-logo{margin-bottom:1.9rem}
   .modal{align-items:center;padding:2rem}
   .modal-card{flex-direction:row;border-radius:24px;max-width:920px;max-height:86vh;transform:translateY(22px) scale(.97);opacity:0;transition:transform .42s var(--ease),opacity .35s ease;box-shadow:0 30px 80px rgba(0,0,0,.3)}
