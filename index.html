@@ -311,24 +311,22 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .story-box{aspect-ratio:16/7}
 }
 
-/* SERIES 3 SCRATCHER — a lottery ticket in the site's paper/ink language,
-   in place of the old Coming Soon teaser. Scratch the foil to reveal the
-   hint and the vote button. On phones it keeps a chunky 2/1 scratch area;
-   beside Our Story (≥541px) it stretches to match the row height so the
-   two cards read as one set at any aspect ratio. */
-.scratcher{position:relative;display:flex;flex-direction:column;width:100%;
-  background:var(--paper);border:1.5px solid var(--ink);border-radius:16px;overflow:hidden}
-.scratch-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
-  padding:.8rem 1rem .7rem;border-bottom:1.5px solid var(--ink)}
-.scratch-brand{font-family:var(--display);font-weight:900;font-size:1.15rem;letter-spacing:-.055em;line-height:.9}
-.scratch-tag{font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-soft)}
-.scratch-body{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;padding:.85rem}
-.scratch-area{position:relative;flex:1 1 auto;aspect-ratio:2/1;border:1.5px solid var(--ink);border-radius:12px;overflow:hidden;
-  touch-action:none;-webkit-user-select:none;user-select:none}
-.scratch-prize{position:absolute;inset:0;background:var(--tile);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;padding:1rem;text-align:center}
-.scratch-q{font-family:var(--display);font-weight:900;font-size:clamp(1.1rem,3vw,1.5rem);letter-spacing:-.04em;line-height:1;display:flex;align-items:baseline;gap:.1em}
-.scratch-cursor{display:inline-block;width:.52em;height:.92em;background:var(--ink);transform:translateY(.08em);animation:scratchblink 1.1s steps(1) infinite}
+/* SERIES 3 SCRATCHER — one foil-covered card in the site's paper/ink
+   language, in place of the old Coming Soon teaser. The whole card is the
+   scratch surface: an idle sheen invites touch, flakes fall as you scratch,
+   and at ~50% cleared the foil fades and the hint types itself out. On
+   phones it keeps a chunky 16/10 shape; beside Our Story (>=541px) it
+   stretches to match the row height so the pair reads as one set. */
+.scratch-card{position:relative;width:100%;aspect-ratio:16/10;border:1.5px solid var(--ink);border-radius:16px;overflow:hidden;
+  background:var(--tile);touch-action:none;-webkit-user-select:none;user-select:none}
+.scratch-prize{position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 78%,var(--pink-glow),transparent 62%),var(--tile);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:1rem;text-align:center}
+.scratch-q{font-family:var(--display);font-weight:900;font-size:clamp(1.25rem,3vw,1.8rem);letter-spacing:-.04em;line-height:1;
+  display:flex;align-items:baseline;min-height:1em;white-space:pre}
+.scratch-cursor{display:inline-block;width:.52em;height:.92em;background:var(--ink);transform:translateY(.08em);margin-left:.08em;
+  animation:scratchblink 1.1s steps(1) infinite;opacity:0}
+.scratch-cursor.on{opacity:1}
 @keyframes scratchblink{50%{opacity:0}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .vote-btn{background:linear-gradient(135deg,var(--pink-2),var(--pink));color:#fff;
@@ -337,7 +335,9 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   padding:.9rem 2.4rem .9rem 2.6rem;min-height:44px;cursor:pointer;
   position:relative;overflow:hidden;isolation:isolate;
   box-shadow:0 6px 20px -6px var(--pink-glow);
-  transition:transform .15s ease,box-shadow .3s ease}
+  opacity:0;transform:translateY(10px);
+  transition:opacity .5s var(--ease),transform .5s var(--ease),box-shadow .3s ease}
+.vote-btn.in{opacity:1;transform:translateY(0)}
 .vote-btn::after{content:'';position:absolute;inset:0;border-radius:999px;
   background:linear-gradient(135deg,var(--pink),var(--pink-deep));
   transform:translateY(101%);transition:transform .35s var(--ease);z-index:0}
@@ -352,18 +352,17 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 }
 .vote-btn:disabled{opacity:.6;cursor:default}
 @keyframes glimmer{0%{left:-65%}22%{left:135%}100%{left:135%}}
-.scratch-area canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab;transition:opacity .8s ease}
-.scratch-area canvas.revealed{opacity:0;pointer-events:none}
-.scratch-foot{display:flex;justify-content:space-between;align-items:center;gap:1rem;
-  padding:0 1rem .85rem;font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
-.scratch-barcode{height:18px;width:76px;opacity:.65;
-  background:repeating-linear-gradient(90deg,
-    var(--ink) 0 2px,transparent 2px 4px,
-    var(--ink) 4px 5px,transparent 5px 9px,
-    var(--ink) 9px 12px,transparent 12px 14px)}
+#scratchFoil{position:absolute;inset:0;width:100%;height:100%;cursor:grab;transition:opacity .6s ease}
+#scratchFoil.revealed{opacity:0;pointer-events:none}
+/* idle sheen that invites touch, disappears at first scratch */
+.scratch-sheen{position:absolute;inset:0;pointer-events:none;overflow:hidden;transition:opacity .4s ease}
+.scratch-sheen::before{content:'';position:absolute;top:-30%;left:-70%;width:44%;height:160%;
+  background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.05) 38%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.05) 62%,transparent 100%);
+  transform:skewX(-18deg);animation:glimmer 3.4s ease-in-out infinite}
+.scratch-sheen.off{opacity:0}
+#scratchFlakes{position:fixed;inset:0;pointer-events:none;z-index:120}
 @media(min-width:541px){
-  .scratcher{align-self:stretch}
-  .scratch-area{aspect-ratio:auto;min-height:96px}
+  .scratch-card{align-self:stretch;aspect-ratio:auto;min-height:0}
 }
 
 /* ARCHIVE — banner reuses .drop-photo so it reads exactly like a series
@@ -534,9 +533,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .drop-title{transform:none!important}
   .modal-card{transform:none!important;opacity:1!important}
   .archive-overlay,.archive-copy{transition:none;transform:none!important}
-  .scratch-cursor{animation:none}
-  .vote-btn::before{animation:none;opacity:0}
-  .scratch-area canvas{transition:none}
+  .scratch-cursor,.vote-btn::before,.scratch-sheen::before{animation:none}
+  .vote-btn::before{opacity:0}
+  .scratch-sheen{display:none}
+  #scratchFoil,.vote-btn{transition:none}
 }
 
 .hero-logo-spin{position:relative;display:inline-block;cursor:pointer;touch-action:manipulation}
@@ -589,26 +589,16 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
       <span class="story-box-title">Our Story</span>
     </div>
   </a>
-  <!-- SERIES 3 SCRATCHER — a lottery ticket in place of the old teaser box:
-       scratch the foil to reveal the hint and cast a vote on what's next. -->
-  <div class="scratcher" aria-label="Series 3 scratch card">
-    <div class="scratch-head">
-      <span class="scratch-brand">earlspade</span>
-      <span class="scratch-tag">Series 3</span>
+  <!-- SERIES 3 SCRATCHER — one foil-covered card in place of the old
+       teaser box: scratch to reveal the hint typing out, then the vote. -->
+  <div class="scratch-card" id="scratchCard" aria-label="Series 3 scratch card">
+    <div class="scratch-prize">
+      <div class="scratch-q" aria-hidden="true"><span id="scratchTyped"></span><span class="scratch-cursor" id="scratchCursor"></span></div>
+      <span class="sr">sky. sea. what's next?</span>
+      <button class="vote-btn" id="voteBtn"><span>Vote</span></button>
     </div>
-    <div class="scratch-body">
-      <div class="scratch-area" id="scratchArea">
-        <div class="scratch-prize">
-          <div class="scratch-q">sky. sea. <span class="scratch-cursor" aria-hidden="true"></span><span class="sr">what's next</span></div>
-          <button class="vote-btn" id="voteBtn"><span>Vote</span></button>
-        </div>
-        <canvas id="scratchFoil" aria-hidden="true"></canvas>
-      </div>
-    </div>
-    <div class="scratch-foot">
-      <span>no. 0003 &mdash; coming soon</span>
-      <span class="scratch-barcode" aria-hidden="true"></span>
-    </div>
+    <canvas id="scratchFoil" aria-hidden="true"></canvas>
+    <div class="scratch-sheen" id="scratchSheen"></div>
   </div>
 </div>
 
@@ -638,6 +628,9 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     <p>You won&rsquo;t find photos in here, and that&rsquo;s on purpose. The jewelry is already sold and gone &mdash; the only place a Celestial piece exists now is with the person wearing it. If you missed it, you missed it. That&rsquo;s what makes the ones you catch worth keeping.</p>
   </div>
 </div>
+
+<!-- Full-screen, hit-test-transparent canvas for foil flakes falling off the scratcher -->
+<canvas id="scratchFlakes" aria-hidden="true"></canvas>
 
 <!-- PRODUCT MODAL -->
 <div class="modal" id="modal" aria-hidden="true">
@@ -1292,21 +1285,26 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
 
 /* ===== SERIES 3 SCRATCHER =======================================
    The foil is a canvas painted over the prize; scratching erases it
-   (destination-out) and once ~50% is cleared the rest fades away.
-   The area is flexible (it stretches to match Our Story's height),
-   so a ResizeObserver repaints the foil until scratching starts. */
+   (destination-out) with foil flakes falling off and soft haptic
+   ticks. Once ~50% is cleared the foil fades and the hint types
+   itself out before the vote button rises in. The card is flexible
+   (it stretches to match Our Story's height), so a ResizeObserver
+   repaints the foil until scratching starts. */
 (function(){
+  const card=document.getElementById('scratchCard');
   const canvas=document.getElementById('scratchFoil');
-  const area=document.getElementById('scratchArea');
-  if(!canvas||!area) return;
+  const sheen=document.getElementById('scratchSheen');
+  if(!card||!canvas) return;
   const ctx=canvas.getContext('2d');
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const BRUSH_RADIUS=24;
   const REVEAL_AT=0.5;
   let isScratching=false,revealed=false,lastPos=null,hasScratched=false;
 
+  /* ---------- foil ---------- */
   function paintFoil(){
-    const rect=area.getBoundingClientRect();
+    const rect=card.getBoundingClientRect();
     if(!rect.width||!rect.height) return;
     const dpr=window.devicePixelRatio||1;
     canvas.width=rect.width*dpr;
@@ -1322,16 +1320,18 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
     ctx.fillRect(0,0,rect.width,rect.height);
 
     for(let i=0;i<500;i++){
-      const x=Math.random()*rect.width,y=Math.random()*rect.height;
       ctx.fillStyle=Math.random()>.5?'rgba(255,255,255,.25)':'rgba(22,20,18,.12)';
-      ctx.fillRect(x,y,1.2,1.2);
+      ctx.fillRect(Math.random()*rect.width,Math.random()*rect.height,1.2,1.2);
     }
 
     ctx.textAlign='center';
     ctx.textBaseline='middle';
-    ctx.fillStyle='rgba(22,20,18,.72)';
-    ctx.font='700 12px "Space Mono", monospace';
-    ctx.fillText('S C R A T C H',rect.width/2,rect.height/2);
+    ctx.fillStyle='rgba(22,20,18,.78)';
+    ctx.font='700 13px "Space Mono", monospace';
+    ctx.fillText('S E R I E S  3',rect.width/2,rect.height/2-8);
+    ctx.fillStyle='rgba(22,20,18,.42)';
+    ctx.font='400 9px "Space Mono", monospace';
+    ctx.fillText('scratch to vote',rect.width/2,rect.height/2+13);
   }
 
   if(document.fonts&&document.fonts.ready){
@@ -1339,16 +1339,72 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
   }
   paintFoil();
 
+  /* ---------- foil flakes ---------- */
+  const fCanvas=document.getElementById('scratchFlakes');
+  const fCtx=fCanvas.getContext('2d');
+  let flakes=[],rafId=null;
+
+  function sizeFlakes(){
+    const dpr=window.devicePixelRatio||1;
+    fCanvas.width=innerWidth*dpr;
+    fCanvas.height=innerHeight*dpr;
+    fCtx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  sizeFlakes();
+  window.addEventListener('resize',sizeFlakes,{passive:true});
+
+  function spawnFlakes(clientX,clientY){
+    if(reduce)return;
+    const shades=['#B4B2AD','#C9C7C2','#9E9C97'];
+    for(let i=0;i<3;i++){
+      flakes.push({
+        x:clientX+(Math.random()-.5)*BRUSH_RADIUS,
+        y:clientY+(Math.random()-.5)*BRUSH_RADIUS,
+        vx:(Math.random()-.5)*1.2,
+        vy:.5+Math.random()*1.2,
+        s:1.5+Math.random()*2.5,
+        r:Math.random()*Math.PI,
+        vr:(Math.random()-.5)*.2,
+        life:1,
+        c:shades[(Math.random()*shades.length)|0]
+      });
+    }
+    if(!rafId)rafId=requestAnimationFrame(tick);
+  }
+
+  function tick(){
+    fCtx.clearRect(0,0,innerWidth,innerHeight);
+    flakes=flakes.filter(f=>f.life>0);
+    for(const f of flakes){
+      f.vy+=.12;               /* gravity */
+      f.x+=f.vx;f.y+=f.vy;
+      f.r+=f.vr;
+      f.life-=.016;
+      fCtx.save();
+      fCtx.translate(f.x,f.y);
+      fCtx.rotate(f.r);
+      fCtx.globalAlpha=Math.max(f.life,0);
+      fCtx.fillStyle=f.c;
+      fCtx.fillRect(-f.s/2,-f.s/2,f.s,f.s*.7);
+      fCtx.restore();
+    }
+    if(flakes.length){rafId=requestAnimationFrame(tick);}
+    else{rafId=null;fCtx.clearRect(0,0,innerWidth,innerHeight);}
+  }
+
+  /* ---------- scratching ---------- */
   function getPos(e){
     const rect=canvas.getBoundingClientRect();
     const p=e.touches?e.touches[0]:e;
-    return{x:p.clientX-rect.left,y:p.clientY-rect.top};
+    return{x:p.clientX-rect.left,y:p.clientY-rect.top,cx:p.clientX,cy:p.clientY};
   }
 
+  let lastBuzz=0;
   function scratch(e){
     if(!isScratching||revealed)return;
     e.preventDefault();
     const pos=getPos(e);
+
     ctx.globalCompositeOperation='destination-out';
     ctx.lineCap='round';ctx.lineJoin='round';
     ctx.lineWidth=BRUSH_RADIUS*2;
@@ -1358,6 +1414,12 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
     ctx.stroke();
     ctx.globalCompositeOperation='source-over';
     lastPos=pos;
+
+    spawnFlakes(pos.cx,pos.cy);
+
+    /* soft haptic tick while scratching (Android/supported devices) */
+    const now=Date.now();
+    if(navigator.vibrate&&now-lastBuzz>90){navigator.vibrate(6);lastBuzz=now;}
   }
 
   function checkReveal(){
@@ -1366,13 +1428,14 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
     const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
     let cleared=0,total=0;
     for(let i=3;i<data.length;i+=4*step){total++;if(data[i]===0)cleared++;}
-    if(cleared/total>=REVEAL_AT){
-      revealed=true;
-      canvas.classList.add('revealed');
-    }
+    if(cleared/total>=REVEAL_AT)reveal();
   }
 
-  function start(e){isScratching=true;hasScratched=true;lastPos=null;scratch(e);}
+  function start(e){
+    isScratching=true;lastPos=null;
+    if(!hasScratched){hasScratched=true;sheen.classList.add('off');}
+    scratch(e);
+  }
   function end(){if(!isScratching)return;isScratching=false;lastPos=null;checkReveal();}
 
   canvas.addEventListener('mousedown',start);
@@ -1383,12 +1446,44 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
   canvas.addEventListener('touchend',end);
 
   if(window.ResizeObserver){
-    new ResizeObserver(()=>{if(!hasScratched&&!revealed)paintFoil();}).observe(area);
+    new ResizeObserver(()=>{if(!hasScratched&&!revealed)paintFoil();}).observe(card);
   }else{
     window.addEventListener('resize',()=>{if(!hasScratched&&!revealed)paintFoil();},{passive:true});
   }
 
-  document.getElementById('voteBtn').addEventListener('click',function(){
+  /* ---------- the reveal: type "sky. sea." then blink, then the button ---------- */
+  const typed=document.getElementById('scratchTyped');
+  const cursor=document.getElementById('scratchCursor');
+  const voteBtn=document.getElementById('voteBtn');
+  const LINE='sky. sea. ';
+
+  function reveal(){
+    revealed=true;
+    canvas.classList.add('revealed');
+    sheen.classList.add('off');
+    if(navigator.vibrate)navigator.vibrate([10,40,14]);
+
+    if(reduce){
+      typed.textContent=LINE;
+      cursor.classList.add('on');
+      voteBtn.classList.add('in');
+      return;
+    }
+
+    cursor.classList.add('on');
+    let i=0;
+    (function type(){
+      if(i<=LINE.length){
+        typed.textContent=LINE.slice(0,i);
+        i++;
+        setTimeout(type,i===5?260:70);  /* breath after "sky." */
+      }else{
+        setTimeout(()=>voteBtn.classList.add('in'),350);
+      }
+    })();
+  }
+
+  voteBtn.addEventListener('click',function(){
     this.querySelector('span').textContent='voted';
     this.disabled=true;
   });
