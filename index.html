@@ -194,13 +194,21 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
 /* HERO — full-screen photo; fills the whole screen on load (iOS-safe),
    content centered over it. */
-.hero{min-height:100vh;min-height:100lvh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 1.2rem 4.5rem;position:relative;background:#0c2636;isolation:isolate}
+/* The section extends --fadeh below the first screen: the photo fills the
+   whole thing, but the dissolve lives entirely in that below-the-fold
+   extension, so on load (and anywhere in the hero) the photo is untouched —
+   the morph into paper only appears as you scroll past it. The extra bottom
+   padding keeps the content centered within the first screen. */
+.hero{--fadeh:clamp(160px,30vh,300px);
+  min-height:calc(100vh + var(--fadeh));min-height:calc(100lvh + var(--fadeh));
+  overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  padding:6rem 1.2rem calc(4.5rem + var(--fadeh));position:relative;background:#0c2636;isolation:isolate}
 .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:#0c2636 url("hero.jpg") center top/cover no-repeat}
-/* Dissolve the photo into the paper background below — a smoothstep-eased
+/* Dissolve the photo into the paper background — a smoothstep-eased
    gradient (many gentle stops, not a hard linear band) so the hero reads
    as morphing into the page rather than ending at an edge. Sits above the
    photo (-2) but under the bubbles (0) and content (1). */
-.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:clamp(160px,30vh,300px);z-index:-1;pointer-events:none;
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:var(--fadeh);z-index:-1;pointer-events:none;
   background:linear-gradient(to bottom,
     rgba(233,230,223,0) 0%,
     rgba(233,230,223,.03) 14%,
