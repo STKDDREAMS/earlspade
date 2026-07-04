@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <meta name="color-scheme" content="light"/>
 <meta name="theme-color" content="#E9E6DF"/>
+<meta name="description" content="earlspade — small, numbered jewelry series from Malibu, California. One run, one season: once it's gone, it's gone forever."/>
+<!-- Social link previews (Instagram DMs/stories, iMessage, X). NOTE:
+     og:url / og:image must be ABSOLUTE — if the production domain is not
+     earlspade.com, update these two URLs. -->
+<meta property="og:title" content="earlspade — Sea Series"/>
+<meta property="og:description" content="Small, numbered jewelry series from Malibu. One run, one season: once it's gone, it's gone forever."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://earlspade.com/"/>
+<meta property="og:image" content="https://earlspade.com/sea-series.jpg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="earlspade — Sea Series"/>
+<meta name="twitter:description" content="Small, numbered jewelry series from Malibu. One run, one season: once it's gone, it's gone forever."/>
+<meta name="twitter:image" content="https://earlspade.com/sea-series.jpg"/>
+<link rel="apple-touch-icon" href="logo.png"/>
 <meta name="robots" content="noimageindex"/>
 <title>earlspade</title>
 <link rel="icon" href="logo.png"/>
@@ -279,6 +293,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .drop-tag{font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:.42rem .85rem;border:1.5px solid #fff;color:#fff;border-radius:999px}
 .drop-tag.live{background:rgba(20,18,15,.6);border:1.5px solid rgba(255,255,255,.28);color:#fff;display:inline-flex;align-items:center;gap:.45rem;padding:.42rem .85rem;font-size:.64rem;letter-spacing:.18em;box-shadow:0 4px 14px -6px rgba(0,0,0,.5)}
 .drop-tag.live::before{content:"";width:6px;height:6px;border-radius:50%;background:#fff;flex:none;animation:liveDot 1.7s ease-in-out infinite}
+/* First-visit cue that the banner opens: bottom-right, gently pulsing.
+   Gone while open, and suppressed for good (hint-off, via localStorage)
+   once the customer has ever opened a series. */
+.drop-hint{position:absolute;right:var(--pad);bottom:1.2rem;z-index:2;
+  font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:#fff;text-shadow:0 1px 8px rgba(0,10,20,.6);animation:hintPulse 2.2s ease-in-out infinite}
+@keyframes hintPulse{0%,100%{opacity:.55}50%{opacity:1}}
+.drop.open .drop-hint,.hint-off .drop-hint{display:none}
 @keyframes liveDot{
   0%{transform:scale(.8);box-shadow:0 0 0 0 rgba(255,255,255,.6)}
   70%{transform:scale(1.1);box-shadow:0 0 0 6px rgba(255,255,255,0)}
@@ -377,7 +399,22 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    banner; clicking it fades the whole screen to black with the story
    centered on it (see .archive-overlay). */
 .archive{padding-top:3.5rem}
-.archive-inner{background:radial-gradient(120% 100% at 50% 22%,#2b2723 0%,#15130f 78%)}
+/* Slim footnote strip — deliberately much smaller than the series
+   banner so it never competes with it. Same width formula, dark ink
+   gradient, title left / CLOSED pill right. Click still opens the
+   fade-to-black overlay. */
+.archive-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));margin-inline:auto;
+  min-height:96px;padding:1.1rem 1.4rem;border:none;cursor:pointer;text-align:left;
+  border-radius:16px;color:#fff;font-family:inherit;
+  background:radial-gradient(140% 160% at 50% 0%,#2b2723 0%,#15130f 78%);
+  box-shadow:0 0 0 0 rgba(18,16,14,0);
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.archive-strip-title{font-family:var(--display);font-weight:800;font-size:clamp(1.25rem,5vw,1.75rem);letter-spacing:-.03em;line-height:1;color:#fff}
+@media(hover:hover){
+  .archive-strip:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(18,16,14,.24)}
+}
+.archive-strip:active,.archive-strip.tap-active{transform:translateY(-1px) scale(.99);box-shadow:0 8px 18px rgba(18,16,14,.18);transition:transform .12s ease,box-shadow .12s ease}
 .archive-overlay{position:fixed;inset:0;z-index:220;display:flex;overflow-y:auto;overscroll-behavior:contain;cursor:pointer;
   background:radial-gradient(130% 100% at 50% 28%,#191613 0%,#0b0a08 72%);
   padding:calc(2.5rem + env(safe-area-inset-top)) var(--pad) calc(2.5rem + env(safe-area-inset-bottom));
@@ -441,7 +478,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    visual gap between the sheet edge and the section head. The photo runs
    to the very bottom of the zone, meeting the footer's border. */
 .zone-series{position:relative;z-index:1;
-  padding-top:calc(clamp(5rem,12vw,7rem) + var(--lift));padding-bottom:3rem}
+  /* bottom padding doubles as scroll runway: the closed page must be tall
+     enough for the Enter landing to reach its target before max-scroll
+     clamps (the slim archive strip shortened the page) */
+  padding-top:calc(clamp(5rem,12vw,7rem) + var(--lift));padding-bottom:8rem}
 /* Labels that sit directly on a loaded backdrop lift to paper for
    contrast (has-bg is set by JS only when the photo really loads, so
    removing the file gracefully falls back to ink-on-paper). */
@@ -608,6 +648,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .modal-card{transform:none!important;opacity:1!important}
   .archive-overlay,.archive-copy{transition:none;transform:none!important}
   .drop-items,.zone-bg-img-open{transition:none}
+  .drop-hint{animation:none;opacity:.85}
   .scratch-cursor,.vote-btn::before,.scratch-sheen::before{animation:none}
   .vote-btn::before{opacity:0}
   .scratch-sheen{display:none}
@@ -717,11 +758,9 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
      grid below the banner: archived pieces are sold and gone, so there is
      nothing left to show. -->
 <section class="archive">
-  <button class="drop-photo archive-box" id="archiveBox" aria-haspopup="dialog" aria-controls="archiveOverlay" onclick="openArchive()">
-    <div class="drop-photo-inner archive-inner"></div>
-    <div class="drop-scrim"></div>
-    <div class="top"><span class="drop-tag">Closed</span></div>
-    <div class="cap"><h2 class="drop-title">The Archive</h2></div>
+  <button class="archive-strip r" id="archiveBox" aria-haspopup="dialog" aria-controls="archiveOverlay" onclick="openArchive()">
+    <h2 class="archive-strip-title">The Archive</h2>
+    <span class="drop-tag">Closed</span>
   </button>
 </section>
 </section>
@@ -883,7 +922,7 @@ function photoHTML(d,di){
     : `<div class="drop-photo-inner ph"><img src="${LOGO}" alt=""></div>`;
   const top = d.tag ? `<div class="top"><span class="drop-tag${d.live?' live':''}">${d.tag}</span></div>` : '';
   const note = d.photo ? '' : `<span class="ph-note">Campaign image</span>`;
-  return `<button class="drop-photo" onclick="toggleDrop(${di})" aria-expanded="false" aria-label="Open ${d.title}">${inner}<div class="drop-scrim"></div>${top}<div class="cap"><h2 class="drop-title">${d.title}</h2></div>${note}</button>`;
+  return `<button class="drop-photo" onclick="toggleDrop(${di})" aria-expanded="false" aria-label="Open ${d.title}">${inner}<div class="drop-scrim"></div>${top}<div class="cap"><h2 class="drop-title">${d.title}</h2></div><span class="drop-hint" aria-hidden="true">tap to open</span>${note}</button>`;
 }
 
 /* Mark zones whose backdrop photo actually loaded, so on-photo text
@@ -931,6 +970,8 @@ function toggleDrop(di){
   const zone = document.getElementById('series');
   if(zone) zone.classList.toggle('bg-open', !!document.querySelector('.drop.open'));
   if(open){
+    try{ localStorage.setItem(OPENED_KEY,'1'); }catch(e){}
+    document.getElementById('shop').classList.add('hint-off');
     const items = section.querySelector('.items');
     if(items){
       const targetY = items.getBoundingClientRect().top + window.scrollY - 14;
@@ -959,8 +1000,12 @@ function closeArchive(){
   document.getElementById('archiveBox').focus();
 }
 
+const OPENED_KEY='earlspade_opened_v1';
+function hintSeen(){ try{return localStorage.getItem(OPENED_KEY)==='1';}catch(e){return false;} }
 function renderDrops(){
-  document.getElementById('shop').innerHTML = DROPS.map((d,di)=>{
+  const shop=document.getElementById('shop');
+  shop.classList.toggle('hint-off', hintSeen());
+  shop.innerHTML = DROPS.map((d,di)=>{
     const id = di===0?' id="latest"':'';
     const items = d.items.map((it,i)=>{
       const num = String(i+1).padStart(2,'0');
@@ -1466,28 +1511,43 @@ document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_ST
     canvas.height=rect.height*dpr;
     ctx.setTransform(dpr,0,0,dpr,0,0);
 
+    /* Warm champagne foil in the site's paper family (not cold silver) */
     const g=ctx.createLinearGradient(0,0,rect.width,rect.height);
-    g.addColorStop(0,'#C9C7C2');
-    g.addColorStop(.35,'#B4B2AD');
-    g.addColorStop(.55,'#D4D2CD');
-    g.addColorStop(1,'#A9A7A2');
+    g.addColorStop(0,'#DAD5C9');
+    g.addColorStop(.35,'#C9C2B2');
+    g.addColorStop(.55,'#E4DFD4');
+    g.addColorStop(1,'#BDB6A6');
     ctx.fillStyle=g;
     ctx.fillRect(0,0,rect.width,rect.height);
 
+    /* speckles: paper white, soft ink, and the occasional pink glint */
     for(let i=0;i<500;i++){
-      ctx.fillStyle=Math.random()>.5?'rgba(255,255,255,.25)':'rgba(22,20,18,.12)';
+      const r=Math.random();
+      ctx.fillStyle = r>.85 ? 'rgba(211,138,160,.35)' : r>.45 ? 'rgba(255,255,255,.3)' : 'rgba(22,20,18,.1)';
       ctx.fillRect(Math.random()*rect.width,Math.random()*rect.height,1.2,1.2);
+    }
+
+    /* faint flower stamp behind the lettering */
+    if(foilStamp.complete&&foilStamp.naturalWidth){
+      const w=Math.min(rect.width*.26,110), h=w*(foilStamp.naturalHeight/foilStamp.naturalWidth);
+      ctx.globalAlpha=.08;
+      ctx.drawImage(foilStamp,(rect.width-w)/2,(rect.height-h)/2,w,h);
+      ctx.globalAlpha=1;
     }
 
     ctx.textAlign='center';
     ctx.textBaseline='middle';
-    ctx.fillStyle='rgba(22,20,18,.78)';
-    ctx.font='700 13px "Space Mono", monospace';
+    ctx.fillStyle='rgba(22,20,18,.8)';
+    ctx.font='900 15px "Archivo", sans-serif';
     ctx.fillText('S E R I E S  3',rect.width/2,rect.height/2-8);
-    ctx.fillStyle='rgba(22,20,18,.42)';
+    ctx.fillStyle='rgba(22,20,18,.45)';
     ctx.font='400 9px "Space Mono", monospace';
-    ctx.fillText('scratch to vote',rect.width/2,rect.height/2+13);
+    ctx.fillText('scratch to vote',rect.width/2,rect.height/2+14);
   }
+
+  const foilStamp=new Image();
+  foilStamp.onload=()=>{if(!hasScratched&&!revealed)paintFoil();};
+  foilStamp.src='logo.png';
 
   if(document.fonts&&document.fonts.ready){
     document.fonts.ready.then(()=>{if(!hasScratched)paintFoil();});
@@ -1634,7 +1694,7 @@ document.addEventListener('dragstart', e => e.preventDefault());
    ancestor). Delegate touchstart/touchend on the document so the press
    feedback works for .drop-photo and .story-box buttons, including the
    ones rendered later by renderDrops(). */
-const TAP_FEEDBACK_SELECTOR = '.drop-photo, .story-box';
+const TAP_FEEDBACK_SELECTOR = '.drop-photo, .story-box, .archive-strip';
 function tapFeedbackOn(e){
   const el = e.target.closest(TAP_FEEDBACK_SELECTOR);
   if(el) el.classList.add('tap-active');
