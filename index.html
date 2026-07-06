@@ -94,6 +94,18 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   background:var(--pop);color:var(--paper);font-family:var(--mono);font-size:.62rem;font-weight:700;
   display:flex;align-items:center;justify-content:center;line-height:1;transform:scale(1);transition:transform .25s var(--ease)}
 .cart-btn .badge.bump{transform:scale(1.35)}
+/* ocean-sound toggle: same visual language as the cart button, pinned
+   bottom-left; hidden until the ambience first starts */
+.sound-btn{position:fixed;bottom:calc(1rem + env(safe-area-inset-bottom));left:calc(var(--pad) + env(safe-area-inset-left));z-index:90;
+  display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:none;border-radius:50%;
+  background:rgba(233,230,223,.88);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);
+  box-shadow:0 6px 18px rgba(18,16,14,.18);cursor:pointer;
+  opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .35s var(--ease),transform .35s var(--ease)}
+.sound-btn.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.sound-btn svg{width:21px;height:21px;display:block}
+.sound-btn .snd-slash{opacity:0;transition:opacity .2s ease}
+.sound-btn[aria-pressed="false"] .snd-slash{opacity:1}
+.sound-btn[aria-pressed="false"] .snd-bubbles{opacity:.45}
 
 /* ===== CART DRAWER ===== */
 .cart-backdrop{position:fixed;inset:0;background:rgba(15,13,11,.46);z-index:120;opacity:0;pointer-events:none;transition:opacity .3s var(--ease);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
@@ -735,6 +747,18 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   <span class="badge" id="cartBadge" style="display:none">0</span>
 </button>
 
+<!-- Underwater ambience toggle — appears once the sound starts (Enter). -->
+<button class="sound-btn" id="soundBtn" aria-label="Toggle ocean sound" aria-pressed="true" onclick="toggleOcean()">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g class="snd-bubbles" stroke="currentColor" stroke-width="1.6">
+      <circle cx="8" cy="16.5" r="3.2"/>
+      <circle cx="14.5" cy="10.5" r="2.3"/>
+      <circle cx="17.5" cy="5.5" r="1.4"/>
+    </g>
+    <line class="snd-slash" x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>
+</button>
+
 <header class="hero" id="top">
   <span class="hero-logo-spin" id="heroLogoSpin"><span class="hero-logo no-vs" id="heroLogo" role="img" aria-label="earlspade flower"></span></span>
   <h1 class="wordmark" id="wordmark" aria-label="earlspade"></h1>
@@ -1156,8 +1180,114 @@ function scrollToLatest(){
   if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-/* Shop click: hero flower shoots down, page follows */
+/* ===== OCEAN AMBIENCE ===========================================
+   Synthesized underwater sound — no audio file. A looped brown-noise
+   bed through a slowly-wobbling lowpass reads as deep water; sparse
+   rising sine blips read as bubbles. Starts inside the Enter press
+   (a real user gesture, so it works in in-app browsers too). */
+const SOUND_KEY='earlspade_sound_v1';
+let oceanCtx=null,oceanGain=null,oceanOn=false,bubbleTimer=null;
+function soundPref(){ try{return localStorage.getItem(SOUND_KEY);}catch(e){return null;} }
+function setSoundPref(v){ try{localStorage.setItem(SOUND_KEY,v);}catch(e){} }
+
+function startOcean(){
+  if(oceanCtx) return;
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC) return;
+  oceanCtx=new AC();
+  const ctx=oceanCtx;
+
+  /* brown-noise bed (6s loop) */
+  const len=ctx.sampleRate*6;
+  const buf=ctx.createBuffer(1,len,ctx.sampleRate);
+  const data=buf.getChannelData(0);
+  let last=0;
+  for(let i=0;i<len;i++){
+    const white=Math.random()*2-1;
+    last=(last+0.02*white)/1.02;
+    data[i]=last*3.5;
+  }
+  const src=ctx.createBufferSource();
+  src.buffer=buf; src.loop=true;
+
+  const filter=ctx.createBiquadFilter();
+  filter.type='lowpass'; filter.frequency.value=280; filter.Q.value=.6;
+
+  /* slow wobble on the cutoff so the wash breathes like water */
+  const lfo=ctx.createOscillator(); lfo.frequency.value=.08;
+  const lfoGain=ctx.createGain(); lfoGain.gain.value=60;
+  lfo.connect(lfoGain); lfoGain.connect(filter.frequency); lfo.start();
+
+  oceanGain=ctx.createGain();
+  oceanGain.gain.value=0;
+  src.connect(filter); filter.connect(oceanGain); oceanGain.connect(ctx.destination);
+  src.start();
+  oceanGain.gain.linearRampToValueAtTime(.09, ctx.currentTime+2.5);
+  oceanOn=true;
+
+  /* sparse bubbles */
+  function bubble(){
+    if(!oceanOn){ bubbleTimer=setTimeout(bubble, 4000); return; }
+    const t=ctx.currentTime;
+    const osc=ctx.createOscillator();
+    osc.type='sine';
+    const f0=250+Math.random()*200;
+    osc.frequency.setValueAtTime(f0,t);
+    osc.frequency.exponentialRampToValueAtTime(f0*2.6+200, t+.22);
+    const g=ctx.createGain();
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(.02+Math.random()*.02, t+.05);
+    g.gain.exponentialRampToValueAtTime(.0001, t+.3);
+    let node=osc;
+    if(ctx.createStereoPanner){
+      const pan=ctx.createStereoPanner();
+      pan.pan.value=(Math.random()*2-1)*.6;
+      osc.connect(pan); node=pan;
+    }
+    node.connect(g); g.connect(ctx.destination);
+    osc.start(t); osc.stop(t+.35);
+    bubbleTimer=setTimeout(bubble, 3000+Math.random()*6000);
+  }
+  bubbleTimer=setTimeout(bubble, 2000);
+
+  document.getElementById('soundBtn').classList.add('show');
+
+  /* save battery when the tab is backgrounded */
+  document.addEventListener('visibilitychange',()=>{
+    if(!oceanCtx) return;
+    if(document.hidden){ oceanCtx.suspend(); }
+    else if(oceanOn){ oceanCtx.resume(); }
+  });
+}
+
+function toggleOcean(){
+  const btn=document.getElementById('soundBtn');
+  if(!oceanCtx){ /* was muted before it ever started — start now (this click is a gesture) */
+    setSoundPref('on');
+    startOcean();
+    btn.setAttribute('aria-pressed','true');
+    return;
+  }
+  oceanOn=!oceanOn;
+  btn.setAttribute('aria-pressed', oceanOn?'true':'false');
+  setSoundPref(oceanOn?'on':'off');
+  if(oceanOn){ oceanCtx.resume(); oceanGain.gain.linearRampToValueAtTime(.09, oceanCtx.currentTime+1); }
+  else{
+    oceanGain.gain.linearRampToValueAtTime(0, oceanCtx.currentTime+.4);
+    setTimeout(()=>{ if(!oceanOn&&oceanCtx) oceanCtx.suspend(); }, 500);
+  }
+}
+
+/* Shop click: hero flower shoots down, page follows — and the dive
+   starts the underwater ambience (unless previously muted; the toggle
+   still appears so it can be turned on). */
 function onShop(){
+  if(soundPref()==='off'){
+    const sb=document.getElementById('soundBtn');
+    sb.classList.add('show'); sb.setAttribute('aria-pressed','false');
+  }else{
+    startOcean();
+  }
   const logo=document.getElementById('heroLogo'), fly=document.getElementById('flydown');
   const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const r=logo.getBoundingClientRect();
