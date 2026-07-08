@@ -55,7 +55,7 @@
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:var(--paper);color-scheme:light;overflow-x:clip;width:100%;touch-action:manipulation}
 body{background:var(--paper);color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased;overflow-x:clip;min-height:100svh;width:100%;max-width:100%;position:relative}
 /* Titles keep the bold display face; everything else reads as minimalist typewriter */
-.wordmark,.drop-title,.story-box-title{font-family:var(--display)}
+.wordmark,.drop-title{font-family:var(--display)}
 body.noscroll{overflow:hidden}
 a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
 img{display:block;max-width:100%}
@@ -323,66 +323,64 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .drop-photo.seen .drop-title{transform:translateY(0)}
 .drop-photo .ph-note{position:absolute;top:1rem;left:var(--pad);z-index:2;font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
 
-/* ===== STORY ROW: two short boxes above the first drop ===== */
-.story-row{display:flex;flex-direction:column;gap:.9rem;
-  width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));margin:0 auto}
-.story-box{position:relative;width:100%;aspect-ratio:32/9;overflow:hidden;border-radius:16px;
-  background:var(--paper-2);border:none;padding:0;cursor:pointer;display:block;text-align:left;
-  font-family:inherit;color:inherit;box-shadow:0 0 0 0 rgba(18,16,14,0);
-  transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
-.story-box-inner{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 12%,var(--paper) 0%,var(--paper-2) 55%,#D2CCBF 100%);
-  background-size:cover;background-position:center;
-  display:flex;align-items:center;justify-content:center;transition:transform .5s var(--ease)}
-.story-box-inner img{width:24%;max-width:90px;opacity:.16}
-.story-box .scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(18,16,14,.55) 0%,rgba(18,16,14,.08) 45%,transparent 65%)}
-.story-box .top{position:absolute;top:var(--pad);left:var(--pad);right:var(--pad);z-index:2;display:flex;justify-content:flex-end}
-.story-box .cap{position:absolute;left:var(--pad);right:var(--pad);bottom:.7rem;z-index:2}
-.story-box-title{font-weight:800;font-size:clamp(1.1rem,4.5vw,1.6rem);line-height:1.05;letter-spacing:-.03em;color:#fff}
-/* Floating / minimalist hover + press feedback, mouse devices only */
+/* ===== STORY ROW: a postcard home from Malibu ===== */
+.story-row{width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));margin:0 auto}
+.postcard{position:relative;display:flex;flex-direction:column;width:100%;overflow:hidden;border-radius:16px;
+  background:var(--paper);border:1.5px solid var(--ink);color:var(--ink);cursor:pointer;
+  box-shadow:0 0 0 0 rgba(18,16,14,0);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.postcard-photo{aspect-ratio:16/9;background:var(--paper-2);background-size:cover;background-position:center;transition:transform .5s var(--ease)}
+.postcard-side{position:relative;display:flex;flex-direction:column;gap:1rem;padding:1.05rem 1.15rem 1.15rem;border-top:1.5px solid var(--ink)}
+.postcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.postmark{width:min(62%,200px);height:auto;color:var(--ink);opacity:.8}
+.stamp{flex:none;width:52px;height:62px;display:flex;align-items:center;justify-content:center;
+  border:1.5px dashed var(--ink-soft);border-radius:4px;background:var(--paper-2);transform:rotate(3deg)}
+.stamp svg{width:30px;height:30px;color:var(--ink)}
+.postcard-lines{display:flex;flex-direction:column;gap:.85rem;margin-top:.2rem}
+.postcard-lines i{display:block;height:1.5px;background:var(--line)}
+.postcard-lines i:nth-child(1){width:92%}
+.postcard-lines i:nth-child(2){width:74%}
+.postcard-lines i:nth-child(3){width:55%}
+.postcard-cta{align-self:flex-end;margin-top:auto;font-family:var(--mono);font-size:.66rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
 @media(hover:hover){
-  .story-box:hover{transform:translateY(-5px);box-shadow:0 18px 34px rgba(18,16,14,.22)}
-  .story-box:hover .story-box-inner{transform:scale(1.045)}
+  .postcard:hover{transform:translateY(-5px);box-shadow:0 18px 34px rgba(18,16,14,.22)}
+  .postcard:hover .postcard-photo{transform:scale(1.03)}
 }
-.story-box:active,.story-box.tap-active{transform:translateY(-1px) scale(.985);box-shadow:0 8px 18px rgba(18,16,14,.18);transition:transform .12s ease,box-shadow .12s ease}
-
+.postcard:active,.postcard.tap-active{transform:translateY(-1px) scale(.99);box-shadow:0 8px 18px rgba(18,16,14,.18);transition:transform .12s ease,box-shadow .12s ease}
 @media(min-width:541px){
-  .story-row{flex-direction:row;align-items:flex-start}
-  .story-box{aspect-ratio:8/5}
-}
-@media(min-width:760px){
-  .story-row{aspect-ratio:auto}
-  .story-box{aspect-ratio:16/7}
+  .postcard{flex-direction:row;min-height:250px}
+  .postcard-photo{flex:1.35;aspect-ratio:auto}
+  .postcard-side{flex:1;border-top:none;border-left:1.5px solid var(--ink)}
 }
 
-/* SERIES 3 — MESSAGE IN A BOTTLE. A hand-drawn ink-sketch bottle (wobbly
-   open strokes, pen re-strokes, hatching — deliberately imperfect) bobs on
-   a broken waterline. Tap: the cork pops, the sketch recedes, and a paper
-   note with a hand-drawn border unrolls to type the hint. On phones the
-   card is 2:1; beside Our Story (>=541px) it stretches to match the row. */
-.bottle-card{position:relative;width:100%;aspect-ratio:2/1;border:1.5px solid var(--ink);border-radius:16px;overflow:hidden;
-  background:var(--tile);-webkit-user-select:none;user-select:none}
-.bottle-tag{position:absolute;top:.85rem;left:1rem;z-index:2;font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-soft)}
-.bottle-scene{position:absolute;inset:0;width:100%;height:100%;transition:opacity .6s ease}
-.bottle-card.open .bottle-scene{opacity:.2;transition-delay:.3s}
+/* SERIES 3 — the message in a bottle, moored to the right of "The
+   Series" title. Same hand-drawn ink sketch, bobbing; tap pops the cork
+   and the note drops open beneath the head. Strokes use currentColor so
+   the sketch flips to paper with the head text while the photo shows. */
+.head-bottle{flex:none;display:flex;flex-direction:column;align-items:center;gap:.15rem;
+  border:none;background:transparent;padding:0 .2rem;margin-bottom:-.2rem;cursor:pointer;color:var(--ink);
+  transition:color .5s ease,transform .25s var(--ease)}
+.zone-series.has-bg.bg-open .head-bottle{color:var(--paper)}
+@media(hover:hover){.head-bottle:hover{transform:translateY(-3px)}}
+.head-bottle-svg{width:clamp(56px,9vw,72px);height:auto;display:block}
+.head-bottle-tag{font-family:var(--mono);font-size:.52rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;opacity:.65}
 .bob{transform-box:fill-box;transform-origin:center;animation:bottlebob 4.8s ease-in-out infinite}
-@keyframes bottlebob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-2.6deg)}}
-.bottle-card.open .bob{animation:none}
+@keyframes bottlebob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-2.4deg)}}
+.head-bottle.open .bob{animation:none}
 .cork-anim{transform-box:fill-box;transform-origin:center;transition:transform .55s var(--ease),opacity .45s ease .12s}
-.bottle-card.open .cork-anim{transform:translate(10px,-48px) rotate(38deg);opacity:0}
-.bottle-tap{position:absolute;inset:0;z-index:3;border:none;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.bottle-hint{position:absolute;left:50%;bottom:.8rem;transform:translateX(-50%);z-index:2;
-  font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);
-  animation:hintPulse 2.2s ease-in-out infinite}
-.bottle-note{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;padding:1rem;pointer-events:none}
-.bottle-card.open .bottle-note{pointer-events:auto}
-/* the note itself: paper sheet with a sketchy hand-drawn border, unrolling */
+.head-bottle.open .cork-anim{transform:translate(9px,-40px) rotate(38deg);opacity:0}
+/* the note unfolds in-flow beneath the head (same grid-rows trick as
+   the product grids) */
+.note-drop{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s var(--ease)}
+.note-drop.open{grid-template-rows:1fr}
+.note-drop-clip{overflow:hidden;display:flex;justify-content:center}
 .note-sheet{display:flex;flex-direction:column;align-items:center;gap:.7rem;text-align:center;
+  margin:1.2rem var(--pad) .2rem;width:min(420px,calc(100% - 2*var(--pad)));
   background:var(--paper);border:1.5px solid var(--ink);
   border-radius:255px 15px 225px 15px/15px 225px 15px 255px;
   padding:1.05rem 1.5rem 1.2rem;box-shadow:0 10px 24px rgba(18,16,14,.16);
   transform:rotate(-2.5deg) scaleY(.1);transform-origin:50% 12%;opacity:0;
-  transition:transform .6s var(--ease) .32s,opacity .35s ease .32s}
-.bottle-card.open .note-sheet{transform:rotate(-1.4deg) scaleY(1);opacity:1}
+  transition:transform .55s var(--ease) .18s,opacity .3s ease .18s}
+.note-drop.open .note-sheet{transform:rotate(-1deg) scaleY(1);opacity:1}
 .note-eyebrow{font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
 .note-q{font-family:var(--display);font-weight:900;font-size:clamp(1.15rem,3vw,1.6rem);letter-spacing:-.04em;line-height:1;
   display:flex;align-items:baseline;min-height:1em;white-space:pre}
@@ -414,8 +412,24 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 }
 .vote-btn:disabled{opacity:.6;cursor:default}
 @keyframes glimmer{0%{left:-65%}22%{left:135%}100%{left:135%}}
-@media(min-width:541px){
-  .bottle-card{align-self:stretch;aspect-ratio:auto;min-height:0}
+/* ===== INFO BUBBLES — after the series opens, frosted glass bubbles
+   carry the selling points up the screen ===== */
+#infoBubbles{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
+.info-bubble{position:absolute;bottom:-180px;display:flex;align-items:center;justify-content:center;text-align:center;
+  border-radius:50%;padding:1.1rem;
+  border:1.5px solid rgba(255,255,255,.85);
+  background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.5),rgba(233,230,223,.32) 60%,rgba(233,230,223,.45));
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  box-shadow:inset -8px -10px 22px rgba(255,255,255,.25),0 8px 26px rgba(8,14,22,.14);
+  font-family:var(--mono);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);
+  animation:bubbleRise linear forwards}
+.info-bubble::before{content:"";position:absolute;top:13%;left:19%;width:15%;height:15%;border-radius:50%;background:rgba(255,255,255,.9)}
+@keyframes bubbleRise{
+  0%{transform:translate(0,0)}
+  20%{transform:translate(12px,-27vh)}
+  45%{transform:translate(-10px,-56vh)}
+  70%{transform:translate(10px,-84vh);opacity:1}
+  100%{transform:translate(-4px,-118vh);opacity:0}
 }
 
 /* ARCHIVE — banner reuses .drop-photo so it reads exactly like a series
@@ -532,7 +546,8 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .zone-series.has-bg.bg-open .item-price{color:rgba(233,230,223,.85);text-shadow:0 1px 8px rgba(8,14,22,.6)}
 
 /* Section head above the series + archive */
-.shop-head{width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));
+.shop-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1.2rem;
+  width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));
   margin:0 auto;padding-bottom:1.1rem;border-bottom:1.5px solid var(--ink);
   scroll-margin-top:4.6rem} /* lands Enter below the fixed corner mark, with the .r reveal lift accounted for */
 .sec-eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
@@ -697,10 +712,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .archive-overlay,.archive-copy{transition:none;transform:none!important}
   .drop-items,.zone-bg-img-open{transition:none}
   .drop-hint{animation:none;opacity:.85}
-  .bob,.note-cursor,.bottle-hint,.vote-btn::before{animation:none}
-  .bottle-hint{opacity:.8}
+  .bob,.note-cursor,.vote-btn::before{animation:none}
   .vote-btn::before{opacity:0}
-  .cork-anim,.note-sheet,.bottle-scene,.vote-btn{transition:none}
+  .cork-anim,.note-sheet,.note-drop,.vote-btn{transition:none}
+  #infoBubbles{display:none}
 }
 
 .hero-logo-spin{position:relative;display:inline-block;cursor:pointer;touch-action:manipulation}
@@ -783,75 +798,82 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 <section class="zone zone-story">
 <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img" style="background-image:url('story-bg.jpg')"></span></div></div>
 <div class="story-row">
-  <a class="story-box" href="our-story.html">
-    <div class="story-box-inner" id="storyBoxPhoto1"></div>
-    <div class="scrim"></div>
-    <div class="cap">
-      <span class="story-box-title">Our Story</span>
+  <!-- OUR STORY — a postcard home from Malibu: the photo is the front,
+       and the back carries a hand-drawn postmark, the flower stamp, and
+       empty address lines. The whole card links to the story page. -->
+  <a class="postcard r" href="our-story.html" aria-label="Read our story">
+    <div class="postcard-photo" id="storyBoxPhoto1"></div>
+    <div class="postcard-side">
+      <div class="postcard-top">
+        <svg class="postmark" viewBox="0 0 172 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+          <circle cx="32" cy="32" r="26" stroke-width="1.6" opacity=".75"/>
+          <circle cx="32" cy="32" r="21.5" stroke-width="1" opacity=".45"/>
+          <text x="32" y="30" text-anchor="middle" font-family="'Space Mono',monospace" font-size="8.5" font-weight="700" fill="currentColor" stroke="none" letter-spacing="1">MALIBU</text>
+          <text x="32" y="40.5" text-anchor="middle" font-family="'Space Mono',monospace" font-size="6" fill="currentColor" stroke="none" letter-spacing="1" opacity=".8">CALIF.</text>
+          <g stroke-width="1.5" opacity=".5">
+            <path d="M 66,22 q 11,-4.5 22,0 t 22,0 t 22,0 t 22,0"/>
+            <path d="M 66,32 q 11,-4.5 22,0 t 22,0 t 22,0 t 22,0"/>
+            <path d="M 66,42 q 11,-4.5 22,0 t 22,0 t 22,0 t 22,0"/>
+          </g>
+        </svg>
+        <span class="stamp" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#E9E6DF"/></svg></span>
+      </div>
+      <div class="postcard-lines" aria-hidden="true"><i></i><i></i><i></i></div>
+      <span class="postcard-cta">our story <span aria-hidden="true">&rarr;</span></span>
     </div>
   </a>
-  <!-- SERIES 3 — MESSAGE IN A BOTTLE. A hand-drawn ink bottle bobs on a
-       sketched waterline; tapping it pops the cork, the scene recedes,
-       and the note unrolls with the hint and the vote. -->
-  <div class="bottle-card" id="bottleCard" aria-label="Series 3 — message in a bottle">
-    <span class="bottle-tag" aria-hidden="true">Series 3</span>
-    <svg class="bottle-scene" viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none" stroke="#16140F" stroke-linecap="round" stroke-linejoin="round">
-      <!-- sketched waterline: broken squiggles + stray dashes -->
-      <g opacity=".5" stroke-width="1.8">
-        <path d="M 30,116 q 9,-5 18,0 t 18,0 t 18,0 t 18,0"/>
-        <path d="M 176,119 q 9,-5 18,0 t 18,0 t 18,0 t 18,0"/>
-      </g>
-      <g opacity=".3" stroke-width="1.4">
-        <path d="M 58,127 l 11,-1"/>
-        <path d="M 128,129 l 15,-1.4"/>
-        <path d="M 236,127 l 13,-1"/>
-        <path d="M 160,136 l 10,-.8"/>
-      </g>
-      <!-- stray bubbles near the neck, drawn as imperfect open arcs -->
-      <g opacity=".5" stroke-width="1.4">
-        <path d="M 213,36 a 4.4,4 0 1 1 .2,-.4"/>
-        <path d="M 226,22 a 2.8,2.6 0 1 1 .2,-.3"/>
-        <path d="M 204,17 a 1.9,1.8 0 1 1 .15,-.2"/>
-      </g>
-      <!-- the bottle: pen-sketch outline, re-strokes, hatching, rolled note -->
-      <g transform="translate(160,80)"><g class="bob"><g transform="rotate(26)">
-        <!-- glass body: one wobbly open stroke -->
-        <path stroke-width="2.2" fill="rgba(22,20,18,.04)" d="M -5.2,-34 C -5.6,-29.5 -4.9,-25.8 -5.8,-22.4 C -7,-18.6 -11.8,-14.9 -12.7,-8.2 C -13.6,-1.2 -12.9,7.4 -13.2,14.6 C -13.4,20.8 -13.8,25.6 -12.9,28.2 C -12.1,30.6 -8.4,31.5 -4.9,31.3 L 5.3,31.1 C 8.9,31.3 12.2,30.4 12.8,27.7 C 13.7,24 12.9,18.9 13.2,13.2 C 13.5,6 14,-2.5 12.9,-8.7 C 11.7,-15.2 7.3,-18.4 6,-22.2 C 4.9,-25.5 5.7,-29.8 5.3,-33.6"/>
-        <!-- pen re-strokes (hand doubling) -->
-        <g opacity=".4" stroke-width="1.1">
-          <path d="M -6.4,-21.6 C -8.4,-18 -11.5,-14.9 -12.3,-9.4"/>
-          <path d="M 5.9,30.4 C 9.4,30.6 11.7,29.5 12.3,26.9"/>
+</div>
+
+</section>
+
+<section class="zone zone-series" id="series">
+  <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg.jpg')"></span></div></div>
+  <header class="shop-head r">
+    <div class="shop-head-text">
+      <p class="sec-eyebrow">earlspade &mdash; collections</p>
+      <h2 class="sec-title">The Series</h2>
+    </div>
+    <!-- SERIES 3 — the message in a bottle, moored beside the title.
+         Tap: the cork pops and the note drops open beneath the head. -->
+    <button class="head-bottle" id="bottleBtn" aria-expanded="false" aria-controls="noteDrop" aria-label="Series 3 — open the bottle" onclick="openBottle()">
+      <svg class="head-bottle-svg" viewBox="0 0 96 112" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <g opacity=".5" stroke-width="1.3">
+          <path d="M 74,28 a 4,3.7 0 1 1 .2,-.4"/>
+          <path d="M 84,15 a 2.5,2.3 0 1 1 .2,-.3"/>
         </g>
-        <!-- glass hatching -->
-        <g opacity=".3" stroke-width="1.1">
-          <path d="M 6.8,-14.9 L 10.4,-10.9"/>
-          <path d="M 5.6,-11 L 10.8,-5.6"/>
-          <path d="M 6.4,-6.1 L 10.2,-2.4"/>
-        </g>
-        <!-- rolled note inside -->
-        <g stroke-width="1.3">
-          <path fill="#E9E6DF" d="M -6.8,3.4 L 5.9,1.2 L 8.1,16.8 L -4.6,19.1 Z"/>
-          <path d="M -6.8,3.4 C -8.9,1.8 -8.3,-1.4 -5.7,-1.6 C -3.8,-1.7 -3,-.2 -3.4,1"/>
-          <g opacity=".55" stroke-width="1">
-            <path d="M -3.4,7.2 L 4,5.9"/>
-            <path d="M -2.8,10.6 L 4.6,9.4"/>
-            <path d="M -2.2,14 L 3.2,13.1"/>
+        <g transform="translate(46,62)"><g class="bob"><g transform="rotate(24)">
+          <path stroke-width="2" d="M -5.2,-34 C -5.6,-29.5 -4.9,-25.8 -5.8,-22.4 C -7,-18.6 -11.8,-14.9 -12.7,-8.2 C -13.6,-1.2 -12.9,7.4 -13.2,14.6 C -13.4,20.8 -13.8,25.6 -12.9,28.2 C -12.1,30.6 -8.4,31.5 -4.9,31.3 L 5.3,31.1 C 8.9,31.3 12.2,30.4 12.8,27.7 C 13.7,24 12.9,18.9 13.2,13.2 C 13.5,6 14,-2.5 12.9,-8.7 C 11.7,-15.2 7.3,-18.4 6,-22.2 C 4.9,-25.5 5.7,-29.8 5.3,-33.6"/>
+          <g opacity=".4" stroke-width="1">
+            <path d="M -6.4,-21.6 C -8.4,-18 -11.5,-14.9 -12.3,-9.4"/>
+            <path d="M 5.9,30.4 C 9.4,30.6 11.7,29.5 12.3,26.9"/>
           </g>
-        </g>
-        <!-- cork (pops off on open) -->
-        <g class="cork-anim">
-          <path stroke-width="2" d="M -5.9,-42.3 L 5.7,-41.8 L 5.2,-33.9 L -5.4,-34.4 Z"/>
-          <g opacity=".45" stroke-width="1">
-            <path d="M -3.4,-41.8 L -4.2,-34.6"/>
-            <path d="M .4,-41.7 L -.3,-34.4"/>
-            <path d="M 3.9,-41.5 L 3.3,-34.7"/>
+          <g opacity=".3" stroke-width="1">
+            <path d="M 6.8,-14.9 L 10.4,-10.9"/>
+            <path d="M 5.6,-11 L 10.8,-5.6"/>
           </g>
-        </g>
-      </g></g></g>
-    </svg>
-    <button class="bottle-tap" id="bottleTap" aria-label="Open the bottle" onclick="openBottle()"></button>
-    <span class="bottle-hint" id="bottleHint" aria-hidden="true">tap the bottle</span>
-    <div class="bottle-note">
+          <g stroke-width="1.2">
+            <path d="M -6.8,3.4 L 5.9,1.2 L 8.1,16.8 L -4.6,19.1 Z"/>
+            <g opacity=".55" stroke-width=".9">
+              <path d="M -3.4,7.2 L 4,5.9"/>
+              <path d="M -2.8,10.6 L 4.6,9.4"/>
+            </g>
+          </g>
+          <g class="cork-anim">
+            <path stroke-width="1.8" d="M -5.9,-42.3 L 5.7,-41.8 L 5.2,-33.9 L -5.4,-34.4 Z"/>
+            <g opacity=".45" stroke-width=".9">
+              <path d="M -3.4,-41.8 L -4.2,-34.6"/>
+              <path d="M 3.9,-41.5 L 3.3,-34.7"/>
+            </g>
+          </g>
+        </g></g></g>
+      </svg>
+      <span class="head-bottle-tag">series 3</span>
+    </button>
+  </header>
+
+  <!-- the note that drops out of the bottle, beneath the head -->
+  <div class="note-drop" id="noteDrop">
+    <div class="note-drop-clip">
       <div class="note-sheet">
         <p class="note-eyebrow">series 3 &mdash; found at sea</p>
         <div class="note-q" aria-hidden="true"><span id="noteTyped"></span><span class="note-cursor" id="noteCursor"></span></div>
@@ -860,16 +882,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
       </div>
     </div>
   </div>
-</div>
-
-</section>
-
-<section class="zone zone-series" id="series">
-  <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg.jpg')"></span></div></div>
-  <header class="shop-head r">
-    <p class="sec-eyebrow">earlspade &mdash; collections</p>
-    <h2 class="sec-title">The Series</h2>
-  </header>
 
 <main id="shop"></main>
 
@@ -903,6 +915,9 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     <p>You won&rsquo;t find photos in here, and that&rsquo;s on purpose. The jewelry is already sold and gone &mdash; the only place a Celestial piece exists now is with the person wearing it. If you missed it, you missed it. That&rsquo;s what makes the ones you catch worth keeping.</p>
   </div>
 </div>
+
+<!-- Frosted info bubbles that rise up the screen after a series opens -->
+<div id="infoBubbles" aria-hidden="true"></div>
 
 <!-- PRODUCT MODAL -->
 <div class="modal" id="modal" aria-hidden="true">
@@ -1109,6 +1124,9 @@ function toggleDrop(di){
         glideTo(targetY, 750);
       }
     }
+    launchInfoBubbles();
+  } else {
+    cancelInfoBubbles();
   }
 }
 
@@ -1717,6 +1735,36 @@ renderCartBadge(false);
 
 document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_STORY_PHOTO}')`;
 
+/* ===== INFO BUBBLES ============================================
+   A beat after the series opens (products unfolded, photo faded in),
+   frosted bubbles rise from the bottom of the screen carrying the
+   selling points — big enough to read on the way up. Closing the
+   series cancels any bubbles still queued. */
+const BUBBLE_PHRASES=['tarnish free',"won't turn green",'water friendly','hypoallergenic','adjustable fit','one run. never again.'];
+let bubbleRun=0;
+function launchInfoBubbles(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const run=++bubbleRun;
+  const wrap=document.getElementById('infoBubbles');
+  BUBBLE_PHRASES.forEach((phrase,i)=>{
+    setTimeout(()=>{
+      if(run!==bubbleRun) return;
+      if(!document.querySelector('.drop.open')) return;
+      if(document.hidden) return;
+      const b=document.createElement('div');
+      b.className='info-bubble';
+      const d=Math.round(116+Math.random()*34);
+      b.style.width=b.style.height=d+'px';
+      b.style.left=Math.round(8+Math.random()*Math.max(40,window.innerWidth-d-16))+'px';
+      b.style.animationDuration=(7.5+Math.random()*3).toFixed(2)+'s';
+      b.textContent=phrase;
+      wrap.appendChild(b);
+      b.addEventListener('animationend',()=>b.remove());
+    }, 1900 + i*1150);
+  });
+}
+function cancelInfoBubbles(){ bubbleRun++; }
+
 /* ===== SERIES 3 — MESSAGE IN A BOTTLE ==========================
    Tap the sketched bottle: the cork pops (a soft thunk through the
    ocean audio if it's running), the drawing recedes, and the note
@@ -1725,9 +1773,10 @@ let bottleOpened=false;
 function openBottle(){
   if(bottleOpened) return;
   bottleOpened=true;
-  document.getElementById('bottleCard').classList.add('open');
-  document.getElementById('bottleTap').style.display='none';
-  document.getElementById('bottleHint').style.display='none';
+  const btn=document.getElementById('bottleBtn');
+  btn.classList.add('open');
+  btn.setAttribute('aria-expanded','true');
+  document.getElementById('noteDrop').classList.add('open');
 
   /* soft cork thunk through the existing ocean context, if running */
   try{
@@ -1767,7 +1816,7 @@ function openBottle(){
       }
     })();
   }
-  setTimeout(startType, reduce?0:850);
+  setTimeout(startType, reduce?0:700);
 }
 
 document.getElementById('voteBtn').addEventListener('click',function(){
@@ -1792,7 +1841,7 @@ document.addEventListener('dragstart', e => e.preventDefault());
    ancestor). Delegate touchstart/touchend on the document so the press
    feedback works for .drop-photo and .story-box buttons, including the
    ones rendered later by renderDrops(). */
-const TAP_FEEDBACK_SELECTOR = '.drop-photo, .story-box, .archive-strip';
+const TAP_FEEDBACK_SELECTOR = '.drop-photo, .postcard, .archive-strip';
 function tapFeedbackOn(e){
   const el = e.target.closest(TAP_FEEDBACK_SELECTOR);
   if(el) el.classList.add('tap-active');
