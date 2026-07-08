@@ -367,22 +367,47 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .ourstory-print{flex:none;width:min(46%,520px)}
 }
 
-/* SERIES 3 — the message in a bottle, moored to the right of "The
-   Series" title. Same hand-drawn ink sketch, bobbing; tap pops the cork
-   and the note drops open beneath the head. Strokes use currentColor so
-   the sketch flips to paper with the head text while the photo shows. */
-.head-bottle{flex:none;display:flex;flex-direction:column;align-items:center;gap:.15rem;
-  border:none;background:transparent;padding:0 .2rem;margin-bottom:-.2rem;cursor:pointer;color:var(--ink);
-  transition:color .5s ease,transform .25s var(--ease)}
-.zone-series.has-bg.bg-open .head-bottle{color:var(--paper)}
-@media(hover:hover){.head-bottle:hover{transform:translateY(-3px)}}
-.head-bottle-svg{width:clamp(56px,9vw,72px);height:auto;display:block}
-.head-bottle-tag{font-family:var(--mono);font-size:.52rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;opacity:.65}
+/* SERIES 3 — the message in a bottle as a frosted porthole medallion:
+   a slowly rotating engraved mono ring around a rendered sea-glass
+   bottle — gradient glass, specular highlights, water with rising
+   bubbles, a parchment note tied in the brand red. The ring text uses
+   currentColor so it flips to paper while the series photo shows; the
+   frosted disc keeps the bottle legible on any background. */
+.head-bottle{position:relative;flex:none;width:clamp(104px,17vw,132px);aspect-ratio:1;margin-bottom:-.4rem;
+  display:flex;align-items:center;justify-content:center;
+  border:none;border-radius:50%;cursor:pointer;color:var(--ink);
+  background:rgba(233,230,223,.34);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),0 10px 26px rgba(18,16,14,.14);
+  transition:color .5s ease,transform .3s var(--ease),box-shadow .3s var(--ease)}
+.zone-series.has-bg.bg-open .head-bottle{color:var(--paper);background:rgba(20,18,15,.28)}
+@media(hover:hover){.head-bottle:hover{transform:translateY(-4px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4),0 16px 34px rgba(18,16,14,.2)}}
+.head-bottle:active{transform:scale(.97)}
+/* soft sonar pulse inviting the tap; retired once opened */
+.hb-pulse{position:absolute;inset:0;border-radius:50%;border:1.5px solid currentColor;opacity:0;pointer-events:none;
+  animation:hbPulse 3.4s ease-out infinite}
+@keyframes hbPulse{0%{transform:scale(.86);opacity:.4}70%{transform:scale(1.22);opacity:0}100%{transform:scale(1.22);opacity:0}}
+.head-bottle.open .hb-pulse{display:none}
+.hb-note{transition:opacity .5s ease .25s}
+.head-bottle.open .hb-note{opacity:0}
+.hb-medal{position:absolute;inset:0;width:100%;height:100%;animation:hbSpin 28s linear infinite}
+@keyframes hbSpin{to{transform:rotate(360deg)}}
+.hb-bottle{position:relative;width:78%;height:78%;display:block}
+/* bubbles rising inside the glass */
+.hb-bub{animation:hbBub 3.6s ease-in infinite}
+.hb-bub.b2{animation-duration:4.4s;animation-delay:1.2s}
+.hb-bub.b3{animation-duration:3.1s;animation-delay:2s}
+@keyframes hbBub{0%{transform:translateY(0);opacity:0}12%{opacity:1}100%{transform:translateY(-46px);opacity:0}}
+/* splash droplets, fired once when the cork pops */
+.hb-drop{opacity:0}
+.head-bottle.open .hb-drop{animation:hbDrop .7s ease-out forwards}
+.head-bottle.open .d2{animation-delay:.06s}
+.head-bottle.open .d3{animation-delay:.12s}
+@keyframes hbDrop{0%{opacity:.9;transform:translate(0,0)}100%{opacity:0;transform:translate(10px,-26px)}}
 .bob{transform-box:fill-box;transform-origin:center;animation:bottlebob 4.8s ease-in-out infinite}
-@keyframes bottlebob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-2.4deg)}}
+@keyframes bottlebob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(3deg)}}
 .head-bottle.open .bob{animation:none}
 .cork-anim{transform-box:fill-box;transform-origin:center;transition:transform .55s var(--ease),opacity .45s ease .12s}
-.head-bottle.open .cork-anim{transform:translate(9px,-40px) rotate(38deg);opacity:0}
+.head-bottle.open .cork-anim{transform:translate(-12px,-44px) rotate(-42deg);opacity:0}
 /* the note unfolds in-flow beneath the head (same grid-rows trick as
    the product grids) */
 .note-drop{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s var(--ease)}
@@ -724,7 +749,8 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .archive-overlay,.archive-copy{transition:none;transform:none!important}
   .drop-items,.zone-bg-img-open{transition:none}
   .drop-hint{animation:none;opacity:.85}
-  .bob,.note-cursor,.vote-btn::before{animation:none}
+  .bob,.note-cursor,.hb-medal,.hb-pulse,.hb-bub,.vote-btn::before{animation:none}
+  .hb-pulse{opacity:0}
   .vote-btn::before{opacity:0}
   .cork-anim,.note-sheet,.note-drop,.vote-btn{transition:none}
   .ourstory-print{animation:none}
@@ -859,38 +885,83 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     <!-- SERIES 3 — the message in a bottle, moored beside the title.
          Tap: the cork pops and the note drops open beneath the head. -->
     <button class="head-bottle" id="bottleBtn" aria-expanded="false" aria-controls="noteDrop" aria-label="Series 3 — open the bottle" onclick="openBottle()">
-      <svg class="head-bottle-svg" viewBox="0 0 96 112" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <g opacity=".5" stroke-width="1.3">
-          <path d="M 74,28 a 4,3.7 0 1 1 .2,-.4"/>
-          <path d="M 84,15 a 2.5,2.3 0 1 1 .2,-.3"/>
-        </g>
-        <g transform="translate(46,62)"><g class="bob"><g transform="rotate(24)">
-          <path stroke-width="2" d="M -5.2,-34 C -5.6,-29.5 -4.9,-25.8 -5.8,-22.4 C -7,-18.6 -11.8,-14.9 -12.7,-8.2 C -13.6,-1.2 -12.9,7.4 -13.2,14.6 C -13.4,20.8 -13.8,25.6 -12.9,28.2 C -12.1,30.6 -8.4,31.5 -4.9,31.3 L 5.3,31.1 C 8.9,31.3 12.2,30.4 12.8,27.7 C 13.7,24 12.9,18.9 13.2,13.2 C 13.5,6 14,-2.5 12.9,-8.7 C 11.7,-15.2 7.3,-18.4 6,-22.2 C 4.9,-25.5 5.7,-29.8 5.3,-33.6"/>
-          <g opacity=".4" stroke-width="1">
-            <path d="M -6.4,-21.6 C -8.4,-18 -11.5,-14.9 -12.3,-9.4"/>
-            <path d="M 5.9,30.4 C 9.4,30.6 11.7,29.5 12.3,26.9"/>
+      <span class="hb-pulse" aria-hidden="true"></span>
+      <!-- rotating mono ring: the medallion's engraving -->
+      <svg class="hb-medal" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><path id="hbRing" d="M 60,60 m -46,0 a 46,46 0 1,1 92,0 a 46,46 0 1,1 -92,0"/></defs>
+        <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4"/>
+        <circle cx="60" cy="60" r="38" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 4" opacity=".3"/>
+        <text font-family="'Space Mono',monospace" font-size="9" font-weight="700" letter-spacing="3.3" fill="currentColor" opacity=".8">
+          <textPath href="#hbRing">SERIES 3 &#183; MESSAGE IN A BOTTLE &#183;&#160;</textPath>
+        </text>
+      </svg>
+      <!-- the bottle: sea-glass, water, parchment note with red thread -->
+      <svg class="hb-bottle" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="gGlass" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#A6D2CB" stop-opacity=".92"/>
+            <stop offset=".45" stop-color="#5F9D96" stop-opacity=".9"/>
+            <stop offset="1" stop-color="#35706B" stop-opacity=".95"/>
+          </linearGradient>
+          <linearGradient id="gWater" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2E6B66" stop-opacity=".9"/>
+            <stop offset="1" stop-color="#1C4A47" stop-opacity=".95"/>
+          </linearGradient>
+          <linearGradient id="gCork" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#D2A876"/>
+            <stop offset="1" stop-color="#A87F4C"/>
+          </linearGradient>
+          <linearGradient id="gNote" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#F4EDDC"/>
+            <stop offset="1" stop-color="#DECFAC"/>
+          </linearGradient>
+          <radialGradient id="gShadow" cx=".5" cy=".5" r=".5">
+            <stop offset="0" stop-color="#12100E" stop-opacity=".22"/>
+            <stop offset="1" stop-color="#12100E" stop-opacity="0"/>
+          </radialGradient>
+          <clipPath id="hbClip"><path d="M -6.5,-46 L -6.5,-30 C -6.5,-24 -17,-18 -17,-8 L -17,32 C -17,39 -12,42 -6,42 L 6,42 C 12,42 17,39 17,32 L 17,-8 C 17,-18 6.5,-24 6.5,-30 L 6.5,-46 Z"/></clipPath>
+        </defs>
+        <ellipse cx="60" cy="126" rx="27" ry="6.5" fill="url(#gShadow)"/>
+        <g transform="translate(60,76)"><g class="bob"><g transform="rotate(-12)">
+          <!-- glass body -->
+          <path fill="url(#gGlass)" stroke="#1E4744" stroke-opacity=".55" stroke-width="1.6" stroke-linejoin="round"
+            d="M -6.5,-46 L -6.5,-30 C -6.5,-24 -17,-18 -17,-8 L -17,32 C -17,39 -12,42 -6,42 L 6,42 C 12,42 17,39 17,32 L 17,-8 C 17,-18 6.5,-24 6.5,-30 L 6.5,-46 Z"/>
+          <!-- water + floating note + inner bubbles, clipped to the glass -->
+          <g clip-path="url(#hbClip)">
+            <path fill="url(#gWater)" d="M -17,15 C -10,12 -4,17 2,14 C 8,11.5 13,14 17,11 L 17,32 C 17,39 12,42 6,42 L -6,42 C -12,42 -17,39 -17,32 Z"/>
+            <path d="M -17,15 C -10,12 -4,17 2,14 C 8,11.5 13,14 17,11" fill="none" stroke="#CFE8E2" stroke-opacity=".55" stroke-width="1.2"/>
+            <g class="hb-bub"><circle cx="-7" cy="34" r="1.6" fill="#DCEFEA" opacity=".7"/></g>
+            <g class="hb-bub b2"><circle cx="5" cy="38" r="1.1" fill="#DCEFEA" opacity=".6"/></g>
+            <g class="hb-bub b3"><circle cx="11" cy="30" r="1.3" fill="#DCEFEA" opacity=".65"/></g>
           </g>
-          <g opacity=".3" stroke-width="1">
-            <path d="M 6.8,-14.9 L 10.4,-10.9"/>
-            <path d="M 5.6,-11 L 10.8,-5.6"/>
+          <!-- parchment note, riding the water; it leaves the bottle on open -->
+          <g class="hb-note" transform="rotate(14) translate(0,-1)">
+            <rect x="-7.5" y="-11" width="15" height="24" rx="6.5" fill="url(#gNote)" stroke="#B5A277" stroke-width="1" stroke-opacity=".8"/>
+            <path d="M -3.5,-8.4 C -1,-10.4 2.5,-9.9 3.6,-7.6" fill="none" stroke="#B5A277" stroke-width="1" opacity=".85"/>
+            <line x1="-7.5" y1="1" x2="7.5" y2="1" stroke="#D70000" stroke-width="1.6" opacity=".9"/>
+            <path d="M -1,1 L -3.4,4.4 M -1,1 L 1.8,4.2" stroke="#D70000" stroke-width="1.2" opacity=".9" fill="none"/>
           </g>
-          <g stroke-width="1.2">
-            <path d="M -6.8,3.4 L 5.9,1.2 L 8.1,16.8 L -4.6,19.1 Z"/>
-            <g opacity=".55" stroke-width=".9">
-              <path d="M -3.4,7.2 L 4,5.9"/>
-              <path d="M -2.8,10.6 L 4.6,9.4"/>
-            </g>
-          </g>
+          <!-- inner right shade + specular highlights -->
+          <path d="M 13.5,-14 C 15,-4 15,18 13,30" fill="none" stroke="#16403D" stroke-width="3" stroke-linecap="round" opacity=".3"/>
+          <path d="M -11,-24 C -13,-12 -13,8 -11,24" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" opacity=".5"/>
+          <path d="M -3.8,-43 L -3.8,-33" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity=".65"/>
+          <!-- lip -->
+          <rect x="-8.2" y="-52" width="16.4" height="6.6" rx="3" fill="url(#gGlass)" stroke="#1E4744" stroke-opacity=".55" stroke-width="1.4"/>
+          <path d="M -5.4,-50.6 L -5.4,-47.4" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+          <!-- cork -->
           <g class="cork-anim">
-            <path stroke-width="1.8" d="M -5.9,-42.3 L 5.7,-41.8 L 5.2,-33.9 L -5.4,-34.4 Z"/>
-            <g opacity=".45" stroke-width=".9">
-              <path d="M -3.4,-41.8 L -4.2,-34.6"/>
-              <path d="M 3.9,-41.5 L 3.3,-34.7"/>
-            </g>
+            <rect x="-6" y="-63" width="12" height="11.5" rx="2.6" fill="url(#gCork)" stroke="#7E5B33" stroke-width="1.1"/>
+            <path d="M -2.6,-61.4 L -3.2,-53.4 M 2.4,-61.2 L 1.9,-53.4" stroke="#7E5B33" stroke-width=".9" opacity=".55"/>
+            <ellipse cx="0" cy="-62.6" rx="5.6" ry="1.6" fill="#DEBB8C" stroke="#7E5B33" stroke-width=".9"/>
           </g>
         </g></g></g>
+        <!-- splash droplets, fired once on open -->
+        <g class="hb-splash" aria-hidden="true">
+          <circle class="hb-drop d1" cx="72" cy="26" r="2.2" fill="#5F9D96"/>
+          <circle class="hb-drop d2" cx="80" cy="32" r="1.6" fill="#7FB5AE"/>
+          <circle class="hb-drop d3" cx="66" cy="20" r="1.4" fill="#A6D2CB"/>
+        </g>
       </svg>
-      <span class="head-bottle-tag">series 3</span>
     </button>
   </header>
 
