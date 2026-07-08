@@ -323,33 +323,35 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .drop-photo.seen .drop-title{transform:translateY(0)}
 .drop-photo .ph-note{position:absolute;top:1rem;left:var(--pad);z-index:2;font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
 
-/* ===== STORY ROW: a postcard home from Malibu ===== */
+/* ===== OUR STORY — an editorial spread on the floating sheet: headline
+   left, and a white-bordered snapshot print right — taped at the corner,
+   postmarked from Malibu, drifting gently like it's resting on water. */
 .story-row{width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));margin:0 auto}
-.postcard{position:relative;display:flex;flex-direction:column;width:100%;overflow:hidden;border-radius:16px;
-  background:var(--paper);border:1.5px solid var(--ink);color:var(--ink);cursor:pointer;
-  box-shadow:0 0 0 0 rgba(18,16,14,0);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
-.postcard-photo{aspect-ratio:16/9;background:var(--paper-2);background-size:cover;background-position:center;transition:transform .5s var(--ease)}
-.postcard-side{position:relative;display:flex;flex-direction:column;gap:1rem;padding:1.05rem 1.15rem 1.15rem;border-top:1.5px solid var(--ink)}
-.postcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
-.postmark{width:min(62%,200px);height:auto;color:var(--ink);opacity:.8}
-.stamp{flex:none;width:52px;height:62px;display:flex;align-items:center;justify-content:center;
-  border:1.5px dashed var(--ink-soft);border-radius:4px;background:var(--paper-2);transform:rotate(3deg)}
-.stamp svg{width:30px;height:30px;color:var(--ink)}
-.postcard-lines{display:flex;flex-direction:column;gap:.85rem;margin-top:.2rem}
-.postcard-lines i{display:block;height:1.5px;background:var(--line)}
-.postcard-lines i:nth-child(1){width:92%}
-.postcard-lines i:nth-child(2){width:74%}
-.postcard-lines i:nth-child(3){width:55%}
-.postcard-cta{align-self:flex-end;margin-top:auto;font-family:var(--mono);font-size:.66rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
-@media(hover:hover){
-  .postcard:hover{transform:translateY(-5px);box-shadow:0 18px 34px rgba(18,16,14,.22)}
-  .postcard:hover .postcard-photo{transform:scale(1.03)}
-}
-.postcard:active,.postcard.tap-active{transform:translateY(-1px) scale(.99);box-shadow:0 8px 18px rgba(18,16,14,.18);transition:transform .12s ease,box-shadow .12s ease}
-@media(min-width:541px){
-  .postcard{flex-direction:row;min-height:250px}
-  .postcard-photo{flex:1.35;aspect-ratio:auto}
-  .postcard-side{flex:1;border-top:none;border-left:1.5px solid var(--ink)}
+.ourstory{display:flex;flex-direction:column;gap:2rem}
+.ourstory-eyebrow{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft)}
+.ourstory-title{font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,7.5vw,3.2rem);letter-spacing:-.04em;line-height:.95;margin-top:.55rem}
+.ourstory-copy{font-size:.82rem;line-height:1.8;letter-spacing:.02em;color:var(--ink-soft);max-width:46ch;margin-top:1rem}
+.ourstory-cta{display:inline-block;margin-top:1.4rem;font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);
+  padding-bottom:.35rem;background:linear-gradient(var(--ink),var(--ink)) left bottom/38px 1.5px no-repeat;transition:background-size .4s var(--ease)}
+@media(hover:hover){.ourstory-cta:hover{background-size:100% 1.5px}}
+/* the print: white photo border, slight tilt, slow drift; hover straightens */
+.ourstory-print{position:relative;display:block;align-self:center;width:min(100%,470px);
+  background:#fff;padding:10px 10px 15px;border-radius:10px;transform:rotate(2deg);
+  box-shadow:0 14px 30px rgba(18,16,14,.18),0 3px 8px rgba(18,16,14,.08);
+  transition:transform .45s var(--ease),box-shadow .45s var(--ease);
+  animation:printFloat 7s ease-in-out infinite}
+@keyframes printFloat{0%,100%{translate:0 0}50%{translate:0 -6px}}
+@media(hover:hover){.ourstory-print:hover{transform:rotate(.4deg) scale(1.015);box-shadow:0 20px 40px rgba(18,16,14,.24)}}
+.ourstory-print:active,.ourstory-print.tap-active{transform:rotate(1deg) scale(.985);transition:transform .12s ease}
+.ourstory-photo{aspect-ratio:4/3;border-radius:6px;background-color:var(--paper-2);background-size:cover;background-position:center}
+.ourstory-tape{position:absolute;top:-11px;left:22px;width:86px;height:26px;transform:rotate(-5deg);z-index:2;
+  background:rgba(233,230,223,.62);border:1px solid rgba(22,20,18,.08);border-radius:2px;
+  box-shadow:0 1px 3px rgba(18,16,14,.08)}
+.ourstory-postmark{position:absolute;right:-14px;bottom:-16px;width:132px;height:auto;color:var(--ink);opacity:.85;transform:rotate(-7deg);pointer-events:none}
+@media(min-width:760px){
+  .ourstory{flex-direction:row;align-items:center;gap:clamp(2.5rem,6vw,4.5rem)}
+  .ourstory-text{flex:1;padding-left:clamp(0rem,2vw,1.5rem)}
+  .ourstory-print{flex:none;width:min(46%,520px)}
 }
 
 /* SERIES 3 — the message in a bottle, moored to the right of "The
@@ -522,9 +524,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    would break the sticky backdrop frame). */
 .zone-story{position:relative;z-index:2;background:var(--paper);
   margin:calc(-1*var(--lift)) 0;
-  padding:clamp(2.6rem,7vw,4rem) 0;
-  border-radius:24px;overflow:clip;
-  box-shadow:0 -16px 38px rgba(18,16,14,.20),0 26px 54px rgba(18,16,14,.32)}
+  padding:clamp(3rem,8vw,4.6rem) 0;
+  /* softly hand-cut corners — no two alike, like torn paper trimmed by hand */
+  border-radius:44px 26px 38px 22px/28px 40px 24px 44px;overflow:clip;
+  box-shadow:inset 0 0 0 1px rgba(22,20,18,.05),0 -16px 38px rgba(18,16,14,.20),0 26px 54px rgba(18,16,14,.32)}
 /* Series zone slides under the sheet; extra top padding restores the
    visual gap between the sheet edge and the section head. The photo runs
    to the very bottom of the zone, meeting the footer's border. */
@@ -715,6 +718,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .bob,.note-cursor,.vote-btn::before{animation:none}
   .vote-btn::before{opacity:0}
   .cork-anim,.note-sheet,.note-drop,.vote-btn{transition:none}
+  .ourstory-print{animation:none}
   #infoBubbles{display:none}
 }
 
@@ -798,30 +802,32 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 <section class="zone zone-story">
 <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img" style="background-image:url('story-bg.jpg')"></span></div></div>
 <div class="story-row">
-  <!-- OUR STORY — a postcard home from Malibu: the photo is the front,
-       and the back carries a hand-drawn postmark, the flower stamp, and
-       empty address lines. The whole card links to the story page. -->
-  <a class="postcard r" href="our-story.html" aria-label="Read our story">
-    <div class="postcard-photo" id="storyBoxPhoto1"></div>
-    <div class="postcard-side">
-      <div class="postcard-top">
-        <svg class="postmark" viewBox="0 0 172 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
-          <circle cx="32" cy="32" r="26" stroke-width="1.6" opacity=".75"/>
-          <circle cx="32" cy="32" r="21.5" stroke-width="1" opacity=".45"/>
-          <text x="32" y="30" text-anchor="middle" font-family="'Space Mono',monospace" font-size="8.5" font-weight="700" fill="currentColor" stroke="none" letter-spacing="1">MALIBU</text>
-          <text x="32" y="40.5" text-anchor="middle" font-family="'Space Mono',monospace" font-size="6" fill="currentColor" stroke="none" letter-spacing="1" opacity=".8">CALIF.</text>
-          <g stroke-width="1.5" opacity=".5">
-            <path d="M 66,22 q 11,-4.5 22,0 t 22,0 t 22,0 t 22,0"/>
-            <path d="M 66,32 q 11,-4.5 22,0 t 22,0 t 22,0 t 22,0"/>
-            <path d="M 66,42 q 11,-4.5 22,0 t 22,0 t 22,0 t 22,0"/>
-          </g>
-        </svg>
-        <span class="stamp" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#E9E6DF"/></svg></span>
-      </div>
-      <div class="postcard-lines" aria-hidden="true"><i></i><i></i><i></i></div>
-      <span class="postcard-cta">our story <span aria-hidden="true">&rarr;</span></span>
+  <!-- OUR STORY — an editorial spread on the floating sheet: headline and
+       teaser on the left, and a snapshot mailed home from Malibu on the
+       right — taped down, postmarked, gently drifting. -->
+  <section class="ourstory r" aria-label="Our story">
+    <div class="ourstory-text">
+      <p class="ourstory-eyebrow">earlspade &mdash; malibu, california</p>
+      <h2 class="ourstory-title">made by the sea.</h2>
+      <p class="ourstory-copy">Small runs of jewelry, sketched on the sand and numbered by hand. When a series sells through, we break the molds and mail ourselves a postcard.</p>
+      <a class="ourstory-cta" href="our-story.html">read our story <span aria-hidden="true">&rarr;</span></a>
     </div>
-  </a>
+    <a class="ourstory-print" href="our-story.html" aria-label="Read our story">
+      <span class="ourstory-tape" aria-hidden="true"></span>
+      <div class="ourstory-photo" id="storyBoxPhoto1"></div>
+      <svg class="ourstory-postmark" viewBox="0 0 96 68" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+        <circle cx="36" cy="34" r="26" stroke-width="1.6" opacity=".8"/>
+        <circle cx="36" cy="34" r="21.5" stroke-width="1" opacity=".5"/>
+        <text x="36" y="32" text-anchor="middle" font-family="'Space Mono',monospace" font-size="8.5" font-weight="700" fill="currentColor" stroke="none" letter-spacing="1">MALIBU</text>
+        <text x="36" y="42.5" text-anchor="middle" font-family="'Space Mono',monospace" font-size="6" fill="currentColor" stroke="none" letter-spacing="1" opacity=".8">CALIF.</text>
+        <g stroke-width="1.4" opacity=".55">
+          <path d="M 66,22 q 7,-3.5 14,0 t 14,0"/>
+          <path d="M 66,32 q 7,-3.5 14,0 t 14,0"/>
+          <path d="M 66,42 q 7,-3.5 14,0 t 14,0"/>
+        </g>
+      </svg>
+    </a>
+  </section>
 </div>
 
 </section>
@@ -1841,7 +1847,7 @@ document.addEventListener('dragstart', e => e.preventDefault());
    ancestor). Delegate touchstart/touchend on the document so the press
    feedback works for .drop-photo and .story-box buttons, including the
    ones rendered later by renderDrops(). */
-const TAP_FEEDBACK_SELECTOR = '.drop-photo, .postcard, .archive-strip';
+const TAP_FEEDBACK_SELECTOR = '.drop-photo, .ourstory-print, .archive-strip';
 function tapFeedbackOn(e){
   const el = e.target.closest(TAP_FEEDBACK_SELECTOR);
   if(el) el.classList.add('tap-active');
