@@ -576,12 +576,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .item.sold:active .item-num,.item.sold:hover .item-num{color:var(--ink-soft)}
 .sold-flag{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:var(--pop)}
 .sold-badge{position:absolute;top:.6rem;right:.6rem;z-index:2;font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pop);background:rgba(233,230,223,.92);padding:.28rem .5rem;border-radius:7px}
-/* Sold-out tile overlay: the photo greys out under a quiet paper veil
-   and a single tracked-out mono word sits centered — no box, no tilt. */
+/* Sold-out tile overlay: the photo greys out under a paper veil with a
+   centered mono label between two hairline rules — minimal but clearly
+   legible at a glance. */
 .tile-soldout{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;
-  background:rgba(233,230,223,.55);-webkit-backdrop-filter:grayscale(1);backdrop-filter:grayscale(1)}
-.tile-soldout-stamp{font-family:var(--mono);font-weight:700;font-size:.62rem;
-  letter-spacing:.34em;margin-right:-.34em;text-transform:uppercase;color:var(--ink);opacity:.85}
+  background:rgba(233,230,223,.72);-webkit-backdrop-filter:grayscale(1);backdrop-filter:grayscale(1)}
+.tile-soldout-stamp{display:flex;align-items:center;gap:.6rem;font-family:var(--mono);font-weight:700;
+  font-size:.72rem;letter-spacing:.3em;margin-right:-.3em;text-transform:uppercase;color:var(--ink)}
+.tile-soldout-stamp::before,.tile-soldout-stamp::after{content:"";width:18px;height:1.5px;background:var(--ink);opacity:.55}
 
 /* reveal */
 .r{opacity:0;transform:translateY(26px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
@@ -1146,7 +1148,7 @@ function renderDrops(){
         ? colors.slice(0,2).map((c,ci)=>`<div class="item-tile-photo${ci?' alt':''}" style="background-image:url('${c.img}')"></div>`).join('')
         : `<img class="ph" src="${LOGO}" alt="">`;
       return `<a class="item${it.soldout?' sold':''} r"${open} style="transition-delay:${delay}s">
-          <div class="item-tile"><span class="item-num">${num}</span>${tileMedia}${it.soldout?'<div class="tile-soldout"><span class="tile-soldout-stamp">Sold Out</span></div>':''}</div>
+          <div class="item-tile"><span class="item-num">${num}</span>${tileMedia}${it.soldout?'<div class="tile-soldout"><span class="tile-soldout-stamp"><span>Sold Out</span></span></div>':''}</div>
           <div class="item-row"><span class="item-name">${it.name}</span>${tail}</div>
         </a>`;
     }).join('');
