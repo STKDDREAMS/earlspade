@@ -576,14 +576,12 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .item.sold:active .item-num,.item.sold:hover .item-num{color:var(--ink-soft)}
 .sold-flag{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:var(--pop)}
 .sold-badge{position:absolute;top:.6rem;right:.6rem;z-index:2;font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pop);background:rgba(233,230,223,.92);padding:.28rem .5rem;border-radius:7px}
-/* Sold-out tile overlay: a frosted veil over the photo with a rotated
-   rubber-stamp label — reads instantly without hiding what's underneath. */
+/* Sold-out tile overlay: the photo greys out under a quiet paper veil
+   and a single tracked-out mono word sits centered — no box, no tilt. */
 .tile-soldout{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;
-  background:rgba(233,230,223,.42);-webkit-backdrop-filter:grayscale(.7) blur(1px);backdrop-filter:grayscale(.7) blur(1px)}
-.tile-soldout-stamp{transform:rotate(-8deg);font-family:var(--mono);font-weight:700;
-  font-size:clamp(.7rem,2.4vw,.9rem);letter-spacing:.22em;text-transform:uppercase;color:var(--ink);
-  padding:.5rem .9rem;border:2px solid var(--ink);border-radius:6px;background:rgba(233,230,223,.55);
-  box-shadow:0 2px 0 rgba(18,16,14,.12)}
+  background:rgba(233,230,223,.55);-webkit-backdrop-filter:grayscale(1);backdrop-filter:grayscale(1)}
+.tile-soldout-stamp{font-family:var(--mono);font-weight:700;font-size:.62rem;
+  letter-spacing:.34em;margin-right:-.34em;text-transform:uppercase;color:var(--ink);opacity:.85}
 
 /* reveal */
 .r{opacity:0;transform:translateY(26px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
