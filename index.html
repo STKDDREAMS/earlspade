@@ -471,10 +471,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .archive-close:hover{transform:rotate(90deg);background:rgba(233,230,223,.22)}
 
 /* ===== ZONES — user-placeable section backdrops =================
-   Drop story-bg.jpg / series-bg.jpg into the repo root to give the
-   Our Story row and the series section a backdrop photo, and
-   series-bg-open.jpg for the series zone while a series is open.
-   The raw images render as-is (cover, centered, no overlays).
+   story-bg.jpg backs the Our Story row (always, if the file exists).
+   series-bg.jpg backs the series section ONLY while a series is open
+   — the zone is plain paper when closed and the photo fades in/out
+   with the products. Raw images, cover, centered, no overlays.
    Without the files the zones simply stay paper. */
 .zone{position:relative}
 /* The backdrop lives in a sticky, viewport-height frame: the photo stays
@@ -495,8 +495,9 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    viewport covered. */
 .zone-bg-frame{position:sticky;top:0;height:100vh;height:calc(var(--vh100,100lvh) + 140px)}
 .zone-bg-img{position:absolute;inset:0;display:block;background-position:center;background-size:cover;background-repeat:no-repeat}
-/* While a series is open the frame crossfades to its open backdrop
-   (series-bg-open.jpg); closing fades it back. */
+/* The series backdrop only shows while a series is open: the zone is
+   plain paper when closed, and the photo fades in when the banner is
+   pressed (bg-open), fading back out on close. */
 .zone-bg-img-open{opacity:0;transition:opacity .9s ease}
 .zone-series.bg-open .zone-bg-img-open{opacity:1}
 .zone>:not(.zone-bg){position:relative;z-index:1}
@@ -518,14 +519,17 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
      enough for the Enter landing to reach its target before max-scroll
      clamps (the slim archive strip shortened the page) */
   padding-top:calc(clamp(5rem,12vw,7rem) + var(--lift));padding-bottom:8rem}
-/* Labels that sit directly on a loaded backdrop lift to paper for
-   contrast (has-bg is set by JS only when the photo really loads, so
-   removing the file gracefully falls back to ink-on-paper). */
-.zone-series.has-bg .sec-title{color:var(--paper);text-shadow:0 2px 18px rgba(8,14,22,.5),0 1px 2px rgba(8,14,22,.4)}
-.zone-series.has-bg .sec-eyebrow{color:rgba(233,230,223,.78);text-shadow:0 1px 8px rgba(8,14,22,.5)}
-.zone-series.has-bg .shop-head{border-bottom-color:rgba(233,230,223,.45)}
-.zone-series.has-bg .item-name{color:var(--paper);text-shadow:0 1px 8px rgba(8,14,22,.6)}
-.zone-series.has-bg .item-price{color:rgba(233,230,223,.85);text-shadow:0 1px 8px rgba(8,14,22,.6)}
+/* Labels flip to paper only while the photo is actually showing:
+   has-bg (set by JS when the photo really loads) AND bg-open (a series
+   is open). Closed state stays ink-on-paper. The color transitions ride
+   the photo's .9s fade so nothing snaps. */
+.sec-title,.sec-eyebrow,.item-name,.item-price{transition:color .5s ease,text-shadow .5s ease}
+.shop-head{transition:border-bottom-color .5s ease}
+.zone-series.has-bg.bg-open .sec-title{color:var(--paper);text-shadow:0 2px 18px rgba(8,14,22,.5),0 1px 2px rgba(8,14,22,.4)}
+.zone-series.has-bg.bg-open .sec-eyebrow{color:rgba(233,230,223,.78);text-shadow:0 1px 8px rgba(8,14,22,.5)}
+.zone-series.has-bg.bg-open .shop-head{border-bottom-color:rgba(233,230,223,.45)}
+.zone-series.has-bg.bg-open .item-name{color:var(--paper);text-shadow:0 1px 8px rgba(8,14,22,.6)}
+.zone-series.has-bg.bg-open .item-price{color:rgba(233,230,223,.85);text-shadow:0 1px 8px rgba(8,14,22,.6)}
 
 /* Section head above the series + archive */
 .shop-head{width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));
@@ -796,7 +800,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 </section>
 
 <section class="zone zone-series" id="series">
-  <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img" style="background-image:url('series-bg.jpg')"></span><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg-open.jpg')"></span></div></div>
+  <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg.jpg')"></span></div></div>
   <header class="shop-head r">
     <p class="sec-eyebrow">earlspade &mdash; collections</p>
     <h2 class="sec-title">The Series</h2>
