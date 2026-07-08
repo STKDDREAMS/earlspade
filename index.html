@@ -576,15 +576,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .item.sold:active .item-num,.item.sold:hover .item-num{color:var(--ink-soft)}
 .sold-flag{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:var(--pop)}
 .sold-badge{position:absolute;top:.6rem;right:.6rem;z-index:2;font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pop);background:rgba(233,230,223,.92);padding:.28rem .5rem;border-radius:7px}
-/* Sold-out tile overlay: the photo greys out under a paper veil and an
-   ink pill sits centered — the same pill language as the LIVE/CLOSED
-   tags, so it reads as part of the system and is unmissable. */
-.tile-soldout{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;
-  background:rgba(233,230,223,.6);-webkit-backdrop-filter:grayscale(1);backdrop-filter:grayscale(1)}
-.tile-soldout-stamp{font-family:var(--mono);font-weight:700;font-size:.62rem;
-  letter-spacing:.22em;text-indent:.22em;text-transform:uppercase;color:var(--paper);
-  background:rgba(22,20,18,.92);padding:.55rem 1.05rem;border-radius:999px;
-  box-shadow:0 4px 14px rgba(18,16,14,.25)}
+/* Sold-out tile: the photo greys out under a paper veil and the flower
+   mark sits centered with a tiny lowercase word under it — a quiet
+   maker's stamp, nothing more. Gone is gone. */
+.tile-soldout{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.55rem;
+  background:rgba(233,230,223,.66);-webkit-backdrop-filter:grayscale(1);backdrop-filter:grayscale(1)}
+.tile-soldout-mark{width:24px;height:24px;color:var(--ink);opacity:.85}
+.tile-soldout-stamp{font-family:var(--mono);font-weight:400;font-size:.56rem;
+  letter-spacing:.3em;text-indent:.3em;color:var(--ink-soft)}
 
 /* reveal */
 .r{opacity:0;transform:translateY(26px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
@@ -1151,7 +1150,7 @@ function renderDrops(){
         ? colors.slice(0,2).map((c,ci)=>`<div class="item-tile-photo${ci?' alt':''}" style="background-image:url('${c.img}')"></div>`).join('')
         : `<img class="ph" src="${LOGO}" alt="">`;
       return `<a class="item${it.soldout?' sold':''} r"${open} style="transition-delay:${delay}s">
-          <div class="item-tile"><span class="item-num">${num}</span>${tileMedia}${it.soldout?'<div class="tile-soldout"><span class="tile-soldout-stamp"><span>Sold Out</span></span></div>':''}</div>
+          <div class="item-tile"><span class="item-num">${num}</span>${tileMedia}${it.soldout?'<div class="tile-soldout"><svg class="tile-soldout-mark" viewBox="0 0 100 100" aria-hidden="true"><g fill="currentColor"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#E9E6DF"/></svg><span class="tile-soldout-stamp">sold out</span></div>':''}</div>
           <div class="item-row"><span class="item-name">${it.name}</span>${tail}</div>
         </a>`;
     }).join('');
