@@ -160,7 +160,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 @media(hover:hover){.empty-cta:hover{transform:translateY(-2px);box-shadow:0 16px 32px -8px var(--pink-glow)}}
 @keyframes moteDrift{0%{opacity:0;transform:translate(0,0) scale(.6)}25%{opacity:.85}100%{opacity:0;transform:translate(10px,-30px) scale(1)}}
 
-.cart-line{display:flex;gap:.9rem;padding:1.1rem 0;border-bottom:1px solid var(--line)}
+.cart-line{display:flex;gap:.9rem;padding:1.1rem 0;border-bottom:2px dotted var(--line)}
 .cart-line .thumb{position:relative;width:68px;height:68px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center}
 .cart-line .thumb .seastar{width:46%;height:46%;color:var(--ink)}
@@ -168,9 +168,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .cart-line .thumb img.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .cart-line .thumb img.ph{width:42%;height:42%;object-fit:contain;opacity:.22}
 .cart-line .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:.3rem}
-.cart-line .name{font-size:.92rem;font-weight:700;line-height:1.2;letter-spacing:-.01em}
+.cart-line .name{font-family:var(--mono);font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;line-height:1.35}
 .cart-line .price{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);letter-spacing:.02em}
-.cart-line .row{display:flex;align-items:center;justify-content:space-between;margin-top:.3rem}
+.cart-line .row{display:flex;align-items:center;gap:.6rem;margin-top:.3rem}
+.cart-line .row .leader{transform:translateY(.35em)}
 .qty-stepper{display:flex;align-items:center;border:1.5px solid var(--ink);border-radius:999px;height:36px;overflow:hidden}
 .qty-stepper button{width:34px;height:100%;border:none;background:none;cursor:pointer;font-size:1.05rem;color:var(--ink);display:flex;align-items:center;justify-content:center;transition:background .15s ease}
 .qty-stepper button:active{background:var(--paper-2)}
@@ -185,21 +186,16 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .cart-foot{border-top:1.5px solid var(--ink);padding:1.2rem var(--pad) calc(1.3rem + env(safe-area-inset-bottom));background:var(--paper)}
 .ship-note{font-family:var(--mono);font-size:.66rem;color:var(--ink-soft);text-align:center;margin-bottom:.9rem;letter-spacing:.03em;
   padding:.55rem .8rem;background:var(--paper-2);border-radius:999px}
-.cart-subtotal{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1rem}
+.cart-subtotal{display:flex;align-items:baseline;gap:.6rem;margin-bottom:1rem}
 .cart-subtotal .label{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
 .cart-subtotal .amt{font-size:1.35rem;font-weight:900;letter-spacing:-.02em}
-.checkout-btn{width:100%;background:linear-gradient(135deg,var(--pink-2),var(--pink));color:#fff;border:none;border-radius:999px;font-family:var(--mono);font-weight:700;
-  font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;padding:1.1rem;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s ease,box-shadow .3s ease;
-  box-shadow:0 6px 20px -6px var(--pink-glow)}
-.checkout-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--pink),var(--pink-deep));border-radius:999px;transform:translateY(101%);transition:transform .35s var(--ease);z-index:0}
-.checkout-btn::before{content:'';position:absolute;top:-20%;left:-65%;width:48%;height:140%;
-  background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.1) 38%,rgba(255,255,255,.26) 50%,rgba(255,255,255,.1) 62%,transparent 100%);
-  transform:skewX(-18deg);z-index:2;pointer-events:none;animation:glimmer 5s ease-in-out infinite}
-.checkout-btn span{position:relative;z-index:1}
+.cart-mantra{margin-top:.85rem;text-align:center;font-family:var(--mono);font-size:.52rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
+.checkout-btn{width:100%;background:var(--ink);color:var(--paper);border:1.5px solid var(--ink);border-radius:13px;
+  font-family:var(--mono);font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;
+  padding:1.05rem;cursor:pointer;transition:background .25s ease,transform .15s ease,box-shadow .3s ease}
 .checkout-btn:active{transform:scale(.97)}
-@media(hover:hover){.checkout-btn:hover{box-shadow:0 10px 26px -6px var(--pink-glow)}.checkout-btn:hover::after{transform:translateY(0)}}
+@media(hover:hover){.checkout-btn:hover{background:var(--tile-ink);box-shadow:0 8px 20px -8px rgba(18,16,14,.5)}}
 .checkout-btn:disabled{opacity:.6;cursor:default}
-.checkout-btn:disabled::before{animation-duration:1.6s}
 .cart-trust{display:flex;align-items:center;justify-content:center;gap:.4rem;margin-top:.85rem;
   font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;color:var(--ink-soft);text-transform:uppercase}
 .cart-trust svg{width:11px;height:11px;flex-shrink:0}
@@ -248,10 +244,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .wordmark span{display:inline-block;opacity:0;transform:translateY(40px);animation:rise .7s var(--ease) forwards}
 .hero-meta{font-family:var(--mono);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft);margin-top:1.4rem;opacity:0;animation:rise .8s .55s var(--ease) forwards}
 .shop-btn{margin-top:2.6rem;display:inline-flex;align-items:center;gap:.6rem;
-  background:rgba(9,26,40,.28);color:#fff;
+  background:rgba(233,230,223,.16);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;
   font-family:var(--mono);font-weight:700;font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;
   padding:1rem 2.1rem;min-height:52px;
-  border:1.5px solid rgba(255,255,255,.62);border-radius:16px;
+  border:1.5px solid rgba(255,255,255,.75);border-radius:999px;
   cursor:pointer;position:relative;isolation:isolate;-webkit-tap-highlight-color:transparent;
   box-shadow:0 12px 30px -16px rgba(0,16,28,.7);
   opacity:0;animation:enterIn .8s .7s var(--ease) forwards;
@@ -315,9 +311,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* First-visit cue that the banner opens: bottom-right, gently pulsing.
    Gone while open, and suppressed for good (hint-off, via localStorage)
    once the customer has ever opened a series. */
-.drop-hint{position:absolute;right:var(--pad);bottom:1.2rem;z-index:2;
-  font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
-  color:#fff;text-shadow:0 1px 8px rgba(0,10,20,.6);animation:hintPulse 2.2s ease-in-out infinite}
+.drop-hint{position:absolute;right:var(--pad);bottom:1.1rem;z-index:2;
+  font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:#fff;padding:.42rem .85rem;border:1.5px solid rgba(255,255,255,.75);border-radius:999px;
+  background:rgba(20,18,15,.35);animation:hintPulse 2.2s ease-in-out infinite}
 @keyframes hintPulse{0%,100%{opacity:.55}50%{opacity:1}}
 .drop.open .drop-hint,.hint-off .drop-hint{display:none}
 @keyframes liveDot{
@@ -407,29 +404,18 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .note-cursor.on{opacity:1}
 @keyframes noteblink{50%{opacity:0}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.vote-btn{background:linear-gradient(135deg,var(--pink-2),var(--pink));color:#fff;
-  border:none;border-radius:999px;font-family:var(--mono);font-weight:700;
+.vote-btn{background:var(--ink);color:var(--paper);border:1.5px solid var(--ink);
+  border-radius:999px;font-family:var(--mono);font-weight:700;
   font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
   padding:.9rem 2.4rem .9rem 2.6rem;min-height:44px;cursor:pointer;
-  position:relative;overflow:hidden;isolation:isolate;
-  box-shadow:0 6px 20px -6px var(--pink-glow);
   opacity:0;transform:translateY(10px);
-  transition:opacity .5s var(--ease),transform .5s var(--ease),box-shadow .3s ease}
+  transition:opacity .5s var(--ease),transform .5s var(--ease),background .25s ease,box-shadow .3s ease}
 .vote-btn.in{opacity:1;transform:translateY(0)}
-.vote-btn::after{content:'';position:absolute;inset:0;border-radius:999px;
-  background:linear-gradient(135deg,var(--pink),var(--pink-deep));
-  transform:translateY(101%);transition:transform .35s var(--ease);z-index:0}
-.vote-btn::before{content:'';position:absolute;top:-20%;left:-65%;width:48%;height:140%;
-  background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.1) 38%,rgba(255,255,255,.26) 50%,rgba(255,255,255,.1) 62%,transparent 100%);
-  transform:skewX(-18deg);z-index:2;pointer-events:none;animation:glimmer 5s ease-in-out infinite}
-.vote-btn span{position:relative;z-index:1}
 .vote-btn:active{transform:scale(.96)}
 @media(hover:hover){
-  .vote-btn:hover{box-shadow:0 10px 26px -6px var(--pink-glow)}
-  .vote-btn:hover::after{transform:translateY(0)}
+  .vote-btn:hover{background:var(--tile-ink);box-shadow:0 8px 20px -8px rgba(18,16,14,.5)}
 }
 .vote-btn:disabled{opacity:.6;cursor:default}
-@keyframes glimmer{0%{left:-65%}22%{left:135%}100%{left:135%}}
 /* ===== INFO BUBBLES — after the series opens, frosted glass bubbles
    carry the selling points up the screen ===== */
 #infoBubbles{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
@@ -640,8 +626,12 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .modal-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .modal-foot{flex:0 0 auto}
 .modal-eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
-.modal-name{font-family:var(--mono);font-weight:700;font-size:clamp(1rem,3.6vw,1.3rem);letter-spacing:.1em;text-transform:uppercase;line-height:1.25;margin-top:.55rem}
-.modal-price{font-family:var(--mono);font-size:1rem;margin-top:.6rem}
+.modal-titlerow{display:flex;align-items:baseline;gap:.6rem;margin-top:.6rem}
+.modal-name{font-family:var(--mono);font-weight:700;font-size:clamp(1rem,3.6vw,1.3rem);letter-spacing:.1em;text-transform:uppercase;line-height:1.25}
+.modal-price{font-family:var(--mono);font-size:.92rem;white-space:nowrap}
+.modal-edition{font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-top:.55rem}
+/* sheet grabber: standard pull affordance; hidden in the desktop split layout */
+.modal-grab{position:absolute;top:.55rem;left:50%;transform:translateX(-50%);z-index:5;width:36px;height:4px;border-radius:999px;background:rgba(22,20,18,.22)}
 /* Colourway switch inside the product box — mono pills that match the
    typewriter look of the rest of the site. Active pill inverts to ink. */
 .modal-colors{display:flex;gap:.5rem;margin-top:1.1rem}
@@ -659,23 +649,19 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
 .modal-actions{display:flex;gap:.7rem;margin-top:1.7rem}
 .btn-buy,.btn-cart{flex:1;font-family:var(--mono);font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;padding:1.05rem;border-radius:13px;cursor:pointer;transition:background .25s ease,color .25s ease,transform .15s ease,box-shadow .3s ease}
-.btn-buy{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--pink-2),var(--pink));color:#fff;border:1.5px solid transparent;box-shadow:0 5px 16px -6px var(--pink-glow)}
-.btn-buy::before{content:'';position:absolute;top:-20%;left:-65%;width:48%;height:140%;
-  background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.1) 38%,rgba(255,255,255,.28) 50%,rgba(255,255,255,.1) 62%,transparent 100%);
-  transform:skewX(-18deg);pointer-events:none;animation:glimmer 5s ease-in-out infinite;animation-delay:.8s}
+.btn-buy{background:var(--ink);color:var(--paper);border:1.5px solid var(--ink)}
 .btn-cart{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
 .btn-buy:active,.btn-cart:active{transform:scale(.98)}
+@media(hover:hover){
+  .btn-buy:hover{background:var(--tile-ink);box-shadow:0 8px 20px -8px rgba(18,16,14,.5)}
+  .btn-cart:hover{background:var(--paper-2)}
+}
 .btn-cart:disabled{opacity:.65;cursor:default}
 @media(hover:hover){
   .btn-buy:hover{background:linear-gradient(135deg,var(--pink),var(--pink-deep));border-color:transparent;box-shadow:0 9px 22px -6px var(--pink-glow)}
   .btn-cart:hover{background:var(--ink);color:var(--paper)}
 }
 
-/* warm glimmer that sweeps across the pink action buttons */
-@keyframes glimmer{
-  0%{left:-65%}
-  22%{left:135%}
-  100%{left:135%}
 }
 @media (prefers-reduced-motion: reduce){
   .btn-buy::before,.checkout-btn::before,.shop-btn::before{animation:none;opacity:0}
@@ -720,6 +706,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .modal-card{flex-direction:row;border-radius:24px;max-width:920px;max-height:86vh;transform:translateY(22px) scale(.97);opacity:0;transition:transform .42s var(--ease),opacity .35s ease;box-shadow:0 30px 80px rgba(0,0,0,.3)}
   .modal.open .modal-card{transform:none;opacity:1}
   .modal-img{width:50%;aspect-ratio:auto;align-self:stretch;min-height:420px;max-height:none;flex:0 0 50%}
+  .modal-grab{display:none}
   .modal-body{width:50%;justify-content:center;padding:2.8rem 2.4rem}
   .modal-desc{margin-top:1.1rem}
 }
@@ -959,13 +946,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 <div class="modal" id="modal" aria-hidden="true">
   <div class="modal-backdrop" onclick="closeModal()"></div>
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="mName">
+    <span class="modal-grab" aria-hidden="true"></span>
     <button class="modal-close" id="mClose" aria-label="Close" onclick="closeModal()">&times;</button>
     <div class="modal-img ph" id="mImg"><img src="logo.png" alt=""></div>
     <div class="modal-body">
       <div class="modal-scroll">
         <p class="modal-eyebrow" id="mEyebrow"></p>
-        <h3 class="modal-name" id="mName"></h3>
-        <p class="modal-price" id="mPrice"></p>
+        <div class="modal-titlerow"><h3 class="modal-name" id="mName"></h3><i class="leader" aria-hidden="true"></i><p class="modal-price" id="mPrice"></p></div>
+        <p class="modal-edition">numbered edition &mdash; one run only</p>
         <div class="modal-colors" id="mColors" role="group" aria-label="Choose finish" hidden></div>
         <p class="modal-desc" id="mDesc"></p>
       </div>
@@ -993,8 +981,9 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   <div class="cart-body" id="cartBody"></div>
   <div class="cart-foot" id="cartFoot" style="display:none">
     <div class="ship-note" id="shipNote"></div>
-    <div class="cart-subtotal"><span class="label">Subtotal</span><span class="amt" id="cartSubtotal">$0</span></div>
+    <div class="cart-subtotal"><span class="label">Subtotal</span><i class="leader" aria-hidden="true"></i><span class="amt" id="cartSubtotal">$0</span></div>
     <button class="checkout-btn" id="checkoutBtn" onclick="goToCheckout()"><span>Checkout</span></button>
+    <p class="cart-mantra">one run only &middot; once it&rsquo;s gone, it&rsquo;s gone forever</p>
     <p class="cart-legal">By placing your order you agree to our <a href="legal/terms.html">Terms</a>, <a href="legal/privacy.html">Privacy Policy</a> &amp; <a href="legal/shipping.html">Shipping &amp; Returns</a>.</p>
     <div class="cart-trust">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
@@ -1311,6 +1300,51 @@ document.addEventListener('keydown', e=>{
   if(e.key==='Escape'){ closeModal(); closeCart(); closeArchive(); }
 });
 
+/* Swipe the product sheet down to close (drag starts on the photo or the
+   grabber, so the scrolling description is never hijacked). Past ~90px
+   the sheet slides away; otherwise it springs back. */
+(function(){
+  const card=document.querySelector('.modal-card');
+  const img=document.getElementById('mImg');
+  if(!card||!img) return;
+  let startY=null,dy=0,dragging=false;
+  function onStart(e){
+    if(!document.getElementById('modal').classList.contains('open')) return;
+    startY=e.touches[0].clientY; dy=0; dragging=true;
+    card.style.transition='none';
+  }
+  function onMove(e){
+    if(!dragging||startY===null) return;
+    dy=e.touches[0].clientY-startY;
+    if(dy<0) dy=dy/6; /* rubber-band upward */
+    e.preventDefault();
+    card.style.transform=`translateY(${Math.max(dy,-30)}px)`;
+  }
+  function onEnd(){
+    if(!dragging) return;
+    dragging=false;
+    if(dy>90){
+      card.style.transition='transform .28s ease';
+      card.style.transform='translateY(108%)';
+      setTimeout(()=>{
+        closeModal();
+        card.style.transition=''; card.style.transform='';
+      },270);
+    }else{
+      card.style.transition='transform .35s var(--ease)';
+      card.style.transform='translateY(0)';
+      setTimeout(()=>{ card.style.transition=''; card.style.transform=''; },360);
+    }
+    startY=null;
+  }
+  [img,card.querySelector('.modal-grab')].forEach(el=>{
+    if(!el) return;
+    el.addEventListener('touchstart',onStart,{passive:true});
+    el.addEventListener('touchmove',onMove,{passive:false});
+    el.addEventListener('touchend',onEnd);
+  });
+})();
+
 function scrollToLatest(){
   const el=document.querySelector('.shop-head')||document.getElementById('latest');
   if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
@@ -1595,6 +1629,7 @@ function lineHTML(id, qty){
             <span>${qty}</span>
             <button aria-label="Increase quantity" onclick="setQty('${id}', ${qty+1})">+</button>
           </div>
+          <i class="leader" aria-hidden="true"></i>
           <span class="linetotal">$${lineTotal.toFixed(2).replace(/\.00$/,'')}</span>
         </div>
       </div>
