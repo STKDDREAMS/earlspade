@@ -576,6 +576,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .item.sold:active .item-num,.item.sold:hover .item-num{color:var(--ink-soft)}
 .sold-flag{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:var(--pop)}
 .sold-badge{position:absolute;top:.6rem;right:.6rem;z-index:2;font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pop);background:rgba(233,230,223,.92);padding:.28rem .5rem;border-radius:7px}
+/* Sold-out tile overlay: a frosted veil over the photo with a rotated
+   rubber-stamp label — reads instantly without hiding what's underneath. */
+.tile-soldout{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;
+  background:rgba(233,230,223,.42);-webkit-backdrop-filter:grayscale(.7) blur(1px);backdrop-filter:grayscale(.7) blur(1px)}
+.tile-soldout-stamp{transform:rotate(-8deg);font-family:var(--mono);font-weight:700;
+  font-size:clamp(.7rem,2.4vw,.9rem);letter-spacing:.22em;text-transform:uppercase;color:var(--ink);
+  padding:.5rem .9rem;border:2px solid var(--ink);border-radius:6px;background:rgba(233,230,223,.55);
+  box-shadow:0 2px 0 rgba(18,16,14,.12)}
 
 /* reveal */
 .r{opacity:0;transform:translateY(26px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
@@ -998,22 +1006,22 @@ const DROPS = [
       {id:'sea-starfish-ring', name:'Starfish Ring', price:'$20', href:'#', icon:'star',
         colors:[{name:'Silver', img:'STAR2.jpg'},{name:'Gold', img:'STAR1.jpg'}],
         desc:'An open, adjustable band that curls into a smooth starfish. Sculpted in stainless steel with a soft brushed finish.'},
-      {id:'sea-coral-ring', name:'Coral Ring', price:'$20', href:'#', icon:'star',
+      {id:'sea-coral-ring', soldout:true, name:'Coral Ring', price:'$20', href:'#', icon:'star',
         colors:[{name:'Gold', img:'REEF2.jpg'},{name:'Silver', img:'REEF1.jpg'}],
         desc:'A branching coral reef captured in fine, textured relief on an adjustable open band.'},
-      {id:'sea-dolphin-ring', name:'Dolphin Ring', price:'$20', href:'#', icon:'star',
+      {id:'sea-dolphin-ring', soldout:true, name:'Dolphin Ring', price:'$20', href:'#', icon:'star',
         colors:[{name:'Silver', img:'DOLPH2.jpg'},{name:'Gold', img:'DOLPH1.jpg'}],
         desc:'A single dolphin arcs over the finger in one clean, polished curve. Adjustable open band.'},
-      {id:'sea-turtle-ring', name:'Sea Turtle Ring', price:'$20', href:'#', icon:'star',
+      {id:'sea-turtle-ring', soldout:true, name:'Sea Turtle Ring', price:'$20', href:'#', icon:'star',
         colors:[{name:'Gold', img:'JERRY2.jpg'},{name:'Silver', img:'JERRY1.jpg'}],
         desc:'A little sea turtle rides an openwork band with a lightly hammered shoulder. Adjustable fit.'},
-      {id:'sea-palm-bracelet', name:'Palm Bracelet', price:'$20', href:'#', icon:'star',
+      {id:'sea-palm-bracelet', soldout:true, name:'Palm Bracelet', price:'$20', href:'#', icon:'star',
         colors:[{name:'Silver', img:'PALM2.jpg'},{name:'Gold', img:'PALM1.jpg'}],
         desc:'A slim cable chain centred on a single palm tree charm, finished with an extender clasp.'},
       {id:'sea-sun-bracelet', name:'Sun Bracelet', price:'$20', href:'#', icon:'sun',
         colors:[{name:'Gold', img:'Hedc8638ac9c34db5b21dcb08d44fe562z.jpg'},{name:'Silver', img:'H2be866b285a04a51b460d554a6c2b604l.jpg'}],
         desc:'A radiant sun charm on a delicate chain, with an adjustable extender for the perfect drape.'},
-      {id:'sea-beach-bracelet', name:'Beach Bracelet', price:'$20', href:'#', icon:'star',
+      {id:'sea-beach-bracelet', soldout:true, name:'Beach Bracelet', price:'$20', href:'#', icon:'star',
         colors:[{name:'Silver', img:'BEACH1.jpg'},{name:'Gold', img:'BEACH2.jpg'}],
         desc:'A textured bar, rippled like wet sand, strung on a fine chain with an extender clasp.'},
     ]
@@ -1140,7 +1148,7 @@ function renderDrops(){
         ? colors.slice(0,2).map((c,ci)=>`<div class="item-tile-photo${ci?' alt':''}" style="background-image:url('${c.img}')"></div>`).join('')
         : `<img class="ph" src="${LOGO}" alt="">`;
       return `<a class="item${it.soldout?' sold':''} r"${open} style="transition-delay:${delay}s">
-          <div class="item-tile">${it.soldout?'<span class="sold-badge">Sold Out</span>':''}<span class="item-num">${num}</span>${tileMedia}</div>
+          <div class="item-tile"><span class="item-num">${num}</span>${tileMedia}${it.soldout?'<div class="tile-soldout"><span class="tile-soldout-stamp">Sold Out</span></div>':''}</div>
           <div class="item-row"><span class="item-name">${it.name}</span>${tail}</div>
         </a>`;
     }).join('');
