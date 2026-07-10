@@ -346,6 +346,12 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .drop-photo .cap{position:absolute;left:var(--pad);right:var(--pad);bottom:1.1rem;z-index:2;overflow:hidden}
 .drop-title{font-weight:800;font-size:clamp(2.4rem,11vw,5rem);line-height:.9;letter-spacing:-.04em;color:#fff;transform:translateY(112%);transition:transform .95s cubic-bezier(.19,1,.22,1)}
 .drop-photo.seen .drop-title{transform:translateY(0)}
+/* on touch devices the closed banner photo takes a slow periodic breath —
+   the same "press me" language as the bottle's hop */
+@media(hover:none){
+  .drop:not(.open) .drop-photo-inner{animation:bannerNudge 5s ease-in-out 1.6s infinite}
+}
+@keyframes bannerNudge{0%,74%,100%{transform:scale(1.06) translateY(0)}84%{transform:scale(1.095) translateY(-4px)}93%{transform:scale(1.07) translateY(-1px)}}
 .drop-sub{font-family:var(--mono);font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-top:.55rem;padding-right:6rem;opacity:0;transition:opacity .8s ease .4s}
 .drop-photo.seen .drop-sub{opacity:1}
 @media(max-width:359px){.drop-sub{display:none}}
@@ -591,11 +597,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    footer border while open. Bottom padding doubles as scroll runway so
    the Enter landing can reach its target before max-scroll clamps. */
 .zone-series{position:relative;z-index:1;
-  /* the bottom padding doubles as scroll runway: the Enter landing and
-     IG's chrome-collapse clamp both need max-scroll to reach past the
-     series head even on the tallest phones (the three-things row is
-     ~250px shorter than the old story spread). */
-  padding-top:clamp(3.4rem,9vw,5.2rem);padding-bottom:18rem}
+  /* the bottom padding doubles as scroll runway for the Enter landing
+     and IG's chrome-collapse clamp (the bottle mooring below the
+     archive supplies the rest of the depth). */
+  padding-top:clamp(3.4rem,9vw,5.2rem);padding-bottom:9rem}
+/* the bottle's mooring below the archive */
+.series3-moor{display:flex;justify-content:center;padding-top:clamp(3rem,8vw,4.6rem)}
+/* caption stays legible when the open-series photo is behind it */
+.zone-series.has-bg.bg-open .head-bottle{color:var(--paper)}
 /* Labels flip to paper only while the photo is actually showing:
    has-bg (set by JS when the photo really loads) AND bg-open (a series
    is open). Closed state stays ink-on-paper. The color transitions ride
@@ -737,19 +746,19 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 }
 
 /* FOOTER */
-.foot{padding:2.4rem var(--pad) calc(1.4rem + env(safe-area-inset-bottom));border-top:1.5px solid var(--ink);display:flex;flex-direction:column;gap:1rem}
-.foot-brand{display:flex;align-items:center;gap:.55rem;font-weight:900;font-size:1.5rem;letter-spacing:-.03em}
-.foot-brand img{height:30px;width:auto}
+.foot{padding:1.4rem var(--pad) calc(1rem + env(safe-area-inset-bottom));border-top:1.5px solid var(--ink);display:flex;flex-direction:column;gap:.7rem}
+.foot-brand{display:flex;align-items:center;gap:.45rem;font-weight:900;font-size:1.1rem;letter-spacing:-.03em}
+.foot-brand img{height:20px;width:auto}
 .foot-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
-.foot-links{display:flex;flex-wrap:wrap;gap:.7rem 1.2rem;font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase}
+.foot-links{display:flex;flex-wrap:wrap;gap:.5rem 1rem;font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase}
 .foot-links a{color:var(--ink-soft);padding-bottom:2px;
   background:linear-gradient(currentColor,currentColor) left bottom/0 1px no-repeat;
   transition:color .2s ease,background-size .3s var(--ease)}
 @media(hover:hover){.foot-links a:hover{background-size:100% 1px}}
-.foot-top{display:flex;flex-direction:column;align-items:center;gap:.7rem;width:100%;color:var(--ink-soft);margin-bottom:1rem}
-.foot-tag{font-family:var(--mono);font-size:.58rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft)}
+.foot-top{display:flex;flex-direction:column;align-items:center;width:100%;color:var(--ink-soft)}
+.foot-tag{font-family:var(--mono);font-size:.54rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
 .foot-links a:active,.foot-links a:hover{color:var(--ink)}
-.foot-copy{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;color:var(--ink-soft);text-transform:uppercase}
+.foot-copy{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;color:var(--ink-soft);text-transform:uppercase}
 
 /* TABLET (bridges the gap between phones and desktop) */
 @media(min-width:541px) and (max-width:759px){
@@ -766,7 +775,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .drop-photo-inner.ph img{width:13%}
   .drop-title{font-size:clamp(3.5rem,7vw,6.5rem)}
   .foot{flex-direction:row;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;max-width:1320px;margin:0 auto}
-  .foot-top{flex-basis:100%;margin-bottom:1.4rem}
+  .foot-top{flex-basis:100%;margin-bottom:.4rem}
   .hero-logo{margin-bottom:1.9rem}
   .modal{align-items:center;padding:2rem}
   .modal-card{flex-direction:row;border-radius:24px;max-width:920px;max-height:86vh;transform:translateY(22px) scale(.97);opacity:0;transition:transform .42s var(--ease),opacity .35s ease;box-shadow:0 30px 80px rgba(0,0,0,.3)}
@@ -913,7 +922,80 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
       <span class="hb-caption"><span class="hb-top">from malibu</span><span class="hb-series">our story</span></span>
     </a>
 
-    <button class="thing head-bottle" id="bottleBtn" aria-expanded="false" aria-controls="noteDrop" aria-label="Series 3 — open the bottle" onclick="openBottle()">
+    <a class="thing" href="game.html" aria-label="Play our game">
+      <svg class="thing-art" viewBox="0 0 150 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <ellipse cx="75" cy="96" rx="38" ry="6" fill="url(#gShadow)"/>
+        <g class="pc-float" style="animation-delay:.5s"><g transform="translate(75,52) rotate(-10)">
+          <circle cx="0" cy="0" r="34" fill="#F4EDDC" stroke="#1E4744" stroke-opacity=".55" stroke-width="1.6"/>
+          <!-- gores: red / teal lenses over the paper ball -->
+          <path d="M 0,-34 C -13,-22 -13,22 0,34 C -24,30 -34,14 -34,0 C -34,-14 -24,-30 0,-34 Z" fill="#D70000" opacity=".92"/>
+          <path d="M 0,-34 C 13,-22 13,22 0,34 C 24,30 34,14 34,0 C 34,-14 24,-30 0,-34 Z" fill="#5F9D96" opacity=".9"/>
+          <path d="M 0,-34 C -13,-22 -13,22 0,34 M 0,-34 C 13,-22 13,22 0,34" fill="none" stroke="#1E4744" stroke-opacity=".45" stroke-width="1.2"/>
+          <circle cx="-11" cy="-13" r="4.5" fill="#FFFFFF" opacity=".55"/>
+        </g></g>
+      </svg>
+      <span class="hb-caption"><span class="hb-top">take a break</span><span class="hb-series">play our game</span></span>
+    </a>
+
+    <button class="thing" onclick="openGallery()" aria-haspopup="dialog" aria-controls="galleryOverlay" aria-label="Open the photo gallery">
+      <svg class="thing-art" viewBox="0 0 150 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <ellipse cx="75" cy="96" rx="42" ry="6.5" fill="url(#gShadow)"/>
+        <g class="ph-float">
+          <!-- back print -->
+          <g class="ph-back" transform="translate(84,50) rotate(9)">
+            <rect x="-34" y="-30" width="68" height="60" rx="4" fill="#FBF8F1" stroke="#C9C0AE" stroke-width="1.3"/>
+            <rect x="-27" y="-23" width="54" height="38" rx="2" fill="url(#gWater)"/>
+          </g>
+          <!-- front print: sun over the horizon -->
+          <g class="ph-front" transform="translate(66,54) rotate(-4)">
+            <rect x="-34" y="-30" width="68" height="60" rx="4" fill="#FFFFFF" stroke="#C9C0AE" stroke-width="1.3"/>
+            <g>
+              <rect x="-27" y="-23" width="54" height="38" rx="2" fill="url(#gGlass)"/>
+              <circle cx="8" cy="-8" r="7" fill="#E8B33C"/>
+              <line x1="-27" y1="2" x2="27" y2="2" stroke="#F4EDDC" stroke-width="1.6" opacity=".8"/>
+            </g>
+          </g>
+        </g>
+      </svg>
+      <span class="hb-caption"><span class="hb-top">have a look</span><span class="hb-series">gallery</span></span>
+    </button>
+
+  </div>
+</div>
+
+</section>
+
+<section class="zone zone-series" id="series">
+  <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg.jpg')"></span></div></div>
+  <header class="shop-head r">
+    <div class="shop-head-text">
+      <p class="sec-eyebrow">earlspade &mdash; collections</p>
+      <h2 class="sec-title">The Series</h2>
+    </div>
+  </header>
+
+<main id="shop"></main>
+
+<!-- ARCHIVE — closed series end up here. There is deliberately no product
+     grid below the banner: archived pieces are sold and gone, so there is
+     nothing left to show. -->
+<section class="archive">
+  <button class="archive-strip r" id="archiveBox" aria-haspopup="dialog" aria-controls="archiveOverlay" onclick="openArchive()">
+    <svg class="archive-mark-ghost" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="#fff"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#15130F"/></svg>
+    <span class="archive-strip-left">
+      <svg class="archive-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="#fff"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#15130F"/></svg>
+      <span class="archive-strip-text">
+        <h2 class="archive-strip-title">The Archive</h2>
+      </span>
+    </span>
+    <span class="drop-tag">Closed</span>
+  </button>
+</section>
+
+<!-- SERIES 3 — the bottle moored below the archive; the note unfolds
+     beneath it. Fills the quiet water at the bottom of the zone. -->
+<div class="series3-moor r">
+  <button class="thing head-bottle" id="bottleBtn" aria-expanded="false" aria-controls="noteDrop" aria-label="Series 3 — open the bottle" onclick="openBottle()">
       <svg class="hb-bottle" viewBox="0 0 190 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
           <linearGradient id="gGlass" x1="0" y1="0" x2="0" y2="1">
@@ -979,33 +1061,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
       </svg>
       <span class="hb-caption"><span class="hb-soon">coming soon</span><span class="hb-series">series 3</span></span>
     </button>
-
-    <button class="thing" onclick="openGallery()" aria-haspopup="dialog" aria-controls="galleryOverlay" aria-label="Open the photo gallery">
-      <svg class="thing-art" viewBox="0 0 150 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <ellipse cx="75" cy="96" rx="42" ry="6.5" fill="url(#gShadow)"/>
-        <g class="ph-float">
-          <!-- back print -->
-          <g class="ph-back" transform="translate(84,50) rotate(9)">
-            <rect x="-34" y="-30" width="68" height="60" rx="4" fill="#FBF8F1" stroke="#C9C0AE" stroke-width="1.3"/>
-            <rect x="-27" y="-23" width="54" height="38" rx="2" fill="url(#gWater)"/>
-          </g>
-          <!-- front print: sun over the horizon -->
-          <g class="ph-front" transform="translate(66,54) rotate(-4)">
-            <rect x="-34" y="-30" width="68" height="60" rx="4" fill="#FFFFFF" stroke="#C9C0AE" stroke-width="1.3"/>
-            <g>
-              <rect x="-27" y="-23" width="54" height="38" rx="2" fill="url(#gGlass)"/>
-              <circle cx="8" cy="-8" r="7" fill="#E8B33C"/>
-              <line x1="-27" y1="2" x2="27" y2="2" stroke="#F4EDDC" stroke-width="1.6" opacity=".8"/>
-            </g>
-          </g>
-        </g>
-      </svg>
-      <span class="hb-caption"><span class="hb-top">have a look</span><span class="hb-series">gallery</span></span>
-    </button>
-
-  </div>
 </div>
-
 <!-- the note that drops out of the bottle, beneath the row -->
 <div class="note-drop" id="noteDrop">
 
@@ -1019,34 +1075,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     </div>
   </div>
 
-</section>
-
-<section class="zone zone-series" id="series">
-  <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg.jpg')"></span></div></div>
-  <header class="shop-head r">
-    <div class="shop-head-text">
-      <p class="sec-eyebrow">earlspade &mdash; collections</p>
-      <h2 class="sec-title">The Series</h2>
-    </div>
-  </header>
-
-<main id="shop"></main>
-
-<!-- ARCHIVE — closed series end up here. There is deliberately no product
-     grid below the banner: archived pieces are sold and gone, so there is
-     nothing left to show. -->
-<section class="archive">
-  <button class="archive-strip r" id="archiveBox" aria-haspopup="dialog" aria-controls="archiveOverlay" onclick="openArchive()">
-    <svg class="archive-mark-ghost" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="#fff"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#15130F"/></svg>
-    <span class="archive-strip-left">
-      <svg class="archive-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="#fff"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#15130F"/></svg>
-      <span class="archive-strip-text">
-        <h2 class="archive-strip-title">The Archive</h2>
-      </span>
-    </span>
-    <span class="drop-tag">Closed</span>
-  </button>
-</section>
 </section>
 
 <!-- ARCHIVE OVERLAY — clicking the banner fades the whole screen to black
@@ -2193,6 +2221,50 @@ document.addEventListener('touchend', tapFeedbackOff, {passive:true});
 document.addEventListener('touchcancel', tapFeedbackOff, {passive:true});
 
 renderDrops();
+
+/* ===== TILT — the embroidered board catches the light: on phones the
+   patches shift a few px with the gyroscope; on desktop they lean
+   toward the cursor. The flower and wordmark stay perfectly still.
+   Uses the separate `translate` property so each patch keeps its CSS
+   rotation; composite-only, rAF-lerped, off under reduced motion. */
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const layers = [['faunaShark',1],['faunaManta',.72],['faunaTurtle',.85],['faunaFish',.55]]
+    .map(function(a){ const el = document.getElementById(a[0]); return el ? {el:el, d:a[1]} : null; })
+    .filter(Boolean);
+  if(!layers.length) return;
+  let tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+  function frame(){
+    cx += (tx - cx) * .08; cy += (ty - cy) * .08;
+    layers.forEach(function(l){ l.el.style.translate = (cx * l.d).toFixed(2) + 'px ' + (cy * l.d).toFixed(2) + 'px'; });
+    raf = (Math.abs(tx - cx) > .05 || Math.abs(ty - cy) > .05) ? requestAnimationFrame(frame) : null;
+  }
+  function set(x, y){ tx = x; ty = y; if(!raf) raf = requestAnimationFrame(frame); }
+  const MAX = 14;
+  function onOrient(e){
+    if(e.beta == null || e.gamma == null) return;
+    const gx = Math.max(-1, Math.min(1, e.gamma / 28));          /* side tilt */
+    const gy = Math.max(-1, Math.min(1, (e.beta - 45) / 28));    /* neutral = held at ~45deg */
+    set(gx * MAX, gy * MAX);
+  }
+  function attach(){ window.addEventListener('deviceorientation', onOrient, {passive:true}); }
+  if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+    /* iOS needs a user gesture: piggyback on the first touch */
+    document.addEventListener('touchend', function(){
+      DeviceOrientationEvent.requestPermission().then(function(s){ if(s === 'granted') attach(); }).catch(function(){});
+    }, {once:true, passive:true});
+  } else if('DeviceOrientationEvent' in window && matchMedia('(hover:none)').matches){
+    attach();
+  }
+  if(matchMedia('(hover:hover) and (pointer:fine)').matches){
+    const hero = document.getElementById('top');
+    hero.addEventListener('mousemove', function(e){
+      const r = hero.getBoundingClientRect();
+      set(((e.clientX - r.left) / r.width - .5) * 2 * MAX, ((e.clientY - r.top) / r.height - .5) * 2 * MAX);
+    }, {passive:true});
+    hero.addEventListener('mouseleave', function(){ set(0, 0); }, {passive:true});
+  }
+})();
 
 /* Warm the series images while the page is idle: the unfold used to
    fetch + decode eight product photos and the backdrop mid-animation,
