@@ -63,7 +63,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--mono);-webkit-fo
 body.noscroll{overflow:hidden}
 /* a whisper of paper grain over everything (photos included) so the whole
    page shares one physical surface; sits under the fixed chrome/modals */
-body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
+body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opacity:.045;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
 img{display:block;max-width:100%}
@@ -218,7 +218,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    shadows, perfectly still. Decorative only — hidden from hit-testing
    and screen readers. */
 .hero-fauna{position:absolute;z-index:0;pointer-events:none;background-position:center;background-size:contain;background-repeat:no-repeat;
-  filter:drop-shadow(0 1px 1px rgba(46,36,26,.28)) drop-shadow(0 5px 7px rgba(46,36,26,.18)) drop-shadow(0 12px 18px rgba(46,36,26,.13))}
+  filter:drop-shadow(0 1px 1px rgba(46,36,26,.3)) drop-shadow(0 9px 14px rgba(46,36,26,.17))}
 .hero-fauna.shark{top:clamp(4.6rem,9vh,7rem);left:4%;width:clamp(150px,24vw,330px);aspect-ratio:1000/503;transform:rotate(-7deg)}
 .hero-fauna.fish{bottom:clamp(4.2rem,11vh,8rem);right:5%;width:clamp(104px,17vw,230px);aspect-ratio:1000/583;transform:rotate(5deg)}
 .hero-meta-cursor{display:inline-block;width:.5em;height:.95em;margin-left:.15em;background:currentColor;transform:translateY(.15em);
@@ -228,14 +228,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    box-shadow) hugs the stitched silhouette — a tight contact shadow at
    the thread edge plus a soft ambient one underneath. Static, no motion. */
 .hero-logo{width:clamp(96px,25vw,158px);aspect-ratio:570/620;display:block;background-repeat:no-repeat;background-position:center;background-size:contain;margin-bottom:1.6rem;
-  filter:drop-shadow(0 1px 1px rgba(46,36,26,.30)) drop-shadow(0 5px 7px rgba(46,36,26,.20)) drop-shadow(0 14px 22px rgba(46,36,26,.16))}
+  filter:drop-shadow(0 1px 1px rgba(46,36,26,.32)) drop-shadow(0 10px 16px rgba(46,36,26,.19))}
 /* The wordmark is embroidered thread too (wordmark.webp), sized to the
    same footprint the typed logotype had and raised off the paper with
    the same silhouette-hugging shadows as the flower (a touch lighter —
    the letters are thinner than the patch). */
 .wordmark{display:block;width:clamp(180px,58vw,680px);max-width:100%}
 .wordmark-img{display:block;width:100%;aspect-ratio:1500/362;background-position:center;background-size:contain;background-repeat:no-repeat;
-  filter:drop-shadow(0 1px 1px rgba(46,36,26,.30)) drop-shadow(0 4px 6px rgba(46,36,26,.18)) drop-shadow(0 10px 16px rgba(46,36,26,.13));
+  filter:drop-shadow(0 1px 1px rgba(46,36,26,.32)) drop-shadow(0 8px 13px rgba(46,36,26,.16));
   opacity:0;transform:translateY(26px);animation:rise .7s .15s var(--ease) forwards}
 .hero-meta{font-family:var(--mono);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft);margin-top:1.4rem;opacity:0;animation:rise .8s .55s var(--ease) forwards}
 .shop-btn{margin-top:2.6rem;display:inline-flex;align-items:center;gap:.6rem;
@@ -310,7 +310,9 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .drop-photo.seen .drop-photo-inner{opacity:1}
 .drop-photo-inner.ph{background:radial-gradient(120% 90% at 50% 12%,var(--paper) 0%,var(--paper-2) 55%,#D2CCBF 100%);display:flex;align-items:center;justify-content:center}
 .drop-photo-inner.ph img{width:38%;max-width:190px;opacity:.16}
-.drop-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(18,16,14,.62) 0%,rgba(18,16,14,.12) 38%,transparent 62%)}
+.drop-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(16,14,12,.58) 0%,rgba(16,14,12,.1) 40%,transparent 64%)}
+/* hairline ring above the photo so the banner reads as a framed object */
+.drop-photo::after{content:"";position:absolute;inset:0;z-index:3;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
 .drop-photo .top{position:absolute;top:var(--pad);left:var(--pad);right:var(--pad);z-index:2;display:flex;justify-content:flex-end}
 .drop-tag{font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:.42rem .85rem;border:1.5px solid #fff;color:#fff;border-radius:999px}
 .drop-tag.live{background:rgba(20,18,15,.6);border:1.5px solid rgba(255,255,255,.28);color:#fff;display:inline-flex;align-items:center;gap:.45rem;padding:.42rem .85rem;font-size:.64rem;letter-spacing:.18em;box-shadow:0 4px 14px -6px rgba(0,0,0,.5)}
@@ -332,6 +334,8 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .drop-photo .cap{position:absolute;left:var(--pad);right:var(--pad);bottom:1.1rem;z-index:2;overflow:hidden}
 .drop-title{font-weight:800;font-size:clamp(2.4rem,11vw,5rem);line-height:.9;letter-spacing:-.04em;color:#fff;transform:translateY(112%);transition:transform .95s cubic-bezier(.19,1,.22,1)}
 .drop-photo.seen .drop-title{transform:translateY(0)}
+.drop-sub{font-family:var(--mono);font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-top:.55rem;padding-right:7.5rem;opacity:0;transition:opacity .8s ease .4s}
+.drop-photo.seen .drop-sub{opacity:1}
 .drop-photo .ph-note{position:absolute;top:1rem;left:var(--pad);z-index:2;font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
 
 /* hand-drawn wave dividers + the mantra line: the flat page's section
@@ -343,36 +347,23 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   padding:0 var(--pad);margin-bottom:2.2rem}
 .mantra-block .wave-divider{margin-bottom:0}
 
-/* ===== OUR STORY — an editorial spread on the floating sheet: headline
-   left, and a white-bordered snapshot print right — taped at the corner,
-   postmarked from Malibu, drifting gently like it's resting on water. */
+/* ===== OUR STORY — a quiet centered manifesto over one wide
+   photograph. No frames, no tape, no props: type, paper, and the sea. */
 .story-row{width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));margin:0 auto}
-.ourstory{display:flex;flex-direction:column;gap:2rem}
+.ourstory{display:flex;flex-direction:column;align-items:center;text-align:center}
 .ourstory-eyebrow{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft)}
-.ourstory-title{font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,7.5vw,3.2rem);letter-spacing:-.04em;line-height:.95;margin-top:.55rem}
-.ourstory-copy{font-size:.82rem;line-height:1.8;letter-spacing:.02em;color:var(--ink-soft);max-width:46ch;margin-top:1rem}
-.ourstory-cta{display:inline-block;margin-top:1.4rem;font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);
-  padding-bottom:.35rem;background:linear-gradient(var(--ink),var(--ink)) left bottom/38px 1.5px no-repeat;transition:background-size .4s var(--ease)}
-@media(hover:hover){.ourstory-cta:hover{background-size:100% 1.5px}}
-/* the print: white photo border, slight tilt, slow drift; hover straightens */
-.ourstory-print{position:relative;display:block;align-self:center;width:min(100%,470px);
-  background:#fff;padding:10px 10px 15px;border-radius:10px;transform:rotate(2deg);
-  box-shadow:0 14px 30px rgba(18,16,14,.18),0 3px 8px rgba(18,16,14,.08);
-  transition:transform .45s var(--ease),box-shadow .45s var(--ease);
-  animation:printFloat 7s ease-in-out infinite}
-@keyframes printFloat{0%,100%{translate:0 0}50%{translate:0 -6px}}
-@media(hover:hover){.ourstory-print:hover{transform:rotate(.4deg) scale(1.015);box-shadow:0 20px 40px rgba(18,16,14,.24)}}
-.ourstory-print:active,.ourstory-print.tap-active{transform:rotate(1deg) scale(.985);transition:transform .12s ease}
-.ourstory-photo{aspect-ratio:4/3;border-radius:6px;background-color:var(--paper-2);background-size:cover;background-position:center}
-.ourstory-tape{position:absolute;top:-11px;left:22px;width:86px;height:26px;transform:rotate(-5deg);z-index:2;
-  background:rgba(233,230,223,.62);border:1px solid rgba(22,20,18,.08);border-radius:2px;
-  box-shadow:0 1px 3px rgba(18,16,14,.08)}
-.ourstory-postmark{position:absolute;right:-14px;bottom:-16px;width:132px;height:auto;color:var(--ink);opacity:.85;transform:rotate(-7deg);pointer-events:none}
-@media(min-width:760px){
-  .ourstory{flex-direction:row;align-items:center;gap:clamp(2.5rem,6vw,4.5rem)}
-  .ourstory-text{flex:1;padding-left:clamp(0rem,2vw,1.5rem)}
-  .ourstory-print{flex:none;width:min(46%,520px)}
-}
+.ourstory-title{font-family:var(--display);font-weight:800;font-size:clamp(2.1rem,8.5vw,3.8rem);letter-spacing:-.04em;line-height:.95;margin-top:.7rem}
+.ourstory-copy{font-size:.82rem;line-height:1.85;letter-spacing:.02em;color:var(--ink-soft);max-width:52ch;margin-top:1.15rem;padding:0 .2rem}
+.ourstory-band{position:relative;width:100%;margin:clamp(2rem,5.5vw,3rem) 0 0;border-radius:16px;overflow:hidden;
+  box-shadow:0 18px 36px -22px rgba(18,16,14,.35)}
+.ourstory-band-photo{aspect-ratio:16/7;background-color:var(--paper-2);background-size:cover;background-position:center}
+.ourstory-band::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(to top,rgba(16,14,12,.32),transparent 40%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.ourstory-band-cap{position:absolute;left:1.1rem;bottom:1rem;z-index:1;font-family:var(--mono);font-size:.56rem;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;color:#fff;padding:.4rem .85rem;border:1.5px solid rgba(255,255,255,.55);
+  border-radius:999px;background:rgba(20,18,15,.3)}
+@media(max-width:480px){.ourstory-band-photo{aspect-ratio:4/3}}
 
 /* SERIES 3 — a sea-glass bottle adrift on its side beside the title.
    No chrome around it: just the rendered glass (water inside, parchment
@@ -414,7 +405,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .head-bottle.open .hb-drop{animation:hbDrop .7s ease-out forwards}
 .head-bottle.open .d2{animation-delay:.06s}
 .head-bottle.open .d3{animation-delay:.12s}
-@keyframes hbDrop{0%{opacity:.9;transform:translate(0,0)}100%{opacity:0;transform:translate(14px,-22px)}}}
+@keyframes hbDrop{0%{opacity:.9;transform:translate(0,0)}100%{opacity:0;transform:translate(14px,-22px)}}
 .head-bottle.open .bob{animation:none}
 .cork-anim{transform-box:fill-box;transform-origin:center;transition:transform .55s var(--ease),opacity .45s ease .12s}
 .head-bottle.open .cork-anim{transform:translate(-12px,-44px) rotate(-42deg);opacity:0}
@@ -474,7 +465,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 @keyframes bubbleBirth{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 /* the ring itself is drawn by hand: an imperfect open circle, a partial
    re-stroke, and a small shine arc — fully clear inside */
-.ib-ring{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(8,14,22,.45))}}
+.ib-ring{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(8,14,22,.45))}
 .info-bubble.mini .ib-core{padding:0}
 /* pop: the sphere swells and vanishes while its carrier keeps rising —
    the flight never stops */
@@ -483,12 +474,12 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .bub-drop{position:absolute;width:9px;height:9px;border-radius:50%;pointer-events:none;
   border:1.5px solid rgba(255,255,255,.9);background:transparent;
   animation:bubDrop .5s ease-out forwards;will-change:transform,opacity}
-@keyframes bubDrop{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}}
+@keyframes bubDrop{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
 
 /* ARCHIVE — banner reuses .drop-photo so it reads exactly like a series
    banner; clicking it fades the whole screen to black with the story
    centered on it (see .archive-overlay). */
-.archive{padding-top:3.5rem}
+.archive{padding-top:clamp(3.2rem,8vw,4.6rem)}
 /* Slim footnote strip — deliberately much smaller than the series
    banner so it never competes with it. Same width formula, dark ink
    gradient, title left / CLOSED pill right. Click still opens the
@@ -500,6 +491,8 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   background:radial-gradient(140% 160% at 50% 0%,#2b2723 0%,#15130f 78%);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.09),0 0 0 0 rgba(18,16,14,0);
   transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+/* stitched inner seam: the archive reads as a dark patch sewn shut */
+.archive-strip::after{content:"";position:absolute;inset:7px;border:1.5px dashed rgba(255,255,255,.17);border-radius:11px;pointer-events:none}
 .archive-strip-left{position:relative;z-index:1;display:flex;align-items:center;gap:.95rem;min-width:0}
 .archive-strip-text{display:flex;flex-direction:column;gap:.42rem;min-width:0}
 .archive-strip-title{font-family:var(--display);font-weight:800;font-size:clamp(1.25rem,5vw,1.75rem);letter-spacing:-.03em;line-height:1;color:#fff}
@@ -565,7 +558,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* The series backdrop only shows while a series is open: the zone is
    plain paper when closed, and the photo fades in when the banner is
    pressed (bg-open), fading back out on close. */
-.zone-bg-img-open{opacity:0;transition:opacity .9s ease}
+.zone-bg-img-open{opacity:0;transition:opacity .9s ease;will-change:opacity}
 .zone-series.bg-open .zone-bg-img-open{opacity:1}
 .zone>:not(.zone-bg){position:relative;z-index:1}
 /* Flat page: the story section sits directly on the paper, separated
@@ -711,7 +704,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .btn-cart:hover{background:var(--ink);color:var(--paper)}
 }
 
-}
 @media (prefers-reduced-motion: reduce){
   .btn-buy::before,.checkout-btn::before,.shop-btn::before{animation:none;opacity:0}
   .drop-tag.live::before{animation:none}
@@ -776,7 +768,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .bob,.note-cursor,.hb-bub,.hb-soon,.ib-core,.vote-btn::before{animation:none}
   .vote-btn::before{opacity:0}
   .cork-anim,.note-sheet,.note-drop,.vote-btn{transition:none}
-  .ourstory-print{animation:none}
   #infoBubbles{display:none}
 }
 
@@ -860,31 +851,15 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img" style="background-image:url('story-bg.jpg')"></span></div></div>
 <div class="wave-divider" aria-hidden="true"><svg viewBox="0 0 140 12" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M 4,7 q 8,-4 16,0 t 16,0 t 16,0 t 16,0 t 16,0 t 16,0 t 16,0 t 16,0"/></svg></div>
 <div class="story-row">
-  <!-- OUR STORY — an editorial spread on the floating sheet: headline and
-       teaser on the left, and a snapshot mailed home from Malibu on the
-       right — taped down, postmarked, gently drifting. -->
+  <!-- OUR STORY — a quiet centered manifesto over one wide photograph. -->
   <section class="ourstory r" aria-label="Our story">
-    <div class="ourstory-text">
-      <p class="ourstory-eyebrow">earlspade &mdash; malibu, california</p>
-      <h2 class="ourstory-title">made by the sea.</h2>
-      <p class="ourstory-copy">Small runs of jewelry, sketched on the sand and numbered by hand. When a series sells through, we break the molds and mail ourselves a postcard.</p>
-      <a class="ourstory-cta" href="our-story.html">read our story <span aria-hidden="true">&rarr;</span></a>
-    </div>
-    <a class="ourstory-print" href="our-story.html" aria-label="Read our story">
-      <span class="ourstory-tape" aria-hidden="true"></span>
-      <div class="ourstory-photo" id="storyBoxPhoto1"></div>
-      <svg class="ourstory-postmark" viewBox="0 0 96 68" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
-        <circle cx="36" cy="34" r="26" stroke-width="1.6" opacity=".8"/>
-        <circle cx="36" cy="34" r="21.5" stroke-width="1" opacity=".5"/>
-        <text x="36" y="32" text-anchor="middle" font-family="'Space Mono',monospace" font-size="8.5" font-weight="700" fill="currentColor" stroke="none" letter-spacing="1">MALIBU</text>
-        <text x="36" y="42.5" text-anchor="middle" font-family="'Space Mono',monospace" font-size="6" fill="currentColor" stroke="none" letter-spacing="1" opacity=".8">CALIF.</text>
-        <g stroke-width="1.4" opacity=".55">
-          <path d="M 66,22 q 7,-3.5 14,0 t 14,0"/>
-          <path d="M 66,32 q 7,-3.5 14,0 t 14,0"/>
-          <path d="M 66,42 q 7,-3.5 14,0 t 14,0"/>
-        </g>
-      </svg>
-    </a>
+    <p class="ourstory-eyebrow">earlspade &mdash; our story</p>
+    <h2 class="ourstory-title">made by the sea.</h2>
+    <p class="ourstory-copy">Small runs of jewelry, sketched on the sand in Malibu and numbered by hand. One series at a time, one season each &mdash; when the last piece sells, we break the molds and start sketching the next.</p>
+    <figure class="ourstory-band">
+      <div class="ourstory-band-photo" id="storyBoxPhoto1"></div>
+      <figcaption class="ourstory-band-cap">malibu, california</figcaption>
+    </figure>
   </section>
 </div>
 
@@ -1168,7 +1143,7 @@ function photoHTML(d,di){
     : `<div class="drop-photo-inner ph"><img src="${LOGO}" alt=""></div>`;
   const top = d.tag ? `<div class="top"><span class="drop-tag${d.live?' live':''}">${d.tag}</span></div>` : '';
   const note = d.photo ? '' : `<span class="ph-note">Campaign image</span>`;
-  return `<button class="drop-photo" onclick="toggleDrop(${di})" aria-expanded="false" aria-label="Open ${d.title}">${inner}<div class="drop-scrim"></div>${top}<div class="cap"><h2 class="drop-title">${d.title}</h2></div><span class="drop-hint" aria-hidden="true">tap to open</span>${note}</button>`;
+  return `<button class="drop-photo" onclick="toggleDrop(${di})" aria-expanded="false" aria-label="Open ${d.title}">${inner}<div class="drop-scrim"></div>${top}<div class="cap"><h2 class="drop-title">${d.title}</h2><p class="drop-sub">${d.items.length} pieces &mdash; numbered by hand</p></div><span class="drop-hint" aria-hidden="true">tap to open</span>${note}</button>`;
 }
 
 /* Mark zones whose backdrop photo actually loaded, so on-photo text
@@ -2081,7 +2056,7 @@ document.addEventListener('dragstart', e => e.preventDefault());
    ancestor). Delegate touchstart/touchend on the document so the press
    feedback works for .drop-photo and .story-box buttons, including the
    ones rendered later by renderDrops(). */
-const TAP_FEEDBACK_SELECTOR = '.drop-photo, .ourstory-print, .archive-strip';
+const TAP_FEEDBACK_SELECTOR = '.drop-photo, .archive-strip';
 function tapFeedbackOn(e){
   const el = e.target.closest(TAP_FEEDBACK_SELECTOR);
   if(el) el.classList.add('tap-active');
@@ -2095,6 +2070,23 @@ document.addEventListener('touchend', tapFeedbackOff, {passive:true});
 document.addEventListener('touchcancel', tapFeedbackOff, {passive:true});
 
 renderDrops();
+
+/* Warm the series images while the page is idle: the unfold used to
+   fetch + decode eight product photos and the backdrop mid-animation,
+   which is what made opening feel choppy. */
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    var urls = ['series-bg.jpg'];
+    DROPS.forEach(function(d){ d.items.forEach(function(it){
+      if(it.img) urls.push(it.img);
+      (it.colors||[]).forEach(function(col){ if(col.img) urls.push(col.img); });
+    });});
+    urls.forEach(function(u){
+      var im = new Image(); im.decoding = 'async'; im.src = u;
+      if(im.decode) im.decode().catch(function(){});
+    });
+  }, 1400);
+});
 
 /* Paint the hero flower as a background (it's a <span>, not an <img>, so
    Edge/Bing never shows the Visual Search hover icon on it). */
