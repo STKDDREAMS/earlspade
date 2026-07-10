@@ -441,18 +441,30 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .vote-btn:hover{background:var(--tile-ink);box-shadow:0 8px 20px -8px rgba(18,16,14,.5)}
 }
 .vote-btn:disabled{opacity:.6;cursor:default}
-/* ===== INFO BUBBLES — after the series opens, frosted glass bubbles
-   carry the selling points up the screen ===== */
+/* ===== INFO BUBBLES — Frutiger Aero glass orbs. Two carry the selling
+   points; a school of small ambient ones rises with them. Every bubble
+   is poppable: tap -> burst + droplets (and a soft blub through the
+   ocean audio when it's running). ===== */
 #infoBubbles{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
 .info-bubble{position:absolute;bottom:-180px;display:flex;align-items:center;justify-content:center;text-align:center;
-  border-radius:50%;padding:1.1rem;
-  border:1.5px solid rgba(255,255,255,.85);
-  background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.5),rgba(233,230,223,.32) 60%,rgba(233,230,223,.45));
-  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
-  box-shadow:inset -8px -10px 22px rgba(255,255,255,.25),0 8px 26px rgba(8,14,22,.14);
-  font-family:var(--mono);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);
+  border-radius:50%;padding:1rem;pointer-events:auto;cursor:pointer;touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
+  border:1px solid rgba(255,255,255,.7);
+  background:
+    radial-gradient(circle at 32% 24%,rgba(255,255,255,.95),rgba(255,255,255,.25) 20%,rgba(255,255,255,0) 42%),
+    radial-gradient(circle at 50% 108%,rgba(125,205,255,.55),rgba(125,205,255,0) 62%),
+    radial-gradient(circle at 50% 50%,rgba(190,232,255,.22),rgba(96,178,235,.3) 74%,rgba(38,124,198,.5) 100%);
+  box-shadow:inset 0 -12px 26px rgba(46,140,215,.4),inset 0 8px 16px rgba(255,255,255,.55),0 12px 34px rgba(30,110,190,.28);
+  font-family:var(--mono);font-weight:700;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:#0D4C74;text-shadow:0 1px 0 rgba(255,255,255,.6);
   animation:bubbleRise linear forwards}
-.info-bubble::before{content:"";position:absolute;top:13%;left:19%;width:15%;height:15%;border-radius:50%;background:rgba(255,255,255,.9)}
+/* the aero crescent shine */
+.info-bubble::before{content:"";position:absolute;top:6%;left:14%;width:60%;height:36%;border-radius:50%;
+  background:linear-gradient(rgba(255,255,255,.95),rgba(255,255,255,.02));pointer-events:none}
+/* small counter-glow at the base */
+.info-bubble::after{content:"";position:absolute;bottom:8%;left:32%;width:36%;height:12%;border-radius:50%;
+  background:rgba(255,255,255,.35);filter:blur(1px);pointer-events:none}
+.info-bubble.mini{padding:0}
 @keyframes bubbleRise{
   0%{transform:translate(0,0)}
   20%{transform:translate(12px,-27vh)}
@@ -460,6 +472,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   70%{transform:translate(10px,-84vh);opacity:1}
   100%{transform:translate(-4px,-118vh);opacity:0}
 }
+/* pop: quick swell + vanish, droplets fly */
+.info-bubble.popping{animation:bubblePop .22s ease-out forwards;pointer-events:none}
+@keyframes bubblePop{0%{transform:scale(1);opacity:1}60%{transform:scale(1.28);opacity:.7}100%{transform:scale(1.45);opacity:0}}
+.bub-drop{position:absolute;width:9px;height:9px;border-radius:50%;pointer-events:none;
+  border:1px solid rgba(255,255,255,.8);
+  background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.95),rgba(140,210,255,.5) 55%,rgba(46,140,215,.55));
+  animation:bubDrop .5s ease-out forwards}
+@keyframes bubDrop{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
 
 /* ARCHIVE — banner reuses .drop-photo so it reads exactly like a series
    banner; clicking it fades the whole screen to black with the story
@@ -1904,32 +1924,88 @@ renderCartBadge(false);
 document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_STORY_PHOTO}')`;
 
 /* ===== INFO BUBBLES ============================================
-   A beat after the series opens (products unfolded, photo faded in),
-   frosted bubbles rise from the bottom of the screen carrying the
-   selling points — big enough to read on the way up. Closing the
-   series cancels any bubbles still queued. */
-const BUBBLE_PHRASES=['tarnish free',"won't turn green",'water friendly','hypoallergenic','adjustable fit','one run. never again.'];
+   A beat after the series opens, two Frutiger-Aero glass orbs rise
+   carrying the selling points, escorted by a school of small ambient
+   bubbles. Every one pops on tap — burst, droplets, and a soft blub
+   through the ocean audio if it's running. Closing the series cancels
+   whatever is still queued. */
+const BUBBLE_PHRASES=['tarnish free','water friendly'];
 let bubbleRun=0;
+function popBubble(b){
+  if(b.classList.contains('popping')) return;
+  const wrap=document.getElementById('infoBubbles');
+  const r=b.getBoundingClientRect();
+  /* pin the bubble where it is (its rise animation owns transform) */
+  b.style.animation='none';
+  b.style.bottom='auto';
+  b.style.top=r.top+'px';
+  b.style.left=r.left+'px';
+  b.classList.add('popping');
+  /* droplets burst from the centre */
+  const cx=r.left+r.width/2, cy=r.top+r.height/2;
+  for(let i=0;i<6;i++){
+    const d=document.createElement('span');
+    d.className='bub-drop';
+    const a=(Math.PI*2*i)/6+Math.random()*.6;
+    const dist=r.width*.45+14+Math.random()*18;
+    d.style.left=(cx-4.5)+'px'; d.style.top=(cy-4.5)+'px';
+    d.style.setProperty('--dx',Math.round(Math.cos(a)*dist)+'px');
+    d.style.setProperty('--dy',Math.round(Math.sin(a)*dist)+'px');
+    wrap.appendChild(d);
+    d.addEventListener('animationend',()=>d.remove());
+  }
+  /* soft blub through the ocean context */
+  try{
+    if(typeof oceanCtx!=='undefined'&&oceanCtx&&oceanCtx.state==='running'){
+      const t=oceanCtx.currentTime,o=oceanCtx.createOscillator(),g=oceanCtx.createGain();
+      o.type='sine';
+      o.frequency.setValueAtTime(480,t);
+      o.frequency.exponentialRampToValueAtTime(180,t+.08);
+      g.gain.setValueAtTime(.08,t);
+      g.gain.exponentialRampToValueAtTime(.0001,t+.12);
+      o.connect(g);g.connect(oceanCtx.destination);o.start(t);o.stop(t+.13);
+    }
+  }catch(e){}
+  setTimeout(()=>b.remove(),240);
+}
+function makeBubble(opts){
+  const wrap=document.getElementById('infoBubbles');
+  const b=document.createElement('div');
+  b.className='info-bubble'+(opts.phrase?'':' mini');
+  b.style.width=b.style.height=opts.d+'px';
+  b.style.left=opts.left+'px';
+  b.style.animationDuration=opts.dur+'s';
+  if(opts.phrase) b.textContent=opts.phrase;
+  b.addEventListener('pointerdown',()=>popBubble(b),{passive:true});
+  /* swallow the synthesized click after a touch pop, so the tap never
+     falls through to whatever sits under the bubble */
+  b.addEventListener('touchend',e=>{e.preventDefault();},{passive:false});
+  b.addEventListener('animationend',()=>{ if(!b.classList.contains('popping')) b.remove(); });
+  wrap.appendChild(b);
+}
 function launchInfoBubbles(){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const run=++bubbleRun;
-  const wrap=document.getElementById('infoBubbles');
+  const spawn=(delay,make)=>setTimeout(()=>{
+    if(run!==bubbleRun) return;
+    if(!document.querySelector('.drop.open')) return;
+    if(document.hidden) return;
+    make();
+  },delay);
+  /* the two message orbs */
   BUBBLE_PHRASES.forEach((phrase,i)=>{
-    setTimeout(()=>{
-      if(run!==bubbleRun) return;
-      if(!document.querySelector('.drop.open')) return;
-      if(document.hidden) return;
-      const b=document.createElement('div');
-      b.className='info-bubble';
-      const d=Math.round(116+Math.random()*34);
-      b.style.width=b.style.height=d+'px';
-      b.style.left=Math.round(8+Math.random()*Math.max(40,window.innerWidth-d-16))+'px';
-      b.style.animationDuration=(7.5+Math.random()*3).toFixed(2)+'s';
-      b.textContent=phrase;
-      wrap.appendChild(b);
-      b.addEventListener('animationend',()=>b.remove());
-    }, 1900 + i*1150);
+    spawn(2000+i*1900,()=>{
+      const d=Math.round(126+Math.random()*22);
+      makeBubble({phrase,d,left:Math.round(14+Math.random()*Math.max(40,window.innerWidth-d-28)),dur:8.5+Math.random()*2});
+    });
   });
+  /* the ambient school */
+  for(let i=0;i<9;i++){
+    spawn(1400+Math.random()*7200,()=>{
+      const d=Math.round(16+Math.random()*30);
+      makeBubble({d,left:Math.round(6+Math.random()*(window.innerWidth-d-12)),dur:6+Math.random()*4});
+    });
+  }
 }
 function cancelInfoBubbles(){ bubbleRun++; }
 
