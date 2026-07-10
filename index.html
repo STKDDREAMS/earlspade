@@ -34,7 +34,7 @@
 <link rel="dns-prefetch" href="https://checkout.stripe.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 :root{
   --paper:#E9E6DF;
@@ -217,7 +217,19 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* Embroidered sea creatures scattered on the same fabric: pinned to the
    hero's corners behind the lockup, perfectly still. Decorative only —
    hidden from hit-testing and screen readers. */
-.hero-fauna{position:absolute;z-index:0;pointer-events:none;background-position:center;background-size:contain;background-repeat:no-repeat}
+.hero-fauna{position:absolute;z-index:0;pointer-events:auto;cursor:pointer;border:none;padding:0;
+  background-color:transparent;background-position:center;background-size:contain;background-repeat:no-repeat;
+  -webkit-tap-highlight-color:transparent}
+/* pixel fact card: square corners, hard offset shadow, pixel type */
+.fauna-card{position:absolute;z-index:6;width:min(250px,64vw);background:var(--paper);color:var(--ink);
+  padding:.85rem .9rem .95rem;border:2px solid var(--ink);box-shadow:5px 5px 0 0 rgba(22,20,18,.28);
+  font-family:'Press Start 2P',var(--mono);text-align:left;pointer-events:none;
+  opacity:0;visibility:hidden;transform:translateY(6px);
+  transition:opacity .16s steps(3,end),transform .16s steps(3,end),visibility 0s linear .16s}
+.fauna-card.show{opacity:1;visibility:visible;transform:none;pointer-events:auto;
+  transition:opacity .16s steps(3,end),transform .16s steps(3,end)}
+.fauna-card h3{font-size:.52rem;font-weight:400;letter-spacing:.04em;margin:0 0 .6rem;color:var(--ink)}
+.fauna-card p{font-size:.44rem;font-weight:400;line-height:2;letter-spacing:.03em;color:var(--ink-soft);margin:0}
 /* Scale is depth: the whale shark is the hero creature and swims in
    from the left edge; the manta glides in from the right; the turtle
    paddles across the lower-left; the little idol reads farthest away.
@@ -369,7 +381,8 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   transition:transform .3s var(--ease);-webkit-tap-highlight-color:transparent}
 @media(hover:hover){.thing:hover{transform:translateY(-4px)}}
 .thing:active{transform:scale(.96)}
-.thing-art{width:clamp(88px,17vw,138px);height:auto;display:block}
+.thing-art{width:clamp(96px,18vw,150px);height:auto;display:block;transition:transform .35s var(--ease)}
+@media(hover:hover){.thing:hover .thing-art{transform:rotate(-2deg) scale(1.05)}}
 /* postcard: slow drift, straightens a touch on the swell */
 .pc-float{transform-box:fill-box;transform-origin:center;animation:pcFloat 6s ease-in-out infinite}
 @keyframes pcFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(1.6deg)}}
@@ -384,49 +397,38 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    its breathing "coming soon") */
 .hb-top{font-size:.5rem;font-weight:700;letter-spacing:.3em;text-indent:.3em;opacity:.5}
 
-/* SERIES 3 — a sea-glass bottle adrift on its side beside the title.
-   No chrome around it: just the rendered glass (water inside, parchment
-   note tied in brand red, cork) floating on a slow swell, with a small
-   "coming soon / series 3" caption beneath. Every few seconds it gives
-   a playful little hop — the animation itself says "press me". */
-.head-bottle{position:relative;flex:none;display:flex;flex-direction:column;align-items:center;gap:.15rem;
+/* SERIES 3 — a pixel-art treasure chest moored below the archive.
+   Press it: the lid swaps open, the gold inside twinkles, and the
+   note drops with the question. Every few seconds it gives a little
+   hop — the animation itself says "press me". */
+.chest-btn{position:relative;flex:none;display:flex;flex-direction:column;align-items:center;gap:.55rem;
   padding:0 .2rem;border:none;background:transparent;cursor:pointer;color:var(--ink);
   transition:transform .3s var(--ease);-webkit-tap-highlight-color:transparent}
-@media(hover:hover){.head-bottle:hover{transform:translateY(-4px)}}
-.head-bottle:active{transform:scale(.96)}
-.hb-bottle{width:clamp(104px,21vw,172px);height:auto;display:block}
+@media(hover:hover){.chest-btn:hover{transform:translateY(-4px)}}
+.chest-btn:active{transform:scale(.96)}
+/* the chest is BIG — it owns the water below the archive */
+.chest-art{width:clamp(160px,38vw,264px);height:auto;display:block}
 @media(max-width:419px){
-  .hb-series{font-size:.56rem;letter-spacing:.16em;text-indent:.16em}
+  .hb-series{font-size:.54rem;letter-spacing:.12em;text-indent:.12em}
   .hb-top,.hb-soon{font-size:.44rem;letter-spacing:.2em;text-indent:.2em}
   .things-row{gap:.4rem}
 }
 .hb-caption{display:flex;flex-direction:column;align-items:center;gap:.28rem;font-family:var(--mono);text-transform:uppercase}
 .hb-soon{font-size:.5rem;font-weight:700;letter-spacing:.3em;text-indent:.3em;opacity:.55;animation:hbBreathe 3.2s ease-in-out infinite}
-.hb-series{font-size:.66rem;font-weight:700;letter-spacing:.22em;text-indent:.22em}
+.hb-series{font-size:.66rem;font-weight:700;letter-spacing:.2em;text-indent:.2em;white-space:nowrap}
 @keyframes hbBreathe{0%,100%{opacity:.4}50%{opacity:.8}}
-/* the float: a slow swell with a slight roll, and a periodic hop that
-   invites the tap */
-.bob{transform-box:fill-box;transform-origin:center;animation:hbFloat 5.2s ease-in-out infinite,hbNudge 5.2s ease-in-out infinite}
-@keyframes hbFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(2.2deg)}}
-@keyframes hbNudge{0%,74%,100%{translate:0 0;scale:1}80%{translate:0 -7px;scale:1.045}86%{translate:0 1px;scale:.99}92%{translate:0 -3px;scale:1.015}}
-.head-bottle.open .bob{animation:hbFloat 5.2s ease-in-out infinite}
-.cork-anim{transform-box:fill-box;transform-origin:center;transition:transform .55s var(--ease),opacity .45s ease .12s}
-.head-bottle.open .cork-anim{transform:translate(30px,-26px) rotate(38deg);opacity:0}
-.hb-note{transition:opacity .5s ease .25s}
-.head-bottle.open .hb-note{opacity:0}
-/* bubbles inside the glass */
-.hb-bub{animation:hbBub 3.8s ease-in infinite}
-.hb-bub.b2{animation-duration:4.6s;animation-delay:1.6s}
-@keyframes hbBub{0%{transform:translateY(0);opacity:0}14%{opacity:1}100%{transform:translateY(-20px);opacity:0}}
-/* splash droplets, fired once when the cork pops */
-.hb-drop{opacity:0}
-.head-bottle.open .hb-drop{animation:hbDrop .7s ease-out forwards}
-.head-bottle.open .d2{animation-delay:.06s}
-.head-bottle.open .d3{animation-delay:.12s}
-@keyframes hbDrop{0%{opacity:.9;transform:translate(0,0)}100%{opacity:0;transform:translate(14px,-22px)}}
-.head-bottle.open .bob{animation:none}
-.cork-anim{transform-box:fill-box;transform-origin:center;transition:transform .55s var(--ease),opacity .45s ease .12s}
-.head-bottle.open .cork-anim{transform:translate(-12px,-44px) rotate(-42deg);opacity:0}
+/* idle: a periodic little hop that invites the tap; stops once open */
+.chest-idle{transform-box:fill-box;transform-origin:center;animation:chestNudge 5.4s ease-in-out 1.2s infinite}
+.chest-btn.open .chest-idle{animation:none}
+@keyframes chestNudge{0%,76%,100%{transform:translateY(0)}84%{transform:translateY(-7px)}92%{transform:translateY(-1px)}}
+/* two pixel states: closed swaps for open when pressed */
+.chest-open-g{opacity:0}
+.chest-btn.open .chest-closed-g{opacity:0}
+.chest-btn.open .chest-open-g{opacity:1}
+/* treasure glints twinkle while the lid is up */
+.px-spark{opacity:0}
+.chest-btn.open .px-spark{animation:pxSpark 1.5s steps(2,end) infinite}
+@keyframes pxSpark{0%,100%{opacity:0}50%{opacity:1}}
 /* the note unfolds in-flow beneath the head (same grid-rows trick as
    the product grids) */
 .note-drop{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s var(--ease)}
@@ -604,7 +606,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* the bottle's mooring below the archive */
 .series3-moor{display:flex;justify-content:center;padding-top:clamp(3rem,8vw,4.6rem)}
 /* caption stays legible when the open-series photo is behind it */
-.zone-series.has-bg.bg-open .head-bottle{color:var(--paper)}
+.zone-series.has-bg.bg-open .chest-btn{color:var(--paper)}
 /* Labels flip to paper only while the photo is actually showing:
    has-bg (set by JS when the photo really loads) AND bg-open (a series
    is open). Closed state stays ink-on-paper. The color transitions ride
@@ -799,9 +801,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .archive-overlay,.archive-copy{transition:none;transform:none!important}
   .drop-items,.zone-bg-img-open{transition:none}
   .drop-hint{animation:none;opacity:.85}
-  .bob,.note-cursor,.hb-bub,.hb-soon,.ib-core,.vote-btn::before,.pc-float,.ph-float{animation:none}
+  .note-cursor,.hb-soon,.ib-core,.vote-btn::before,.pc-float,.ph-float,.chest-idle,.px-spark{animation:none}
   .vote-btn::before{opacity:0}
-  .cork-anim,.note-sheet,.note-drop,.vote-btn{transition:none}
+  .note-sheet,.note-drop,.vote-btn{transition:none}
+  .chest-open-g,.chest-closed-g{transition:none}
   #infoBubbles{display:none}
 }
 
@@ -869,10 +872,11 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 </button>
 
 <header class="hero" id="top">
-  <span class="hero-fauna shark no-vs" id="faunaShark" aria-hidden="true"></span>
-  <span class="hero-fauna manta no-vs" id="faunaManta" aria-hidden="true"></span>
-  <span class="hero-fauna turtle no-vs" id="faunaTurtle" aria-hidden="true"></span>
-  <span class="hero-fauna fish no-vs" id="faunaFish" aria-hidden="true"></span>
+  <span class="hero-fauna shark no-vs" id="faunaShark" role="button" tabindex="0" aria-label="About the whale shark"></span>
+  <span class="hero-fauna manta no-vs" id="faunaManta" role="button" tabindex="0" aria-label="About the spotted eagle ray"></span>
+  <span class="hero-fauna turtle no-vs" id="faunaTurtle" role="button" tabindex="0" aria-label="About the green sea turtle"></span>
+  <span class="hero-fauna fish no-vs" id="faunaFish" role="button" tabindex="0" aria-label="About the moorish idol"></span>
+  <div class="fauna-card" id="faunaCard" role="dialog" aria-hidden="true"><h3 id="fcName"></h3><p id="fcDesc"></p></div>
   <span class="hero-logo no-vs" id="heroLogo" role="img" aria-label="earlspade flower"></span>
   <h1 class="wordmark" aria-label="earlspade"><span class="wordmark-img no-vs" id="wordmarkImg" aria-hidden="true"></span></h1>
   <p class="hero-meta" aria-label="Malibu, California"><span id="heroMetaTyped" aria-hidden="true"></span><span class="hero-meta-cursor" id="heroMetaCursor" aria-hidden="true"></span></p>
@@ -888,6 +892,32 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 <div class="story-row">
   <!-- THREE THINGS — postcard (our story), bottle (series 3), photo
        stack (gallery): each a hand-drawn object with a caption. -->
+  <!-- shared paint servers for the hand-drawn objects (were defined in
+       the old bottle SVG) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+          <linearGradient id="gGlass" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#A6D2CB" stop-opacity=".92"/>
+            <stop offset=".55" stop-color="#5F9D96" stop-opacity=".9"/>
+            <stop offset="1" stop-color="#35706B" stop-opacity=".95"/>
+          </linearGradient>
+          <linearGradient id="gWater" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2E6B66" stop-opacity=".9"/>
+            <stop offset="1" stop-color="#1C4A47" stop-opacity=".95"/>
+          </linearGradient>
+          <linearGradient id="gCork" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#D2A876"/>
+            <stop offset="1" stop-color="#A87F4C"/>
+          </linearGradient>
+          <linearGradient id="gNote" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#F4EDDC"/>
+            <stop offset="1" stop-color="#DECFAC"/>
+          </linearGradient>
+          <radialGradient id="gShadow" cx=".5" cy=".5" r=".5">
+            <stop offset="0" stop-color="#12100E" stop-opacity=".2"/>
+            <stop offset="1" stop-color="#12100E" stop-opacity="0"/>
+          </radialGradient>
+          <clipPath id="hbClip"><path d="M -58,-20 C -65,-20 -67,-11 -67,0 C -67,11 -65,20 -58,20 L 20,20 C 29,20 33,14 38,10.5 C 42,8 47,7.5 50,7.5 L 50,-7.5 C 47,-7.5 42,-8 38,-10.5 C 33,-14 29,-20 20,-20 Z"/></clipPath>
+        </defs></svg>
   <div class="things-row r">
 
     <a class="thing" href="our-story.html" aria-label="Our story">
@@ -995,81 +1025,19 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 <!-- SERIES 3 — the bottle moored below the archive; the note unfolds
      beneath it. Fills the quiet water at the bottom of the zone. -->
 <div class="series3-moor r">
-  <button class="thing head-bottle" id="bottleBtn" aria-expanded="false" aria-controls="noteDrop" aria-label="Series 3 — open the bottle" onclick="openBottle()">
-      <svg class="hb-bottle" viewBox="0 0 190 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="gGlass" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#A6D2CB" stop-opacity=".92"/>
-            <stop offset=".55" stop-color="#5F9D96" stop-opacity=".9"/>
-            <stop offset="1" stop-color="#35706B" stop-opacity=".95"/>
-          </linearGradient>
-          <linearGradient id="gWater" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#2E6B66" stop-opacity=".9"/>
-            <stop offset="1" stop-color="#1C4A47" stop-opacity=".95"/>
-          </linearGradient>
-          <linearGradient id="gCork" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#D2A876"/>
-            <stop offset="1" stop-color="#A87F4C"/>
-          </linearGradient>
-          <linearGradient id="gNote" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#F4EDDC"/>
-            <stop offset="1" stop-color="#DECFAC"/>
-          </linearGradient>
-          <radialGradient id="gShadow" cx=".5" cy=".5" r=".5">
-            <stop offset="0" stop-color="#12100E" stop-opacity=".2"/>
-            <stop offset="1" stop-color="#12100E" stop-opacity="0"/>
-          </radialGradient>
-          <clipPath id="hbClip"><path d="M -58,-20 C -65,-20 -67,-11 -67,0 C -67,11 -65,20 -58,20 L 20,20 C 29,20 33,14 38,10.5 C 42,8 47,7.5 50,7.5 L 50,-7.5 C 47,-7.5 42,-8 38,-10.5 C 33,-14 29,-20 20,-20 Z"/></clipPath>
-        </defs>
-        <ellipse cx="92" cy="82" rx="52" ry="7" fill="url(#gShadow)"/>
-        <g transform="translate(92,46)"><g class="bob"><g transform="rotate(-6)">
-          <!-- glass body, lying down -->
-          <path fill="url(#gGlass)" stroke="#1E4744" stroke-opacity=".55" stroke-width="1.6" stroke-linejoin="round"
-            d="M -58,-20 C -65,-20 -67,-11 -67,0 C -67,11 -65,20 -58,20 L 20,20 C 29,20 33,14 38,10.5 C 42,8 47,7.5 50,7.5 L 50,-7.5 C 47,-7.5 42,-8 38,-10.5 C 33,-14 29,-20 20,-20 Z"/>
-          <!-- water along the bottom + note + inner bubbles, clipped -->
-          <g clip-path="url(#hbClip)">
-            <path fill="url(#gWater)" d="M -70,3 C -52,0 -34,6 -14,3 C 4,.5 22,6 42,3 L 54,4.5 L 54,26 L -70,26 Z"/>
-            <path d="M -70,3 C -52,0 -34,6 -14,3 C 4,.5 22,6 42,3 L 54,4.5" fill="none" stroke="#CFE8E2" stroke-opacity=".5" stroke-width="1.2"/>
-            <g class="hb-bub"><circle cx="26" cy="12" r="1.5" fill="#DCEFEA" opacity=".65"/></g>
-            <g class="hb-bub b2"><circle cx="-38" cy="14" r="1.1" fill="#DCEFEA" opacity=".55"/></g>
-          </g>
-          <!-- parchment note, adrift inside; leaves the bottle on open -->
-          <g class="hb-note" transform="translate(-16,1) rotate(-8)">
-            <rect x="-13" y="-8" width="26" height="16" rx="6.5" fill="url(#gNote)" stroke="#B5A277" stroke-width="1" stroke-opacity=".8"/>
-            <path d="M -10,-4.5 C -12.4,-2.5 -11.9,1.5 -9.6,2.4" fill="none" stroke="#B5A277" stroke-width="1" opacity=".85"/>
-            <line x1="1" y1="-8" x2="1" y2="8" stroke="#D70000" stroke-width="1.6" opacity=".9"/>
-            <path d="M 1,0 L 4.4,-2.2 M 1,0 L 4.2,2.4" stroke="#D70000" stroke-width="1.2" opacity=".9" fill="none"/>
-          </g>
-          <!-- top specular streak + inner base shade -->
-          <path d="M -52,-13.5 C -28,-16.5 0,-16.5 22,-13" fill="none" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" opacity=".5"/>
-          <path d="M -50,15 C -26,17.5 2,17.5 24,14.5" fill="none" stroke="#16403D" stroke-width="3" stroke-linecap="round" opacity=".28"/>
-          <!-- lip -->
-          <rect x="50" y="-9.4" width="7.2" height="18.8" rx="3" fill="url(#gGlass)" stroke="#1E4744" stroke-opacity=".55" stroke-width="1.4"/>
-          <!-- cork -->
-          <g class="cork-anim">
-            <rect x="57.4" y="-7.2" width="13" height="14.4" rx="2.8" fill="url(#gCork)" stroke="#7E5B33" stroke-width="1.1"/>
-            <path d="M 59.6,-4.4 L 68,-4.9 M 59.8,2.8 L 68,2.4" stroke="#7E5B33" stroke-width=".9" opacity=".5"/>
-            <ellipse cx="70.2" cy="0" rx="1.8" ry="6.4" fill="#DEBB8C" stroke="#7E5B33" stroke-width=".9"/>
-          </g>
-        </g></g></g>
-        <!-- splash droplets, fired once on open -->
-        <g class="hb-splash" aria-hidden="true">
-          <circle class="hb-drop d1" cx="164" cy="34" r="2.2" fill="#5F9D96"/>
-          <circle class="hb-drop d2" cx="172" cy="42" r="1.6" fill="#7FB5AE"/>
-          <circle class="hb-drop d3" cx="158" cy="28" r="1.4" fill="#A6D2CB"/>
-        </g>
-      </svg>
-      <span class="hb-caption"><span class="hb-soon">coming soon</span><span class="hb-series">series 3</span></span>
-    </button>
+  <button class="thing chest-btn" id="chestBtn" aria-expanded="false" aria-controls="noteDrop" aria-label="Series 3 — open the chest" onclick="openChest()">
+    <svg class="chest-art" viewBox="0 0 132 106" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true"><ellipse cx="66" cy="99" rx="46" ry="6" fill="url(#gShadow)"/><g class="chest-idle"><g class="chest-closed-g"><rect x="30" y="12" width="72" height="6" fill="#2A1D10"/><rect x="18" y="18" width="12" height="6" fill="#2A1D10"/><rect x="30" y="18" width="72" height="6" fill="#B07C46"/><rect x="102" y="18" width="12" height="6" fill="#2A1D10"/><rect x="12" y="24" width="6" height="6" fill="#2A1D10"/><rect x="18" y="24" width="12" height="6" fill="#B07C46"/><rect x="30" y="24" width="30" height="6" fill="#8B5A2B"/><rect x="60" y="24" width="12" height="6" fill="#E8B33C"/><rect x="72" y="24" width="36" height="6" fill="#8B5A2B"/><rect x="108" y="24" width="6" height="6" fill="#B07C46"/><rect x="114" y="24" width="6" height="6" fill="#2A1D10"/><rect x="12" y="30" width="6" height="6" fill="#2A1D10"/><rect x="18" y="30" width="6" height="6" fill="#B07C46"/><rect x="24" y="30" width="36" height="6" fill="#8B5A2B"/><rect x="60" y="30" width="12" height="6" fill="#E8B33C"/><rect x="72" y="30" width="36" height="6" fill="#8B5A2B"/><rect x="108" y="30" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="30" width="6" height="6" fill="#2A1D10"/><rect x="12" y="36" width="6" height="6" fill="#2A1D10"/><rect x="18" y="36" width="42" height="6" fill="#8B5A2B"/><rect x="60" y="36" width="12" height="6" fill="#E8B33C"/><rect x="72" y="36" width="36" height="6" fill="#8B5A2B"/><rect x="108" y="36" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="36" width="6" height="6" fill="#2A1D10"/><rect x="12" y="42" width="108" height="6" fill="#2A1D10"/><rect x="12" y="48" width="6" height="6" fill="#2A1D10"/><rect x="18" y="48" width="6" height="6" fill="#B07C46"/><rect x="24" y="48" width="36" height="6" fill="#8B5A2B"/><rect x="60" y="48" width="12" height="6" fill="#E8B33C"/><rect x="72" y="48" width="36" height="6" fill="#8B5A2B"/><rect x="108" y="48" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="48" width="6" height="6" fill="#2A1D10"/><rect x="12" y="54" width="6" height="6" fill="#2A1D10"/><rect x="18" y="54" width="6" height="6" fill="#B07C46"/><rect x="24" y="54" width="30" height="6" fill="#8B5A2B"/><rect x="54" y="54" width="24" height="6" fill="#E8B33C"/><rect x="78" y="54" width="30" height="6" fill="#8B5A2B"/><rect x="108" y="54" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="54" width="6" height="6" fill="#2A1D10"/><rect x="12" y="60" width="6" height="6" fill="#2A1D10"/><rect x="18" y="60" width="6" height="6" fill="#B07C46"/><rect x="24" y="60" width="30" height="6" fill="#8B5A2B"/><rect x="54" y="60" width="6" height="6" fill="#E8B33C"/><rect x="60" y="60" width="12" height="6" fill="#241A10"/><rect x="72" y="60" width="6" height="6" fill="#E8B33C"/><rect x="78" y="60" width="30" height="6" fill="#8B5A2B"/><rect x="108" y="60" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="60" width="6" height="6" fill="#2A1D10"/><rect x="12" y="66" width="6" height="6" fill="#2A1D10"/><rect x="18" y="66" width="42" height="6" fill="#8B5A2B"/><rect x="60" y="66" width="12" height="6" fill="#E8B33C"/><rect x="72" y="66" width="36" height="6" fill="#8B5A2B"/><rect x="108" y="66" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="66" width="6" height="6" fill="#2A1D10"/><rect x="12" y="72" width="6" height="6" fill="#2A1D10"/><rect x="18" y="72" width="90" height="6" fill="#8B5A2B"/><rect x="108" y="72" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="72" width="6" height="6" fill="#2A1D10"/><rect x="12" y="78" width="6" height="6" fill="#2A1D10"/><rect x="18" y="78" width="96" height="6" fill="#5C3A1E"/><rect x="114" y="78" width="6" height="6" fill="#2A1D10"/><rect x="18" y="84" width="96" height="6" fill="#2A1D10"/></g><g class="chest-open-g"><rect x="18" y="6" width="96" height="6" fill="#2A1D10"/><rect x="12" y="12" width="6" height="6" fill="#2A1D10"/><rect x="18" y="12" width="96" height="6" fill="#5C3A1E"/><rect x="114" y="12" width="6" height="6" fill="#2A1D10"/><rect x="12" y="18" width="6" height="6" fill="#2A1D10"/><rect x="18" y="18" width="96" height="6" fill="#8B5A2B"/><rect x="114" y="18" width="6" height="6" fill="#2A1D10"/><rect x="12" y="24" width="108" height="6" fill="#2A1D10"/><rect x="12" y="30" width="6" height="6" fill="#2A1D10"/><rect x="18" y="30" width="12" height="6" fill="#241A10"/><rect x="30" y="30" width="6" height="6" fill="#E8B33C"/><rect class="px-spark" style="animation-delay:0.00s" x="36" y="30" width="6" height="6" fill="#FFF3D6"/><rect x="42" y="30" width="6" height="6" fill="#241A10"/><rect x="48" y="30" width="18" height="6" fill="#E8B33C"/><rect x="66" y="30" width="6" height="6" fill="#241A10"/><rect class="px-spark" style="animation-delay:0.45s" x="72" y="30" width="6" height="6" fill="#FFF3D6"/><rect x="78" y="30" width="12" height="6" fill="#E8B33C"/><rect x="90" y="30" width="6" height="6" fill="#241A10"/><rect x="96" y="30" width="6" height="6" fill="#E8B33C"/><rect class="px-spark" style="animation-delay:0.90s" x="102" y="30" width="6" height="6" fill="#FFF3D6"/><rect x="108" y="30" width="6" height="6" fill="#241A10"/><rect x="114" y="30" width="6" height="6" fill="#2A1D10"/><rect x="12" y="36" width="6" height="6" fill="#2A1D10"/><rect x="18" y="36" width="6" height="6" fill="#241A10"/><rect x="24" y="36" width="84" height="6" fill="#E8B33C"/><rect x="108" y="36" width="6" height="6" fill="#241A10"/><rect x="114" y="36" width="6" height="6" fill="#2A1D10"/><rect x="12" y="42" width="108" height="6" fill="#2A1D10"/><rect x="12" y="48" width="6" height="6" fill="#2A1D10"/><rect x="18" y="48" width="6" height="6" fill="#B07C46"/><rect x="24" y="48" width="36" height="6" fill="#8B5A2B"/><rect x="60" y="48" width="12" height="6" fill="#E8B33C"/><rect x="72" y="48" width="36" height="6" fill="#8B5A2B"/><rect x="108" y="48" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="48" width="6" height="6" fill="#2A1D10"/><rect x="12" y="54" width="6" height="6" fill="#2A1D10"/><rect x="18" y="54" width="6" height="6" fill="#B07C46"/><rect x="24" y="54" width="30" height="6" fill="#8B5A2B"/><rect x="54" y="54" width="24" height="6" fill="#E8B33C"/><rect x="78" y="54" width="30" height="6" fill="#8B5A2B"/><rect x="108" y="54" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="54" width="6" height="6" fill="#2A1D10"/><rect x="12" y="60" width="6" height="6" fill="#2A1D10"/><rect x="18" y="60" width="6" height="6" fill="#B07C46"/><rect x="24" y="60" width="30" height="6" fill="#8B5A2B"/><rect x="54" y="60" width="6" height="6" fill="#E8B33C"/><rect x="60" y="60" width="12" height="6" fill="#241A10"/><rect x="72" y="60" width="6" height="6" fill="#E8B33C"/><rect x="78" y="60" width="30" height="6" fill="#8B5A2B"/><rect x="108" y="60" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="60" width="6" height="6" fill="#2A1D10"/><rect x="12" y="66" width="6" height="6" fill="#2A1D10"/><rect x="18" y="66" width="42" height="6" fill="#8B5A2B"/><rect x="60" y="66" width="12" height="6" fill="#E8B33C"/><rect x="72" y="66" width="36" height="6" fill="#8B5A2B"/><rect x="108" y="66" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="66" width="6" height="6" fill="#2A1D10"/><rect x="12" y="72" width="6" height="6" fill="#2A1D10"/><rect x="18" y="72" width="90" height="6" fill="#8B5A2B"/><rect x="108" y="72" width="6" height="6" fill="#5C3A1E"/><rect x="114" y="72" width="6" height="6" fill="#2A1D10"/><rect x="12" y="78" width="6" height="6" fill="#2A1D10"/><rect x="18" y="78" width="96" height="6" fill="#5C3A1E"/><rect x="114" y="78" width="6" height="6" fill="#2A1D10"/><rect x="18" y="84" width="96" height="6" fill="#2A1D10"/></g></g></svg>
+    <span class="hb-caption"><span class="hb-soon">coming soon</span><span class="hb-series">series 3</span></span>
+  </button>
 </div>
 <!-- the note that drops out of the bottle, beneath the row -->
 <div class="note-drop" id="noteDrop">
 
     <div class="note-drop-clip">
       <div class="note-sheet">
-        <p class="note-eyebrow">series 3 &mdash; found at sea</p>
+        <p class="note-eyebrow">series 3 &mdash; sunken treasure</p>
         <div class="note-q" aria-hidden="true"><span id="noteTyped"></span><span class="note-cursor" id="noteCursor"></span></div>
-        <span class="sr">sky. sea. what's next?</span>
+        <span class="sr">what's next? sky, sea&hellip;</span>
         <button class="vote-btn" id="voteBtn"><span>Vote</span></button>
       </div>
     </div>
@@ -1458,7 +1426,7 @@ function closeModal(){
 }
 
 document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){ closeModal(); closeCart(); closeArchive(); closeGallery(); }
+  if(e.key==='Escape'){ closeModal(); closeCart(); closeArchive(); closeGallery(); hideFaunaCard(); }
   if(document.getElementById('galleryOverlay').classList.contains('open')){
     if(e.key==='ArrowLeft') galStep(-1);
     if(e.key==='ArrowRight') galStep(1);
@@ -2096,7 +2064,7 @@ function cancelInfoBubbles(){ bubbleRun++; }
    Tap the sketched bottle: the cork pops (a soft thunk through the
    ocean audio if it's running), the drawing recedes, and the note
    unrolls with the hint typing itself out before the vote rises. */
-let bottleOpened=false;
+let chestOpened=false;
 /* ===== GALLERY ===================================================
    A small lightbox over the page: arrows, keyboard, swipe. Images are
    the photos already in the repo. */
@@ -2136,15 +2104,15 @@ function closeGallery(){
   }, {passive:true});
 })();
 
-function openBottle(){
-  if(bottleOpened) return;
-  bottleOpened=true;
-  const btn=document.getElementById('bottleBtn');
+function openChest(){
+  if(chestOpened) return;
+  chestOpened=true;
+  const btn=document.getElementById('chestBtn');
   btn.classList.add('open');
   btn.setAttribute('aria-expanded','true');
   document.getElementById('noteDrop').classList.add('open');
 
-  /* soft cork thunk through the existing ocean context, if running */
+  /* soft wooden thunk through the existing ocean context, if running */
   try{
     if(typeof oceanCtx!=='undefined'&&oceanCtx&&oceanCtx.state==='running'){
       const t=oceanCtx.currentTime,o=oceanCtx.createOscillator(),g=oceanCtx.createGain();
@@ -2162,7 +2130,7 @@ function openBottle(){
   const typed=document.getElementById('noteTyped');
   const cursor=document.getElementById('noteCursor');
   const voteBtn=document.getElementById('voteBtn');
-  const LINE='sky. sea. ';
+  const LINE="what's next? sky, sea...";
   function startType(){
     if(reduce){
       typed.textContent=LINE;
@@ -2176,7 +2144,7 @@ function openBottle(){
       if(i<=LINE.length){
         typed.textContent=LINE.slice(0,i);
         i++;
-        setTimeout(type,i===5?260:70);  /* breath after "sky." */
+        setTimeout(type,i===12?300:70);  /* breath after "what's next?" */
       }else{
         setTimeout(()=>voteBtn.classList.add('in'),300);
       }
@@ -2222,49 +2190,62 @@ document.addEventListener('touchcancel', tapFeedbackOff, {passive:true});
 
 renderDrops();
 
-/* ===== TILT — the embroidered board catches the light: on phones the
-   patches shift a few px with the gyroscope; on desktop they lean
-   toward the cursor. The flower and wordmark stay perfectly still.
-   Uses the separate `translate` property so each patch keeps its CSS
-   rotation; composite-only, rAF-lerped, off under reduced motion. */
-(function(){
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const layers = [['faunaShark',1],['faunaManta',.72],['faunaTurtle',.85],['faunaFish',.55]]
-    .map(function(a){ const el = document.getElementById(a[0]); return el ? {el:el, d:a[1]} : null; })
-    .filter(Boolean);
-  if(!layers.length) return;
-  let tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
-  function frame(){
-    cx += (tx - cx) * .08; cy += (ty - cy) * .08;
-    layers.forEach(function(l){ l.el.style.translate = (cx * l.d).toFixed(2) + 'px ' + (cy * l.d).toFixed(2) + 'px'; });
-    raf = (Math.abs(tx - cx) > .05 || Math.abs(ty - cy) > .05) ? requestAnimationFrame(frame) : null;
-  }
-  function set(x, y){ tx = x; ty = y; if(!raf) raf = requestAnimationFrame(frame); }
-  const MAX = 14;
-  function onOrient(e){
-    if(e.beta == null || e.gamma == null) return;
-    const gx = Math.max(-1, Math.min(1, e.gamma / 28));          /* side tilt */
-    const gy = Math.max(-1, Math.min(1, (e.beta - 45) / 28));    /* neutral = held at ~45deg */
-    set(gx * MAX, gy * MAX);
-  }
-  function attach(){ window.addEventListener('deviceorientation', onOrient, {passive:true}); }
-  if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
-    /* iOS needs a user gesture: piggyback on the first touch */
-    document.addEventListener('touchend', function(){
-      DeviceOrientationEvent.requestPermission().then(function(s){ if(s === 'granted') attach(); }).catch(function(){});
-    }, {once:true, passive:true});
-  } else if('DeviceOrientationEvent' in window && matchMedia('(hover:none)').matches){
-    attach();
-  }
-  if(matchMedia('(hover:hover) and (pointer:fine)').matches){
-    const hero = document.getElementById('top');
-    hero.addEventListener('mousemove', function(e){
-      const r = hero.getBoundingClientRect();
-      set(((e.clientX - r.left) / r.width - .5) * 2 * MAX, ((e.clientY - r.top) / r.height - .5) * 2 * MAX);
-    }, {passive:true});
-    hero.addEventListener('mouseleave', function(){ set(0, 0); }, {passive:true});
-  }
-})();
+/* ===== FAUNA FACTS — tap a creature, a pixel dialog surfaces beside
+   it with its name and a line about where it lives. One at a time;
+   tap elsewhere (or Escape) closes. */
+const FAUNA_INFO = {
+  faunaShark:{name:'whale shark', desc:'the biggest fish in the sea — school-bus big — and it eats almost nothing but plankton. cruises warm coasts from baja to the philippines. every spot pattern is one of a kind.'},
+  faunaManta:{name:'spotted eagle ray', desc:'glides tropical reefs on wings up to ten feet across, and sometimes leaps clear out of the water. digs up buried shellfish with its shovel of a nose.'},
+  faunaTurtle:{name:'green sea turtle', desc:'lives in every warm ocean and swims home to nest on the exact beach where it hatched. can rest underwater for hours on a single breath.'},
+  faunaFish:{name:'moorish idol', desc:'a coral-reef local across the indo-pacific and hawaii. picky eater, mates for life — and yes, gill from finding nemo is one.'}
+};
+let faunaOpenId = null;
+function hideFaunaCard(){
+  const card = document.getElementById('faunaCard');
+  if(!card) return;
+  card.classList.remove('show'); card.setAttribute('aria-hidden','true');
+  faunaOpenId = null;
+}
+function showFaunaCard(id){
+  const el = document.getElementById(id), card = document.getElementById('faunaCard');
+  if(!el || !card) return;
+  if(faunaOpenId === id){ hideFaunaCard(); return; }
+  faunaOpenId = id;
+  document.getElementById('fcName').textContent = FAUNA_INFO[id].name;
+  document.getElementById('fcDesc').textContent = FAUNA_INFO[id].desc;
+  card.classList.add('show'); card.setAttribute('aria-hidden','false');
+  /* anchor beside the creature, clamped inside the hero */
+  const hero = document.getElementById('top').getBoundingClientRect();
+  const r = el.getBoundingClientRect();
+  const cw = card.offsetWidth, ch = card.offsetHeight;
+  let x = r.left - hero.left + r.width/2 - cw/2;
+  x = Math.max(10, Math.min(x, hero.width - cw - 10));
+  let y = r.bottom - hero.top + 12;
+  if(y + ch > hero.height - 10) y = r.top - hero.top - ch - 12;
+  y = Math.max(10, y);
+  card.style.left = Math.round(x) + 'px';
+  card.style.top = Math.round(y) + 'px';
+  /* a soft blip if the ocean is running */
+  try{
+    if(typeof oceanCtx !== 'undefined' && oceanCtx && oceanCtx.state === 'running'){
+      const t = oceanCtx.currentTime, o = oceanCtx.createOscillator(), g = oceanCtx.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(520, t); o.frequency.exponentialRampToValueAtTime(880, t + .07);
+      g.gain.setValueAtTime(.06, t); g.gain.exponentialRampToValueAtTime(.0001, t + .12);
+      o.connect(g); g.connect(oceanCtx.destination); o.start(t); o.stop(t + .13);
+    }
+  }catch(e){}
+}
+Object.keys(FAUNA_INFO).forEach(function(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('click', function(e){ e.stopPropagation(); showFaunaCard(id); });
+  el.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); showFaunaCard(id); }
+  });
+});
+document.addEventListener('click', function(e){
+  if(faunaOpenId && !e.target.closest('.hero-fauna')) hideFaunaCard();
+});
 
 /* Warm the series images while the page is idle: the unfold used to
    fetch + decode eight product photos and the backdrop mid-animation,
