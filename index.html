@@ -335,20 +335,29 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* ===== OUR STORY — a quiet centered manifesto over one wide
    photograph. No frames, no tape, no props: type, paper, and the sea. */
 .story-row{width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));margin:0 auto}
-.ourstory{display:flex;flex-direction:column;align-items:center;text-align:center}
-.ourstory-eyebrow{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft)}
-.ourstory-title{font-family:var(--display);font-weight:800;font-size:clamp(2.1rem,8.5vw,3.8rem);letter-spacing:-.04em;line-height:.95;margin-top:.7rem}
-.ourstory-copy{font-size:.82rem;line-height:1.85;letter-spacing:.02em;color:var(--ink-soft);max-width:52ch;margin-top:1.15rem;padding:0 .2rem}
-.ourstory-band{position:relative;width:100%;margin:clamp(2rem,5.5vw,3rem) 0 0;border-radius:16px;overflow:hidden;
-  box-shadow:0 18px 36px -22px rgba(18,16,14,.35)}
-.ourstory-band-photo{aspect-ratio:16/7;background-color:var(--paper-2);background-size:cover;background-position:center}
-.ourstory-band::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:linear-gradient(to top,rgba(16,14,12,.32),transparent 40%);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
-.ourstory-band-cap{position:absolute;left:1.1rem;bottom:1rem;z-index:1;font-family:var(--mono);font-size:.56rem;font-weight:700;
-  letter-spacing:.2em;text-transform:uppercase;color:#fff;padding:.4rem .85rem;border:1.5px solid rgba(255,255,255,.55);
-  border-radius:999px;background:rgba(20,18,15,.3)}
-@media(max-width:480px){.ourstory-band-photo{aspect-ratio:4/3}}
+/* ===== THREE THINGS — a row of hand-drawn objects in the bottle's
+   illustrated language: postcard -> our story page, bottle -> the
+   series 3 note, photo stack -> the gallery lightbox. */
+.things-row{display:grid;grid-template-columns:repeat(3,1fr);align-items:end;justify-items:center;gap:clamp(.5rem,3vw,2.5rem)}
+.thing{display:flex;flex-direction:column;align-items:center;gap:.15rem;border:none;background:transparent;padding:0 .2rem;
+  cursor:pointer;color:var(--ink);text-decoration:none;font-family:inherit;
+  transition:transform .3s var(--ease);-webkit-tap-highlight-color:transparent}
+@media(hover:hover){.thing:hover{transform:translateY(-4px)}}
+.thing:active{transform:scale(.96)}
+.thing-art{width:clamp(88px,17vw,138px);height:auto;display:block}
+/* postcard: slow drift, straightens a touch on the swell */
+.pc-float{transform-box:fill-box;transform-origin:center;animation:pcFloat 6s ease-in-out infinite}
+@keyframes pcFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(1.6deg)}}
+/* photo stack: same drift offset in time; prints fan apart on hover */
+.ph-float{transform-box:fill-box;transform-origin:center;animation:pcFloat 6.8s ease-in-out .9s infinite}
+.ph-back,.ph-front{transform-box:fill-box;transform-origin:62% 82%;transition:transform .45s var(--ease)}
+@media(hover:hover){
+  .thing:hover .ph-back{transform:rotate(7deg)}
+  .thing:hover .ph-front{transform:rotate(-5deg)}
+}
+/* faint static top line for the non-bottle captions (the bottle keeps
+   its breathing "coming soon") */
+.hb-top{font-size:.5rem;font-weight:700;letter-spacing:.3em;text-indent:.3em;opacity:.5}
 
 /* SERIES 3 — a sea-glass bottle adrift on its side beside the title.
    No chrome around it: just the rendered glass (water inside, parchment
@@ -356,16 +365,15 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    "coming soon / series 3" caption beneath. Every few seconds it gives
    a playful little hop — the animation itself says "press me". */
 .head-bottle{position:relative;flex:none;display:flex;flex-direction:column;align-items:center;gap:.15rem;
-  margin-bottom:-.3rem;padding:0 .2rem;border:none;background:transparent;cursor:pointer;color:var(--ink);
-  transition:color .5s ease,transform .3s var(--ease)}
-.zone-series.has-bg.bg-open .head-bottle{color:var(--paper)}
+  padding:0 .2rem;border:none;background:transparent;cursor:pointer;color:var(--ink);
+  transition:transform .3s var(--ease);-webkit-tap-highlight-color:transparent}
 @media(hover:hover){.head-bottle:hover{transform:translateY(-4px)}}
 .head-bottle:active{transform:scale(.96)}
-.hb-bottle{width:clamp(128px,22vw,172px);height:auto;display:block}
+.hb-bottle{width:clamp(104px,21vw,172px);height:auto;display:block}
 @media(max-width:419px){
-  .shop-head{gap:.7rem}
-  .hb-bottle{width:112px}
-  .hb-series{font-size:.6rem}
+  .hb-series{font-size:.56rem;letter-spacing:.16em;text-indent:.16em}
+  .hb-top,.hb-soon{font-size:.44rem;letter-spacing:.2em;text-indent:.2em}
+  .things-row{gap:.4rem}
 }
 .hb-caption{display:flex;flex-direction:column;align-items:center;gap:.28rem;font-family:var(--mono);text-transform:uppercase}
 .hb-soon{font-size:.5rem;font-weight:700;letter-spacing:.3em;text-indent:.3em;opacity:.55;animation:hbBreathe 3.2s ease-in-out infinite}
@@ -509,6 +517,23 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   display:flex;align-items:center;justify-content:center;transition:transform .2s ease,background .2s ease}
 .archive-close:hover{transform:rotate(90deg);background:rgba(233,230,223,.22)}
 
+/* ===== GALLERY — full-screen lightbox over the page (same fade
+   conventions as the archive overlay). */
+.gallery-overlay{position:fixed;inset:0;z-index:220;display:flex;flex-direction:column;align-items:center;gap:1rem;
+  background:rgba(11,10,8,.95);
+  padding:calc(2.6rem + env(safe-area-inset-top)) 1rem calc(1.6rem + env(safe-area-inset-bottom));
+  opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s}
+.gallery-overlay.open{opacity:1;visibility:visible;transition:opacity .45s ease}
+.gal-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;width:100%;cursor:pointer}
+.gal-img{max-width:min(92vw,1080px);max-height:100%;object-fit:contain;border-radius:10px;box-shadow:0 24px 60px rgba(0,0,0,.5);cursor:default}
+.gal-nav{display:flex;align-items:center;gap:1.2rem}
+.gal-arrow{width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(233,230,223,.4);background:transparent;color:var(--paper);
+  font-size:1.05rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .2s ease,transform .2s ease;-webkit-tap-highlight-color:transparent}
+.gal-arrow:active{transform:scale(.94)}
+@media(hover:hover){.gal-arrow:hover{background:rgba(233,230,223,.14)}}
+.gal-count{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.22em;color:rgba(233,230,223,.6);min-width:4.2em;text-align:center}
+
 /* ===== ZONES — user-placeable section backdrops =================
    story-bg.jpg backs the Our Story row (always, if the file exists).
    series-bg.jpg backs the series section ONLY while a series is open
@@ -547,7 +572,11 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    footer border while open. Bottom padding doubles as scroll runway so
    the Enter landing can reach its target before max-scroll clamps. */
 .zone-series{position:relative;z-index:1;
-  padding-top:clamp(3.4rem,9vw,5.2rem);padding-bottom:8rem}
+  /* the bottom padding doubles as scroll runway: the Enter landing and
+     IG's chrome-collapse clamp both need max-scroll to reach past the
+     series head even on the tallest phones (the three-things row is
+     ~250px shorter than the old story spread). */
+  padding-top:clamp(3.4rem,9vw,5.2rem);padding-bottom:18rem}
 /* Labels flip to paper only while the photo is actually showing:
    has-bg (set by JS when the photo really loads) AND bg-open (a series
    is open). Closed state stays ink-on-paper. The color transitions ride
@@ -742,7 +771,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .archive-overlay,.archive-copy{transition:none;transform:none!important}
   .drop-items,.zone-bg-img-open{transition:none}
   .drop-hint{animation:none;opacity:.85}
-  .bob,.note-cursor,.hb-bub,.hb-soon,.ib-core,.vote-btn::before{animation:none}
+  .bob,.note-cursor,.hb-bub,.hb-soon,.ib-core,.vote-btn::before,.pc-float,.ph-float{animation:none}
   .vote-btn::before{opacity:0}
   .cork-anim,.note-sheet,.note-drop,.vote-btn{transition:none}
   #infoBubbles{display:none}
@@ -827,30 +856,43 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 <section class="zone zone-story">
 <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img" style="background-image:url('story-bg.jpg')"></span></div></div>
 <div class="story-row">
-  <!-- OUR STORY — a quiet centered manifesto over one wide photograph. -->
-  <section class="ourstory r" aria-label="Our story">
-    <p class="ourstory-eyebrow">earlspade &mdash; our story</p>
-    <h2 class="ourstory-title">made by the sea.</h2>
-    <p class="ourstory-copy">Small runs of jewelry, sketched on the sand in Malibu and numbered by hand. One series at a time, one season each &mdash; when the last piece sells, we break the molds and start sketching the next.</p>
-    <figure class="ourstory-band">
-      <div class="ourstory-band-photo" id="storyBoxPhoto1"></div>
-      <figcaption class="ourstory-band-cap">malibu, california</figcaption>
-    </figure>
-  </section>
-</div>
+  <!-- THREE THINGS — postcard (our story), bottle (series 3), photo
+       stack (gallery): each a hand-drawn object with a caption. -->
+  <div class="things-row r">
 
-</section>
+    <a class="thing" href="our-story.html" aria-label="Our story">
+      <svg class="thing-art" viewBox="0 0 150 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <ellipse cx="75" cy="96" rx="46" ry="6.5" fill="url(#gShadow)"/>
+        <g class="pc-float"><g transform="translate(75,52) rotate(-4)">
+          <rect x="-52" y="-34" width="104" height="68" rx="6" fill="url(#gNote)" stroke="#B5A277" stroke-width="1.4"/>
+          <line x1="2" y1="-26" x2="2" y2="26" stroke="#B5A277" stroke-width="1.1" opacity=".7"/>
+          <!-- address lines (straight, drawn) -->
+          <g stroke="#8E7F5C" stroke-width="1.4" stroke-linecap="round" opacity=".65">
+            <line x1="12" y1="2" x2="42" y2="2"/>
+            <line x1="12" y1="11" x2="38" y2="11"/>
+            <line x1="12" y1="20" x2="42" y2="20"/>
+          </g>
+          <!-- message scribble marks on the left -->
+          <g stroke="#8E7F5C" stroke-width="1.3" stroke-linecap="round" opacity=".5">
+            <line x1="-42" y1="-6" x2="-10" y2="-6"/>
+            <line x1="-42" y1="2" x2="-16" y2="2"/>
+            <line x1="-42" y1="10" x2="-12" y2="10"/>
+            <line x1="-42" y1="18" x2="-24" y2="18"/>
+          </g>
+          <!-- stamp: paper square with the red flower -->
+          <g transform="translate(30,-19)">
+            <rect x="-13" y="-11" width="26" height="22" rx="2" fill="#F4EDDC" stroke="#B5A277" stroke-width="1.2" stroke-dasharray="2.6 2.2"/>
+            <g fill="#D70000"><circle cx="0" cy="-4.4" r="2.6"/><circle cx="3.8" cy="-2.2" r="2.6"/><circle cx="3.8" cy="2.2" r="2.6"/><circle cx="0" cy="4.4" r="2.6"/><circle cx="-3.8" cy="2.2" r="2.6"/><circle cx="-3.8" cy="-2.2" r="2.6"/></g>
+            <circle cx="0" cy="0" r="2.2" fill="#E8B33C"/>
+          </g>
+          <!-- postmark ring over the stamp corner -->
+          <circle cx="14" cy="-24" r="8.5" fill="none" stroke="#8E7F5C" stroke-width="1.2" opacity=".55"/>
+        </g></g>
+      </svg>
+      <span class="hb-caption"><span class="hb-top">from malibu</span><span class="hb-series">our story</span></span>
+    </a>
 
-<section class="zone zone-series" id="series">
-  <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg.jpg')"></span></div></div>
-  <header class="shop-head r">
-    <div class="shop-head-text">
-      <p class="sec-eyebrow">earlspade &mdash; collections</p>
-      <h2 class="sec-title">The Series</h2>
-    </div>
-    <!-- SERIES 3 — the message in a bottle, moored beside the title.
-         Tap: the cork pops and the note drops open beneath the head. -->
-    <button class="head-bottle" id="bottleBtn" aria-expanded="false" aria-controls="noteDrop" aria-label="Series 3 — open the bottle" onclick="openBottle()">
+    <button class="thing head-bottle" id="bottleBtn" aria-expanded="false" aria-controls="noteDrop" aria-label="Series 3 — open the bottle" onclick="openBottle()">
       <svg class="hb-bottle" viewBox="0 0 190 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
           <linearGradient id="gGlass" x1="0" y1="0" x2="0" y2="1">
@@ -916,10 +958,36 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
       </svg>
       <span class="hb-caption"><span class="hb-soon">coming soon</span><span class="hb-series">series 3</span></span>
     </button>
-  </header>
 
-  <!-- the note that drops out of the bottle, beneath the head -->
-  <div class="note-drop" id="noteDrop">
+    <button class="thing" onclick="openGallery()" aria-haspopup="dialog" aria-controls="galleryOverlay" aria-label="Open the photo gallery">
+      <svg class="thing-art" viewBox="0 0 150 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <ellipse cx="75" cy="96" rx="42" ry="6.5" fill="url(#gShadow)"/>
+        <g class="ph-float">
+          <!-- back print -->
+          <g class="ph-back" transform="translate(84,50) rotate(9)">
+            <rect x="-34" y="-30" width="68" height="60" rx="4" fill="#FBF8F1" stroke="#C9C0AE" stroke-width="1.3"/>
+            <rect x="-27" y="-23" width="54" height="38" rx="2" fill="url(#gWater)"/>
+          </g>
+          <!-- front print: sun over the horizon -->
+          <g class="ph-front" transform="translate(66,54) rotate(-4)">
+            <rect x="-34" y="-30" width="68" height="60" rx="4" fill="#FFFFFF" stroke="#C9C0AE" stroke-width="1.3"/>
+            <g>
+              <rect x="-27" y="-23" width="54" height="38" rx="2" fill="url(#gGlass)"/>
+              <circle cx="8" cy="-8" r="7" fill="#E8B33C"/>
+              <line x1="-27" y1="2" x2="27" y2="2" stroke="#F4EDDC" stroke-width="1.6" opacity=".8"/>
+            </g>
+          </g>
+        </g>
+      </svg>
+      <span class="hb-caption"><span class="hb-top">have a look</span><span class="hb-series">gallery</span></span>
+    </button>
+
+  </div>
+</div>
+
+<!-- the note that drops out of the bottle, beneath the row -->
+<div class="note-drop" id="noteDrop">
+
     <div class="note-drop-clip">
       <div class="note-sheet">
         <p class="note-eyebrow">series 3 &mdash; found at sea</p>
@@ -929,6 +997,17 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
       </div>
     </div>
   </div>
+
+</section>
+
+<section class="zone zone-series" id="series">
+  <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg.jpg')"></span></div></div>
+  <header class="shop-head r">
+    <div class="shop-head-text">
+      <p class="sec-eyebrow">earlspade &mdash; collections</p>
+      <h2 class="sec-title">The Series</h2>
+    </div>
+  </header>
 
 <main id="shop"></main>
 
@@ -958,6 +1037,19 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     <p>The Celestial Series was the first thing we ever made &mdash; a small, numbered run of pieces cast from star charts we sketched over one summer in Malibu. Every piece was stamped with its number, and the night the last one sold, we broke the molds.</p>
     <p>That&rsquo;s when we decided the archive would be a rule, not an accident. Every earlspade series is a single pressing: one run, one season, and when it closes it moves here and never comes back. No reissues, no restocks, no &ldquo;back by popular demand.&rdquo;</p>
     <p>You won&rsquo;t find photos in here, and that&rsquo;s on purpose. The jewelry is already sold and gone &mdash; the only place a Celestial piece exists now is with the person wearing it. If you missed it, you missed it. That&rsquo;s what makes the ones you catch worth keeping.</p>
+  </div>
+</div>
+
+<!-- GALLERY OVERLAY — lightbox for the photo gallery button -->
+<div class="gallery-overlay" id="galleryOverlay" role="dialog" aria-modal="true" aria-label="Photo gallery" aria-hidden="true">
+  <button class="archive-close" aria-label="Close gallery" onclick="closeGallery()">&times;</button>
+  <div class="gal-stage" id="galStage">
+    <img class="gal-img no-vs" id="galImg" alt="earlspade photo"/>
+  </div>
+  <div class="gal-nav">
+    <button class="gal-arrow" aria-label="Previous photo" onclick="galStep(-1)">&larr;</button>
+    <span class="gal-count" id="galCount">1 / 1</span>
+    <button class="gal-arrow" aria-label="Next photo" onclick="galStep(1)">&rarr;</button>
   </div>
 </div>
 
@@ -1025,7 +1117,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
 <script>
 const LOGO = "logo.png";
-const OUR_STORY_PHOTO = "our-story.jpg";
 
 /* Product marks for the cart/checkout thumbnails. Inline SVG (not <img>)
    so iOS never does double-tap-to-zoom on them. STARFISH is traced from the
@@ -1316,7 +1407,11 @@ function closeModal(){
 }
 
 document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){ closeModal(); closeCart(); closeArchive(); }
+  if(e.key==='Escape'){ closeModal(); closeCart(); closeArchive(); closeGallery(); }
+  if(document.getElementById('galleryOverlay').classList.contains('open')){
+    if(e.key==='ArrowLeft') galStep(-1);
+    if(e.key==='ArrowRight') galStep(1);
+  }
 });
 
 /* Swipe the product sheet down to close (drag starts on the photo or the
@@ -1831,7 +1926,6 @@ window.addEventListener('pageshow', (event) => {
 loadCart();
 renderCartBadge(false);
 
-document.getElementById('storyBoxPhoto1').style.backgroundImage = `url('${OUR_STORY_PHOTO}')`;
 
 /* ===== INFO BUBBLES ============================================
    A beat after the series opens, two Frutiger-Aero glass orbs rise
@@ -1952,6 +2046,45 @@ function cancelInfoBubbles(){ bubbleRun++; }
    ocean audio if it's running), the drawing recedes, and the note
    unrolls with the hint typing itself out before the vote rises. */
 let bottleOpened=false;
+/* ===== GALLERY ===================================================
+   A small lightbox over the page: arrows, keyboard, swipe. Images are
+   the photos already in the repo. */
+const GALLERY = ['our-story.jpg','sea-series.jpg','series-bg.jpg','STAR2.jpg','Hedc8638ac9c34db5b21dcb08d44fe562z.jpg','TAN.jpg'];
+let galI = 0;
+function galShow(i){
+  galI = (i + GALLERY.length) % GALLERY.length;
+  document.getElementById('galImg').src = GALLERY[galI];
+  document.getElementById('galCount').textContent = (galI+1) + ' / ' + GALLERY.length;
+  const pre = new Image(); pre.src = GALLERY[(galI+1) % GALLERY.length];
+}
+function galStep(d){ galShow(galI + d); }
+function openGallery(){
+  const o = document.getElementById('galleryOverlay');
+  o.classList.add('open'); o.setAttribute('aria-hidden','false');
+  document.body.classList.add('noscroll');
+  galShow(galI);
+  o.querySelector('.archive-close').focus();
+}
+function closeGallery(){
+  const o = document.getElementById('galleryOverlay');
+  if(!o.classList.contains('open')) return;
+  o.classList.remove('open'); o.setAttribute('aria-hidden','true');
+  document.body.classList.remove('noscroll');
+}
+/* backdrop (not the photo or arrows) closes; horizontal swipe steps */
+(function(){
+  const stage = document.getElementById('galStage');
+  stage.addEventListener('click', e => { if(e.target === stage) closeGallery(); });
+  let tx = null, ty = null;
+  stage.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
+  stage.addEventListener('touchend', e => {
+    if(tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    tx = ty = null;
+    if(Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy)*1.4) galStep(dx < 0 ? 1 : -1);
+  }, {passive:true});
+})();
+
 function openBottle(){
   if(bottleOpened) return;
   bottleOpened=true;
@@ -2043,7 +2176,7 @@ renderDrops();
    which is what made opening feel choppy. */
 window.addEventListener('load', function(){
   setTimeout(function(){
-    var urls = ['series-bg.jpg'];
+    var urls = ['series-bg.jpg'].concat(GALLERY);
     DROPS.forEach(function(d){ d.items.forEach(function(it){
       if(it.img) urls.push(it.img);
       (it.colors||[]).forEach(function(col){ if(col.img) urls.push(col.img); });
