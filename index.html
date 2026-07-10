@@ -23,6 +23,7 @@
 <title>earlspade</title>
 <link rel="icon" href="logo.png"/>
 <link rel="preload" as="image" href="hero-flower.webp">
+<link rel="preload" as="image" href="wordmark.webp">
 <link rel="prefetch" href="series-bg.jpg">
 <link rel="prefetch" href="our-story.jpg">
 <link rel="preconnect" href="https://checkout.stripe.com" crossorigin>
@@ -218,8 +219,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    the thread edge plus a soft ambient one underneath. Static, no motion. */
 .hero-logo{width:clamp(96px,25vw,158px);aspect-ratio:570/620;display:block;background-repeat:no-repeat;background-position:center;background-size:contain;margin-bottom:1.6rem;
   filter:drop-shadow(0 1px 1px rgba(46,36,26,.30)) drop-shadow(0 5px 7px rgba(46,36,26,.20)) drop-shadow(0 14px 22px rgba(46,36,26,.16))}
-.wordmark{font-weight:900;font-size:clamp(2.2rem,13.5vw,10rem);line-height:.85;letter-spacing:-.055em;display:flex;flex-wrap:nowrap;max-width:100%}
-.wordmark span{display:inline-block;opacity:0;transform:translateY(40px);animation:rise .7s var(--ease) forwards}
+/* The wordmark is embroidered thread too (wordmark.webp), sized to the
+   same footprint the typed logotype had and raised off the paper with
+   the same silhouette-hugging shadows as the flower (a touch lighter —
+   the letters are thinner than the patch). */
+.wordmark{display:block;width:clamp(180px,58vw,680px);max-width:100%}
+.wordmark-img{display:block;width:100%;aspect-ratio:1500/362;background-position:center;background-size:contain;background-repeat:no-repeat;
+  filter:drop-shadow(0 1px 1px rgba(46,36,26,.30)) drop-shadow(0 4px 6px rgba(46,36,26,.18)) drop-shadow(0 10px 16px rgba(46,36,26,.13));
+  opacity:0;transform:translateY(26px);animation:rise .7s .15s var(--ease) forwards}
 .hero-meta{font-family:var(--mono);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft);margin-top:1.4rem;opacity:0;animation:rise .8s .55s var(--ease) forwards}
 .shop-btn{margin-top:2.6rem;display:inline-flex;align-items:center;gap:.6rem;
   background:transparent;color:var(--ink);
@@ -266,7 +273,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 @media (max-height:560px) {
   .hero{padding:2.4rem 1.2rem;min-height:100vh;min-height:var(--vh100,100lvh)}
   .hero-logo{width:clamp(56px,11vw,84px);margin-bottom:.7rem}
-  .wordmark{font-size:clamp(1.8rem,7vw,3.5rem)}
+  .wordmark{width:min(30vw,220px)}
   .hero-meta{margin-top:.6rem}
   .shop-btn{margin-top:1.2rem;padding:.78rem 1.7rem;min-height:44px}
   .divecue{display:none}
@@ -743,7 +750,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
-  .hero-logo,.wordmark span,.hero-meta,.shop-btn,.divecue{opacity:1!important;transform:none!important;translate:none!important}
+  .hero-logo,.wordmark-img,.hero-meta,.shop-btn,.divecue{opacity:1!important;transform:none!important;translate:none!important}
   .divecue i,.hero-meta-cursor{animation:none}
   .modal-img::after{transition:none}
   .shop-btn .arr{transform:none!important}
@@ -826,7 +833,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
 <header class="hero" id="top">
   <span class="hero-logo no-vs" id="heroLogo" role="img" aria-label="earlspade flower"></span>
-  <h1 class="wordmark" id="wordmark" aria-label="earlspade"></h1>
+  <h1 class="wordmark" aria-label="earlspade"><span class="wordmark-img no-vs" id="wordmarkImg" aria-hidden="true"></span></h1>
   <p class="hero-meta" aria-label="Malibu, California"><span id="heroMetaTyped" aria-hidden="true"></span><span class="hero-meta-cursor" id="heroMetaCursor" aria-hidden="true"></span></p>
   <button class="shop-btn" onclick="onShop()"><span class="t">enter</span><span class="arr" aria-hidden="true">&rarr;</span></button>
   <div class="divecue" id="divecue" aria-hidden="true"><span>dive</span><i></i></div>
@@ -1135,8 +1142,9 @@ function priceToNumber(str){
   return isNaN(n) ? 0 : n;
 }
 
-document.getElementById('wordmark').innerHTML =
-  'earlspade'.split('').map((ch,i)=>`<span style="animation-delay:${.12+i*.045}s">${ch}</span>`).join('');
+/* Paint the embroidered wordmark as a background (a <span>, not an <img>,
+   for the same Visual-Search-proofing as the flower). */
+(function(){ var wm=document.getElementById('wordmarkImg'); if(wm) wm.style.backgroundImage='url("wordmark.webp")'; })();
 
 function photoHTML(d,di){
   const inner = d.photo
