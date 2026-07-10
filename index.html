@@ -23,6 +23,8 @@
 <title>earlspade</title>
 <link rel="icon" href="logo.png"/>
 <link rel="preload" as="image" href="hero.jpg">
+<link rel="prefetch" href="series-bg.jpg">
+<link rel="prefetch" href="our-story.jpg">
 <link rel="preconnect" href="https://checkout.stripe.com" crossorigin>
 <link rel="dns-prefetch" href="https://checkout.stripe.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -184,8 +186,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .cart-line .linetotal{font-family:var(--mono);font-size:.82rem;font-weight:800}
 
 .cart-foot{border-top:1.5px solid var(--ink);padding:1.2rem var(--pad) calc(1.3rem + env(safe-area-inset-bottom));background:var(--paper)}
-.ship-note{font-family:var(--mono);font-size:.66rem;color:var(--ink-soft);text-align:center;margin-bottom:.9rem;letter-spacing:.03em;
-  padding:.55rem .8rem;background:var(--paper-2);border-radius:999px}
 .cart-subtotal{display:flex;align-items:baseline;gap:.6rem;margin-bottom:1rem}
 .cart-subtotal .label{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
 .cart-subtotal .amt{font-size:1.35rem;font-weight:900;letter-spacing:-.02em}
@@ -196,9 +196,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .checkout-btn:active{transform:scale(.97)}
 @media(hover:hover){.checkout-btn:hover{background:var(--tile-ink);box-shadow:0 8px 20px -8px rgba(18,16,14,.5)}}
 .checkout-btn:disabled{opacity:.6;cursor:default}
-.cart-trust{display:flex;align-items:center;justify-content:center;gap:.4rem;margin-top:.85rem;
-  font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;color:var(--ink-soft);text-transform:uppercase}
-.cart-trust svg{width:11px;height:11px;flex-shrink:0}
 .cart-legal{margin-top:.7rem;text-align:center;font-family:var(--mono);font-size:.56rem;line-height:1.5;letter-spacing:.02em;color:var(--ink-soft)}
 .cart-legal a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
 
@@ -206,17 +203,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .cart-drawer{width:100vw}
 }
 
-/* SHORT VIEWPORTS — compact the hero so it doesn't overflow or force
-   scroll on first load, on landscape phones, short/split-screen windows,
-   or any other unusual aspect ratio. */
-@media (max-height:560px) {
-  .hero{padding:2.4rem 1.2rem;min-height:100vh;min-height:100lvh}
-  .hero-logo{width:clamp(48px,10vw,72px);margin-bottom:.6rem;animation:pop .9s .05s var(--ease) forwards}
-  .wordmark{font-size:clamp(1.8rem,7vw,3.5rem)}
-  .hero-meta{margin-top:.6rem}
-  .shop-btn{margin-top:1.2rem;padding:.78rem 1.7rem;min-height:44px}
-  .divecue{display:none}
-}
 
 /* HERO — full-screen photo; fills the whole screen on load (iOS-safe),
    content centered over it. */
@@ -282,6 +268,19 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   transition:opacity .5s ease}
 .divecue i{width:1.5px;height:26px;background:rgba(255,255,255,.85);transform-origin:top;animation:cue 1.8s ease-in-out infinite}
 .divecue.off{opacity:0}
+
+/* SHORT VIEWPORTS (landscape phones, split screens): compact the hero so
+   nothing overflows — placed after the base hero rules so it actually
+   applies. */
+@media (max-height:560px) {
+  .hero{padding:2.4rem 1.2rem;min-height:100vh;min-height:var(--vh100,100lvh)}
+  .hero-logo{width:clamp(48px,10vw,72px);margin-bottom:.6rem;animation:pop .9s .05s var(--ease) forwards}
+  .wordmark{font-size:clamp(1.8rem,7vw,3.5rem)}
+  .hero-meta{margin-top:.6rem}
+  .shop-btn{margin-top:1.2rem;padding:.78rem 1.7rem;min-height:44px}
+  .divecue{display:none}
+}
+
 @keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
 @keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
 @keyframes rise{to{opacity:1;transform:translateY(0)}}
@@ -379,6 +378,11 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 @media(hover:hover){.head-bottle:hover{transform:translateY(-4px)}}
 .head-bottle:active{transform:scale(.96)}
 .hb-bottle{width:clamp(128px,22vw,172px);height:auto;display:block}
+@media(max-width:419px){
+  .shop-head{gap:.7rem}
+  .hb-bottle{width:112px}
+  .hb-series{font-size:.6rem}
+}
 .hb-caption{display:flex;flex-direction:column;align-items:center;gap:.28rem;font-family:var(--mono);text-transform:uppercase}
 .hb-soon{font-size:.5rem;font-weight:700;letter-spacing:.3em;text-indent:.3em;opacity:.55;animation:hbBreathe 3.2s ease-in-out infinite}
 .hb-series{font-size:.66rem;font-weight:700;letter-spacing:.22em;text-indent:.22em}
@@ -454,32 +458,22 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 @keyframes bubbleRiseY{0%{transform:translateY(0);opacity:1}82%{opacity:1}100%{transform:translateY(-118vh);opacity:0}}
 .ib-sway{width:100%;height:100%;animation:bubbleSway 3.4s ease-in-out infinite alternate;will-change:transform}
 @keyframes bubbleSway{from{transform:translateX(-10px)}to{transform:translateX(10px)}}
-.ib-core{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;padding:.65rem;
-  border:1px solid rgba(255,255,255,.5);
-  background:
-    radial-gradient(circle at 32% 24%,rgba(255,255,255,.8),rgba(255,255,255,.16) 20%,rgba(255,255,255,0) 42%),
-    radial-gradient(circle at 50% 108%,rgba(125,205,255,.38),rgba(125,205,255,0) 62%),
-    radial-gradient(circle at 50% 50%,rgba(190,232,255,.12),rgba(96,178,235,.18) 74%,rgba(38,124,198,.34) 100%);
-  box-shadow:inset 0 -10px 20px rgba(46,140,215,.24),inset 0 6px 12px rgba(255,255,255,.34),0 8px 22px rgba(30,110,190,.14);
+.ib-core{position:relative;width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;padding:.65rem;
   font-family:var(--mono);font-weight:700;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;
-  color:#0D4C74;text-shadow:0 1px 0 rgba(255,255,255,.55);
+  color:#fff;text-shadow:0 1px 2px rgba(8,14,22,.55),0 1px 10px rgba(8,14,22,.4);
   will-change:transform,opacity;
   animation:bubbleBirth .9s var(--ease) both}
 @keyframes bubbleBirth{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
-/* the aero crescent shine */
-.ib-core::before{content:"";position:absolute;top:6%;left:14%;width:60%;height:36%;border-radius:50%;
-  background:linear-gradient(rgba(255,255,255,.8),rgba(255,255,255,.02));pointer-events:none}
-/* small counter-glow at the base */
-.ib-core::after{content:"";position:absolute;bottom:8%;left:32%;width:36%;height:12%;border-radius:50%;
-  background:rgba(255,255,255,.28);filter:blur(1px);pointer-events:none}
+/* the ring itself is drawn by hand: an imperfect open circle, a partial
+   re-stroke, and a small shine arc — fully clear inside */
+.ib-ring{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(8,14,22,.45))}}
 .info-bubble.mini .ib-core{padding:0}
 /* pop: the sphere swells and vanishes while its carrier keeps rising —
    the flight never stops */
 .ib-core.popping{animation:bubblePop .2s ease-out forwards!important}
 @keyframes bubblePop{0%{transform:scale(1);opacity:1}55%{transform:scale(1.22);opacity:.65}100%{transform:scale(1.38);opacity:0}}
 .bub-drop{position:absolute;width:9px;height:9px;border-radius:50%;pointer-events:none;
-  border:1px solid rgba(255,255,255,.7);
-  background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.85),rgba(140,210,255,.4) 55%,rgba(46,140,215,.42));
+  border:1.5px solid rgba(255,255,255,.9);background:transparent;
   animation:bubDrop .5s ease-out forwards;will-change:transform,opacity}
 @keyframes bubDrop{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}}
 
@@ -1059,15 +1053,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   </div>
   <div class="cart-body" id="cartBody"></div>
   <div class="cart-foot" id="cartFoot" style="display:none">
-    <div class="ship-note" id="shipNote"></div>
     <div class="cart-subtotal"><span class="label">Subtotal</span><i class="leader" aria-hidden="true"></i><span class="amt" id="cartSubtotal">$0</span></div>
     <button class="checkout-btn" id="checkoutBtn" onclick="goToCheckout()"><span>Checkout</span></button>
     <p class="cart-mantra">one run only &middot; once it&rsquo;s gone, it&rsquo;s gone forever</p>
     <p class="cart-legal">By placing your order you agree to our <a href="legal/terms.html">Terms</a>, <a href="legal/privacy.html">Privacy Policy</a> &amp; <a href="legal/shipping.html">Shipping &amp; Returns</a>.</p>
-    <div class="cart-trust">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
-      <span>Secure checkout</span>
-    </div>
   </div>
 </aside>
 
@@ -1739,11 +1728,6 @@ function renderCartBody(){
   document.getElementById('cartCount').textContent = `(${count} ${count===1?'item':'items'})`;
   const subtotal = cartSubtotal();
   document.getElementById('cartSubtotal').textContent = `$${subtotal.toFixed(2).replace(/\.00$/,'')}`;
-  const FREE_SHIP_THRESHOLD = 150;
-  const remaining = FREE_SHIP_THRESHOLD - subtotal;
-  document.getElementById('shipNote').textContent = remaining > 0
-    ? `Add $${remaining.toFixed(2).replace(/\.00$/,'')} more for free shipping`
-    : `You\u2019ve unlocked free shipping`;
 }
 
 function openCart(){
@@ -1968,7 +1952,16 @@ function makeBubble(opts){
   sway.style.animationDelay=(-Math.random()*3).toFixed(2)+'s';
   const core=document.createElement('div');
   core.className='ib-core';
-  if(opts.phrase) core.textContent=opts.phrase;
+  core.innerHTML='<svg class="ib-ring" viewBox="0 0 100 100" fill="none" stroke="rgba(255,255,255,.9)" stroke-linecap="round" aria-hidden="true">'
+    +'<path stroke-width="1.7" d="M 50,5.5 A 45,46 0 1 1 47.5,5.6"/>'
+    +'<path stroke-width="1.1" opacity=".45" d="M 12.5,64 A 44,45 0 0 1 9.5,44"/>'
+    +'<path stroke-width="2" opacity=".85" d="M 25,21.5 A 33,33 0 0 1 44.5,11.5"/>'
+    +'</svg>';
+  if(opts.phrase){
+    const t=document.createElement('span');
+    t.textContent=opts.phrase;
+    core.appendChild(t);
+  }
   sway.appendChild(core);
   b.appendChild(sway);
   b.addEventListener('pointerdown',()=>popBubble(b),{passive:true});
@@ -1981,6 +1974,8 @@ function makeBubble(opts){
 function launchInfoBubbles(){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const run=++bubbleRun;
+  const zone=document.getElementById('series');
+  if(!zone||!zone.classList.contains('has-bg')) return; /* white ink needs the photo behind it */
   const spawn=(delay,make)=>setTimeout(()=>{
     if(run!==bubbleRun) return;
     if(!document.querySelector('.drop.open')) return;
