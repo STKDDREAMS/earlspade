@@ -367,44 +367,42 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .ourstory-print{flex:none;width:min(46%,520px)}
 }
 
-/* SERIES 3 — the message in a bottle as a frosted porthole medallion:
-   a slowly rotating engraved mono ring around a rendered sea-glass
-   bottle — gradient glass, specular highlights, water with rising
-   bubbles, a parchment note tied in the brand red. The ring text uses
-   currentColor so it flips to paper while the series photo shows; the
-   frosted disc keeps the bottle legible on any background. */
-.head-bottle{position:relative;flex:none;width:clamp(104px,17vw,132px);aspect-ratio:1;margin-bottom:-.4rem;
-  display:flex;align-items:center;justify-content:center;
-  border:none;border-radius:50%;cursor:pointer;color:var(--ink);
-  background:rgba(233,230,223,.34);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),0 10px 26px rgba(18,16,14,.14);
-  transition:color .5s ease,transform .3s var(--ease),box-shadow .3s var(--ease)}
-.zone-series.has-bg.bg-open .head-bottle{color:var(--paper);background:rgba(20,18,15,.28)}
-@media(hover:hover){.head-bottle:hover{transform:translateY(-4px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4),0 16px 34px rgba(18,16,14,.2)}}
-.head-bottle:active{transform:scale(.97)}
-/* soft sonar pulse inviting the tap; retired once opened */
-.hb-pulse{position:absolute;inset:0;border-radius:50%;border:1.5px solid currentColor;opacity:0;pointer-events:none;
-  animation:hbPulse 3.4s ease-out infinite}
-@keyframes hbPulse{0%{transform:scale(.86);opacity:.4}70%{transform:scale(1.22);opacity:0}100%{transform:scale(1.22);opacity:0}}
-.head-bottle.open .hb-pulse{display:none}
+/* SERIES 3 — a sea-glass bottle adrift on its side beside the title.
+   No chrome around it: just the rendered glass (water inside, parchment
+   note tied in brand red, cork) floating on a slow swell, with a small
+   "coming soon / series 3" caption beneath. Every few seconds it gives
+   a playful little hop — the animation itself says "press me". */
+.head-bottle{position:relative;flex:none;display:flex;flex-direction:column;align-items:center;gap:.15rem;
+  margin-bottom:-.3rem;padding:0 .2rem;border:none;background:transparent;cursor:pointer;color:var(--ink);
+  transition:color .5s ease,transform .3s var(--ease)}
+.zone-series.has-bg.bg-open .head-bottle{color:var(--paper)}
+@media(hover:hover){.head-bottle:hover{transform:translateY(-4px)}}
+.head-bottle:active{transform:scale(.96)}
+.hb-bottle{width:clamp(128px,22vw,172px);height:auto;display:block}
+.hb-caption{display:flex;flex-direction:column;align-items:center;gap:.28rem;font-family:var(--mono);text-transform:uppercase}
+.hb-soon{font-size:.5rem;font-weight:700;letter-spacing:.3em;text-indent:.3em;opacity:.55;animation:hbBreathe 3.2s ease-in-out infinite}
+.hb-series{font-size:.66rem;font-weight:700;letter-spacing:.22em;text-indent:.22em}
+@keyframes hbBreathe{0%,100%{opacity:.4}50%{opacity:.8}}
+/* the float: a slow swell with a slight roll, and a periodic hop that
+   invites the tap */
+.bob{transform-box:fill-box;transform-origin:center;animation:hbFloat 5.2s ease-in-out infinite,hbNudge 5.2s ease-in-out infinite}
+@keyframes hbFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(2.2deg)}}
+@keyframes hbNudge{0%,74%,100%{translate:0 0;scale:1}80%{translate:0 -7px;scale:1.045}86%{translate:0 1px;scale:.99}92%{translate:0 -3px;scale:1.015}}
+.head-bottle.open .bob{animation:hbFloat 5.2s ease-in-out infinite}
+.cork-anim{transform-box:fill-box;transform-origin:center;transition:transform .55s var(--ease),opacity .45s ease .12s}
+.head-bottle.open .cork-anim{transform:translate(30px,-26px) rotate(38deg);opacity:0}
 .hb-note{transition:opacity .5s ease .25s}
 .head-bottle.open .hb-note{opacity:0}
-.hb-medal{position:absolute;inset:0;width:100%;height:100%;animation:hbSpin 28s linear infinite}
-@keyframes hbSpin{to{transform:rotate(360deg)}}
-.hb-bottle{position:relative;width:78%;height:78%;display:block}
-/* bubbles rising inside the glass */
-.hb-bub{animation:hbBub 3.6s ease-in infinite}
-.hb-bub.b2{animation-duration:4.4s;animation-delay:1.2s}
-.hb-bub.b3{animation-duration:3.1s;animation-delay:2s}
-@keyframes hbBub{0%{transform:translateY(0);opacity:0}12%{opacity:1}100%{transform:translateY(-46px);opacity:0}}
+/* bubbles inside the glass */
+.hb-bub{animation:hbBub 3.8s ease-in infinite}
+.hb-bub.b2{animation-duration:4.6s;animation-delay:1.6s}
+@keyframes hbBub{0%{transform:translateY(0);opacity:0}14%{opacity:1}100%{transform:translateY(-20px);opacity:0}}
 /* splash droplets, fired once when the cork pops */
 .hb-drop{opacity:0}
 .head-bottle.open .hb-drop{animation:hbDrop .7s ease-out forwards}
 .head-bottle.open .d2{animation-delay:.06s}
 .head-bottle.open .d3{animation-delay:.12s}
-@keyframes hbDrop{0%{opacity:.9;transform:translate(0,0)}100%{opacity:0;transform:translate(10px,-26px)}}
-.bob{transform-box:fill-box;transform-origin:center;animation:bottlebob 4.8s ease-in-out infinite}
-@keyframes bottlebob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(3deg)}}
+@keyframes hbDrop{0%{opacity:.9;transform:translate(0,0)}100%{opacity:0;transform:translate(14px,-22px)}}}
 .head-bottle.open .bob{animation:none}
 .cork-anim{transform-box:fill-box;transform-origin:center;transition:transform .55s var(--ease),opacity .45s ease .12s}
 .head-bottle.open .cork-anim{transform:translate(-12px,-44px) rotate(-42deg);opacity:0}
@@ -456,16 +454,18 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 @keyframes bubbleRiseY{0%{transform:translateY(0);opacity:1}82%{opacity:1}100%{transform:translateY(-118vh);opacity:0}}
 .ib-sway{width:100%;height:100%;animation:bubbleSway 3.4s ease-in-out infinite alternate;will-change:transform}
 @keyframes bubbleSway{from{transform:translateX(-10px)}to{transform:translateX(10px)}}
-.ib-core{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;padding:1rem;
-  border:1px solid rgba(255,255,255,.55);
+.ib-core{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;padding:.65rem;
+  border:1px solid rgba(255,255,255,.5);
   background:
     radial-gradient(circle at 32% 24%,rgba(255,255,255,.8),rgba(255,255,255,.16) 20%,rgba(255,255,255,0) 42%),
     radial-gradient(circle at 50% 108%,rgba(125,205,255,.38),rgba(125,205,255,0) 62%),
     radial-gradient(circle at 50% 50%,rgba(190,232,255,.12),rgba(96,178,235,.18) 74%,rgba(38,124,198,.34) 100%);
-  box-shadow:inset 0 -12px 26px rgba(46,140,215,.28),inset 0 8px 16px rgba(255,255,255,.4),0 12px 34px rgba(30,110,190,.18);
-  font-family:var(--mono);font-weight:700;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:inset 0 -10px 20px rgba(46,140,215,.24),inset 0 6px 12px rgba(255,255,255,.34),0 8px 22px rgba(30,110,190,.14);
+  font-family:var(--mono);font-weight:700;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;
   color:#0D4C74;text-shadow:0 1px 0 rgba(255,255,255,.55);
-  will-change:transform,opacity}
+  will-change:transform,opacity;
+  animation:bubbleBirth .9s var(--ease) both}
+@keyframes bubbleBirth{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 /* the aero crescent shine */
 .ib-core::before{content:"";position:absolute;top:6%;left:14%;width:60%;height:36%;border-radius:50%;
   background:linear-gradient(rgba(255,255,255,.8),rgba(255,255,255,.02));pointer-events:none}
@@ -475,7 +475,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .info-bubble.mini .ib-core{padding:0}
 /* pop: the sphere swells and vanishes while its carrier keeps rising —
    the flight never stops */
-.ib-core.popping{animation:bubblePop .2s ease-out forwards}
+.ib-core.popping{animation:bubblePop .2s ease-out forwards!important}
 @keyframes bubblePop{0%{transform:scale(1);opacity:1}55%{transform:scale(1.22);opacity:.65}100%{transform:scale(1.38);opacity:0}}
 .bub-drop{position:absolute;width:9px;height:9px;border-radius:50%;pointer-events:none;
   border:1px solid rgba(255,255,255,.7);
@@ -771,8 +771,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .archive-overlay,.archive-copy{transition:none;transform:none!important}
   .drop-items,.zone-bg-img-open{transition:none}
   .drop-hint{animation:none;opacity:.85}
-  .bob,.note-cursor,.hb-medal,.hb-pulse,.hb-bub,.vote-btn::before{animation:none}
-  .hb-pulse{opacity:0}
+  .bob,.note-cursor,.hb-bub,.hb-soon,.ib-core,.vote-btn::before{animation:none}
   .vote-btn::before{opacity:0}
   .cork-anim,.note-sheet,.note-drop,.vote-btn{transition:none}
   .ourstory-print{animation:none}
@@ -907,83 +906,70 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     <!-- SERIES 3 — the message in a bottle, moored beside the title.
          Tap: the cork pops and the note drops open beneath the head. -->
     <button class="head-bottle" id="bottleBtn" aria-expanded="false" aria-controls="noteDrop" aria-label="Series 3 — open the bottle" onclick="openBottle()">
-      <span class="hb-pulse" aria-hidden="true"></span>
-      <!-- rotating mono ring: the medallion's engraving -->
-      <svg class="hb-medal" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs><path id="hbRing" d="M 60,60 m -46,0 a 46,46 0 1,1 92,0 a 46,46 0 1,1 -92,0"/></defs>
-        <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4"/>
-        <circle cx="60" cy="60" r="38" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 4" opacity=".3"/>
-        <text font-family="'Space Mono',monospace" font-size="9" font-weight="700" letter-spacing="3.3" fill="currentColor" opacity=".8">
-          <textPath href="#hbRing">SERIES 3 &#183; MESSAGE IN A BOTTLE &#183;&#160;</textPath>
-        </text>
-      </svg>
-      <!-- the bottle: sea-glass, water, parchment note with red thread -->
-      <svg class="hb-bottle" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <svg class="hb-bottle" viewBox="0 0 190 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
           <linearGradient id="gGlass" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="#A6D2CB" stop-opacity=".92"/>
-            <stop offset=".45" stop-color="#5F9D96" stop-opacity=".9"/>
+            <stop offset=".55" stop-color="#5F9D96" stop-opacity=".9"/>
             <stop offset="1" stop-color="#35706B" stop-opacity=".95"/>
           </linearGradient>
           <linearGradient id="gWater" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="#2E6B66" stop-opacity=".9"/>
             <stop offset="1" stop-color="#1C4A47" stop-opacity=".95"/>
           </linearGradient>
-          <linearGradient id="gCork" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="gCork" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0" stop-color="#D2A876"/>
             <stop offset="1" stop-color="#A87F4C"/>
           </linearGradient>
-          <linearGradient id="gNote" x1="0" y1="0" x2="1" y2="0">
+          <linearGradient id="gNote" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="#F4EDDC"/>
             <stop offset="1" stop-color="#DECFAC"/>
           </linearGradient>
           <radialGradient id="gShadow" cx=".5" cy=".5" r=".5">
-            <stop offset="0" stop-color="#12100E" stop-opacity=".22"/>
+            <stop offset="0" stop-color="#12100E" stop-opacity=".2"/>
             <stop offset="1" stop-color="#12100E" stop-opacity="0"/>
           </radialGradient>
-          <clipPath id="hbClip"><path d="M -6.5,-46 L -6.5,-30 C -6.5,-24 -17,-18 -17,-8 L -17,32 C -17,39 -12,42 -6,42 L 6,42 C 12,42 17,39 17,32 L 17,-8 C 17,-18 6.5,-24 6.5,-30 L 6.5,-46 Z"/></clipPath>
+          <clipPath id="hbClip"><path d="M -58,-20 C -65,-20 -67,-11 -67,0 C -67,11 -65,20 -58,20 L 20,20 C 29,20 33,14 38,10.5 C 42,8 47,7.5 50,7.5 L 50,-7.5 C 47,-7.5 42,-8 38,-10.5 C 33,-14 29,-20 20,-20 Z"/></clipPath>
         </defs>
-        <ellipse cx="60" cy="126" rx="27" ry="6.5" fill="url(#gShadow)"/>
-        <g transform="translate(60,76)"><g class="bob"><g transform="rotate(-12)">
-          <!-- glass body -->
+        <ellipse cx="92" cy="82" rx="52" ry="7" fill="url(#gShadow)"/>
+        <g transform="translate(92,46)"><g class="bob"><g transform="rotate(-6)">
+          <!-- glass body, lying down -->
           <path fill="url(#gGlass)" stroke="#1E4744" stroke-opacity=".55" stroke-width="1.6" stroke-linejoin="round"
-            d="M -6.5,-46 L -6.5,-30 C -6.5,-24 -17,-18 -17,-8 L -17,32 C -17,39 -12,42 -6,42 L 6,42 C 12,42 17,39 17,32 L 17,-8 C 17,-18 6.5,-24 6.5,-30 L 6.5,-46 Z"/>
-          <!-- water + floating note + inner bubbles, clipped to the glass -->
+            d="M -58,-20 C -65,-20 -67,-11 -67,0 C -67,11 -65,20 -58,20 L 20,20 C 29,20 33,14 38,10.5 C 42,8 47,7.5 50,7.5 L 50,-7.5 C 47,-7.5 42,-8 38,-10.5 C 33,-14 29,-20 20,-20 Z"/>
+          <!-- water along the bottom + note + inner bubbles, clipped -->
           <g clip-path="url(#hbClip)">
-            <path fill="url(#gWater)" d="M -17,15 C -10,12 -4,17 2,14 C 8,11.5 13,14 17,11 L 17,32 C 17,39 12,42 6,42 L -6,42 C -12,42 -17,39 -17,32 Z"/>
-            <path d="M -17,15 C -10,12 -4,17 2,14 C 8,11.5 13,14 17,11" fill="none" stroke="#CFE8E2" stroke-opacity=".55" stroke-width="1.2"/>
-            <g class="hb-bub"><circle cx="-7" cy="34" r="1.6" fill="#DCEFEA" opacity=".7"/></g>
-            <g class="hb-bub b2"><circle cx="5" cy="38" r="1.1" fill="#DCEFEA" opacity=".6"/></g>
-            <g class="hb-bub b3"><circle cx="11" cy="30" r="1.3" fill="#DCEFEA" opacity=".65"/></g>
+            <path fill="url(#gWater)" d="M -70,3 C -52,0 -34,6 -14,3 C 4,.5 22,6 42,3 L 54,4.5 L 54,26 L -70,26 Z"/>
+            <path d="M -70,3 C -52,0 -34,6 -14,3 C 4,.5 22,6 42,3 L 54,4.5" fill="none" stroke="#CFE8E2" stroke-opacity=".5" stroke-width="1.2"/>
+            <g class="hb-bub"><circle cx="26" cy="12" r="1.5" fill="#DCEFEA" opacity=".65"/></g>
+            <g class="hb-bub b2"><circle cx="-38" cy="14" r="1.1" fill="#DCEFEA" opacity=".55"/></g>
           </g>
-          <!-- parchment note, riding the water; it leaves the bottle on open -->
-          <g class="hb-note" transform="rotate(14) translate(0,-1)">
-            <rect x="-7.5" y="-11" width="15" height="24" rx="6.5" fill="url(#gNote)" stroke="#B5A277" stroke-width="1" stroke-opacity=".8"/>
-            <path d="M -3.5,-8.4 C -1,-10.4 2.5,-9.9 3.6,-7.6" fill="none" stroke="#B5A277" stroke-width="1" opacity=".85"/>
-            <line x1="-7.5" y1="1" x2="7.5" y2="1" stroke="#D70000" stroke-width="1.6" opacity=".9"/>
-            <path d="M -1,1 L -3.4,4.4 M -1,1 L 1.8,4.2" stroke="#D70000" stroke-width="1.2" opacity=".9" fill="none"/>
+          <!-- parchment note, adrift inside; leaves the bottle on open -->
+          <g class="hb-note" transform="translate(-16,1) rotate(-8)">
+            <rect x="-13" y="-8" width="26" height="16" rx="6.5" fill="url(#gNote)" stroke="#B5A277" stroke-width="1" stroke-opacity=".8"/>
+            <path d="M -10,-4.5 C -12.4,-2.5 -11.9,1.5 -9.6,2.4" fill="none" stroke="#B5A277" stroke-width="1" opacity=".85"/>
+            <line x1="1" y1="-8" x2="1" y2="8" stroke="#D70000" stroke-width="1.6" opacity=".9"/>
+            <path d="M 1,0 L 4.4,-2.2 M 1,0 L 4.2,2.4" stroke="#D70000" stroke-width="1.2" opacity=".9" fill="none"/>
           </g>
-          <!-- inner right shade + specular highlights -->
-          <path d="M 13.5,-14 C 15,-4 15,18 13,30" fill="none" stroke="#16403D" stroke-width="3" stroke-linecap="round" opacity=".3"/>
-          <path d="M -11,-24 C -13,-12 -13,8 -11,24" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" opacity=".5"/>
-          <path d="M -3.8,-43 L -3.8,-33" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity=".65"/>
+          <!-- top specular streak + inner base shade -->
+          <path d="M -52,-13.5 C -28,-16.5 0,-16.5 22,-13" fill="none" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" opacity=".5"/>
+          <path d="M -50,15 C -26,17.5 2,17.5 24,14.5" fill="none" stroke="#16403D" stroke-width="3" stroke-linecap="round" opacity=".28"/>
           <!-- lip -->
-          <rect x="-8.2" y="-52" width="16.4" height="6.6" rx="3" fill="url(#gGlass)" stroke="#1E4744" stroke-opacity=".55" stroke-width="1.4"/>
-          <path d="M -5.4,-50.6 L -5.4,-47.4" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+          <rect x="50" y="-9.4" width="7.2" height="18.8" rx="3" fill="url(#gGlass)" stroke="#1E4744" stroke-opacity=".55" stroke-width="1.4"/>
           <!-- cork -->
           <g class="cork-anim">
-            <rect x="-6" y="-63" width="12" height="11.5" rx="2.6" fill="url(#gCork)" stroke="#7E5B33" stroke-width="1.1"/>
-            <path d="M -2.6,-61.4 L -3.2,-53.4 M 2.4,-61.2 L 1.9,-53.4" stroke="#7E5B33" stroke-width=".9" opacity=".55"/>
-            <ellipse cx="0" cy="-62.6" rx="5.6" ry="1.6" fill="#DEBB8C" stroke="#7E5B33" stroke-width=".9"/>
+            <rect x="57.4" y="-7.2" width="13" height="14.4" rx="2.8" fill="url(#gCork)" stroke="#7E5B33" stroke-width="1.1"/>
+            <path d="M 59.6,-4.4 L 68,-4.9 M 59.8,2.8 L 68,2.4" stroke="#7E5B33" stroke-width=".9" opacity=".5"/>
+            <ellipse cx="70.2" cy="0" rx="1.8" ry="6.4" fill="#DEBB8C" stroke="#7E5B33" stroke-width=".9"/>
           </g>
         </g></g></g>
         <!-- splash droplets, fired once on open -->
         <g class="hb-splash" aria-hidden="true">
-          <circle class="hb-drop d1" cx="72" cy="26" r="2.2" fill="#5F9D96"/>
-          <circle class="hb-drop d2" cx="80" cy="32" r="1.6" fill="#7FB5AE"/>
-          <circle class="hb-drop d3" cx="66" cy="20" r="1.4" fill="#A6D2CB"/>
+          <circle class="hb-drop d1" cx="164" cy="34" r="2.2" fill="#5F9D96"/>
+          <circle class="hb-drop d2" cx="172" cy="42" r="1.6" fill="#7FB5AE"/>
+          <circle class="hb-drop d3" cx="158" cy="28" r="1.4" fill="#A6D2CB"/>
         </g>
       </svg>
+      <span class="hb-caption"><span class="hb-soon">coming soon</span><span class="hb-series">series 3</span></span>
     </button>
   </header>
 
@@ -2001,18 +1987,28 @@ function launchInfoBubbles(){
     if(document.hidden) return;
     make();
   },delay);
+  /* Spawn positions hug the screen edges so bubbles decorate rather
+     than block what the customer is looking at. */
+  const edgeLeft=(d)=>{
+    const w=window.innerWidth, m=8;
+    const band=Math.max(60,w*.3);
+    return Math.round(Math.random()<.5
+      ? m+Math.random()*band
+      : w-d-m-Math.random()*band);
+  };
   /* the two message orbs */
   BUBBLE_PHRASES.forEach((phrase,i)=>{
     spawn(2000+i*1900,()=>{
-      const d=Math.round(126+Math.random()*22);
-      makeBubble({phrase,d,left:Math.round(14+Math.random()*Math.max(40,window.innerWidth-d-28)),dur:8.5+Math.random()*2});
+      const d=Math.round(90+Math.random()*16);
+      makeBubble({phrase,d,left:edgeLeft(d),dur:8.5+Math.random()*2});
     });
   });
-  /* the ambient school */
-  for(let i=0;i<9;i++){
+  /* the ambient school (a lighter one on small screens) */
+  const minis=window.innerWidth<480?6:9;
+  for(let i=0;i<minis;i++){
     spawn(1400+Math.random()*7200,()=>{
-      const d=Math.round(16+Math.random()*30);
-      makeBubble({d,left:Math.round(6+Math.random()*(window.innerWidth-d-12)),dur:6+Math.random()*4});
+      const d=Math.round(12+Math.random()*21);
+      makeBubble({d,left:edgeLeft(d),dur:6+Math.random()*4});
     });
   }
 }
