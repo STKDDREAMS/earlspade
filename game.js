@@ -19,7 +19,7 @@ const AIR_FRICTION    = 0.01;  // slight air drag stabilises tall stacks
 
 /* pacing */
 const DROP_COOLDOWN_MS = 500;   // min time between drops (no spamming)
-const OVER_LINE_FRAC   = 0.14;  // game-over line, fraction of world height
+const OVER_LINE_OFF    = 6;     // game-over line sits this far below the box rim
 const OVER_SECONDS     = 2.0;   // continuous seconds over the line = game over
 const MAX_SPAWN_TIER   = 4;     // tiers 0..4 (1–5 human) can spawn as drops
 
@@ -30,22 +30,218 @@ const WATERMELON_BONUS = 500;   // two watermelons vanish -> this bonus
 /* world: fixed logical width so gameplay is identical on every screen */
 const WORLD_W = 420;
 const WALL_T  = 12;             // wall thickness (visual + physical)
+/* the CONTAINER is deliberately small — like the real melon game the
+   box is snug (about 1.28x taller than wide) so it fills fast and
+   losing is always close. Everything above the box rim is open water
+   where the next creature hovers. */
+const BOX_ASPECT = 1.28;        // box height = WORLD_W * this
 
-/* the 11 tiers: cherry -> watermelon.
-   radius in world units; color is the flat circle; emoji is the face. */
+/* the 11 tiers: SEA CREATURES, small -> big, ending on the whale shark
+   (the brand's hero creature). Physics stays a circle of radius r —
+   that's what keeps stacking stable — and each creature's pixel sprite
+   is drawn over it. `art` is the pixel map (see PALETTE + buildSprite),
+   `over` scales the sprite box relative to the collision circle so
+   wide creatures (wings, claws) can overhang a little. */
+const PALETTE = {
+  K:'#161412',           // ink outline
+  W:'#F6F1E6', w:'#DDD8CC',
+  B:'#2E5E8C', b:'#4B84B4', L:'#7FB2D9', l:'#A9CBE4',
+  T:'#35706B', t:'#5F9D96', a:'#A6D2CB',
+  R:'#D70000', r:'#9E0000',
+  P:'#E8849C', p:'#F2B8C6',
+  G:'#E8B33C', g:'#C4922A',
+  N:'#2E5E3F', n:'#4E8B5B', m:'#8FBF7A',
+  V:'#7A5AA0', v:'#9C7CC4',
+  O:'#E88A2E',
+  E:'#FFFFFF',           // eye white
+};
+const ART = {
+bubble: [
+"...KKKK...",
+".KKaaaaKK.",
+".KaaEEaaK.",
+"KaaEWWaaaK",
+"KaaEWWaaaK",
+"KaaaaaaaaK",
+".KaaaaaaK.",
+".KKaaaaKK.",
+"...KKKK...",
+],
+shrimp: [
+"....KKKK....",
+"..KKPppPKK..",
+".KPpPPPPpPK.",
+"KPpPKEKPPPK.",
+"KPPPKKKPPpK.",
+".KPPPPPPpK..",
+"..KKPPPPK...",
+"..KpPPPK....",
+".KPPPpK.....",
+".KppPK......",
+"..KKK.......",
+],
+shell: [
+"....KKKKK....",
+"..KKwWWWwKK..",
+".KwWKWWWKWwK.",
+"KwWWKWWWKWWwK",
+"KWWWKWWWKWWWK",
+"KwWWKWWWKWWwK",
+".KwWKWWWKWwK.",
+"..KKwWWWwKK..",
+"...KKKKKKK...",
+"....KGgGK....",
+".....KKK.....",
+],
+crab: [
+"KKK.......KKK",
+"KrRK.....KRrK",
+"KRRK.....KRRK",
+".KRKKKKKKKRK.",
+"..KRRRRRRRK..",
+".KRREKREKRRK.",
+"KRRREKREKRRRK",
+"KRrRRRRRRRrRK",
+".KRRRRRRRRRK.",
+"..KKKKKKKKK..",
+".KK.KK.KK.KK.",
+],
+seahorse: [
+"....KKKK....",
+"...KGgGGK...",
+"..KGGEKGGK..",
+"..KGGKKGKK..",
+"...KGGGGKgK.",
+"....KGGK.KK.",
+"...KGGGK....",
+"..KGGGGK....",
+".KGgGGK.....",
+".KGGGK......",
+".KgGGGK.....",
+"..KGGGGK....",
+"...KGgGK....",
+"....KKGK....",
+".....KK.....",
+],
+puffer: [
+"..K..KK..K..",
+".KOK KK KOK.".replace(' ','.').replace(' ','.'),
+"..KOOOOOOK..",
+".KOEKOOEKOK.",
+"KOOOOOOOOOOK",
+"KOOOKOOKOOOK",
+".KOOOOOOOOK.",
+"..KOOOOOOK..",
+".KOK.KK.KOK.",
+"..K..KK..K..",
+],
+jellyfish: [
+"....KKKKK....",
+"..KKvVVVvKK..",
+".KvVVVVVVVvK.",
+"KvVVEKVKEVVvK",
+"KVVVKKVKKVVVK",
+"KVVVVVVVVVVVK",
+".KKKKKKKKKKK.",
+".KvK.KvK.KvK.",
+".KVK.KVK.KVK.",
+"..KvK.KvK....",
+"..KVK.KVK....",
+"...K...K.....",
+],
+idol: [
+"........KKK...",
+".......KWWK...",
+"......KWWK....",
+".....KWWK.....",
+"..KKKWWKKKK...",
+".KWWKKWWKGGK..",
+"KWWWKKWWKGGKK.",
+"KWEKKKWWKGGKBK",
+"KWWWKKWWKGGKK.",
+".KWWKKWWKGGK..",
+"..KKKKKKKKK...",
+],
+turtle: [
+"....KKKKKK....",
+"..KKnNNNNnKK..",
+".KnNGNNGNNnK..",
+"KnNNNNNNNNNnK.",
+"KNGNNGGNNGNNKK",
+"KnNNNNNNNNNnKEK",
+".KnNGNNGNNnK.KK",
+"..KKnNNNnKK...",
+"..K.KKKK.K....",
+".KK......KK...",
+],
+ray: [
+"K...........K",
+"KK.........KK",
+"KbK.......KbK",
+"KbbK..K..KbbK",
+"KbbbKKBKKbbbK",
+".KbbBBEBBbbK.",
+".KbBBBBBBBbK.",
+"..KbBWBWBbK..",
+"...KbBBBbK...",
+"....KbBbK....",
+".....KbK.....",
+".....KbK.....",
+".....KbK.....",
+"......K......",
+],
+whale: [
+"....KKKKKKKKK.......",
+"..KKBBBBBBBBBKK.....",
+".KBBWBBWBBWBBBBK.KK.",
+"KBBBBBBBBBBBBBBKKBK.",
+"KBEKBWBBWBBWBBBBBBK.",
+"KBKKBBBBBBBBBBBBBK..",
+"KBBBBBBBBBBBBBBBBK..",
+"KWWWBBWBBWBBBBBBBBK.",
+".KWWWWWWWWWBBBKKKBK.",
+"..KKWWWWWWWWBK...KK.",
+"....KKKKKKKKK.......",
+],
+};
 const TIERS = [
-  { name:'cherry',     r:15,  color:'#C22F3B', emoji:'🍒' },
-  { name:'strawberry', r:21,  color:'#D7404F', emoji:'🍓' },
-  { name:'grape',      r:28,  color:'#8656A8', emoji:'🍇' },
-  { name:'dekopon',    r:35,  color:'#E8A23C', emoji:'🍊' },
-  { name:'orange',     r:44,  color:'#E88A2E', emoji:'🍊' },
-  { name:'apple',      r:54,  color:'#C22F3B', emoji:'🍎' },
-  { name:'pear',       r:64,  color:'#A8B84B', emoji:'🍐' },
-  { name:'peach',      r:76,  color:'#EFA3A8', emoji:'🍑' },
-  { name:'pineapple',  r:89,  color:'#E3B84B', emoji:'🍍' },
-  { name:'melon',      r:103, color:'#9BBF6A', emoji:'🍈' },
-  { name:'watermelon', r:118, color:'#3E7C4F', emoji:'🍉' },
+  { name:'bubble',     r:15,  art:'bubble',    over:1.00 },
+  { name:'shrimp',     r:21,  art:'shrimp',    over:1.05 },
+  { name:'shell',      r:28,  art:'shell',     over:1.02 },
+  { name:'crab',       r:35,  art:'crab',      over:1.15 },
+  { name:'seahorse',   r:44,  art:'seahorse',  over:1.05 },
+  { name:'puffer',     r:54,  art:'puffer',    over:1.08 },
+  { name:'jellyfish',  r:64,  art:'jellyfish', over:1.05 },
+  { name:'moorish idol',r:76, art:'idol',      over:1.08 },
+  { name:'turtle',     r:89,  art:'turtle',    over:1.10 },
+  { name:'eagle ray',  r:103, art:'ray',       over:1.15 },
+  { name:'whale shark',r:118, art:'whale',     over:1.10 },
 ];
+
+/* Each sprite is rasterised ONCE onto an offscreen canvas (8px per
+   pixel-cell, comfortably above any on-screen size), then stamped with
+   drawImage each frame — cheap, and with imageSmoothing disabled the
+   pixels stay razor sharp at any scale. */
+const SPRITES = TIERS.map(t => buildSprite(ART[t.art]));
+function buildSprite(rows){
+  const CELL = 8;
+  const w = Math.max(...rows.map(r => r.length)), h = rows.length;
+  const size = Math.max(w, h);                 // square canvas, art centered
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = size * CELL;
+  const g = cv.getContext('2d');
+  const ox = Math.floor((size - w) / 2), oy = Math.floor((size - h) / 2);
+  for(let y = 0; y < h; y++){
+    const row = rows[y];
+    for(let x = 0; x < row.length; x++){
+      const ch = row[x];
+      if(ch === '.' || ch === ' ') continue;
+      g.fillStyle = PALETTE[ch] || '#000';
+      g.fillRect((ox + x) * CELL, (oy + y) * CELL, CELL, CELL);
+    }
+  }
+  return cv;
+}
 /* spawn odds for tiers 0..4 — favor the small ones */
 const SPAWN_WEIGHTS = [5,3,2,1,1];
 
@@ -133,15 +329,19 @@ function worldHeightFromContainer(){
 }
 
 /* ================= WORLD SETUP ================= */
+let BOX_TOP = 0;               // world y of the container rim
 function buildWorld(){
   engine = Engine.create({ enableSleeping: false });
   engine.gravity.y = GRAVITY_Y;
   world = engine.world;
   WORLD_H = worldHeightFromContainer();
+  /* the box hangs from the floor up; rim sits BOX_ASPECT * width above
+     it (clamped so there's always headroom to aim above the rim). */
+  const boxH = Math.min(WORLD_W * BOX_ASPECT, WORLD_H - 150);
+  BOX_TOP = WORLD_H - boxH;
   const opts = { isStatic: true, friction: FRICTION, restitution: 0 };
   Composite.add(world, [
     Bodies.rectangle(WORLD_W/2, WORLD_H + WALL_T/2, WORLD_W * 2, WALL_T, opts),          // floor
-    Bodies.rectangle(-WALL_T/2 + WALL_T/2 - WALL_T/2, 0, 0, 0, opts),                     // (placeholder, unused)
     Bodies.rectangle(WALL_T/2 - WALL_T, WORLD_H/2, WALL_T*2, WORLD_H * 3, opts),          // left wall
     Bodies.rectangle(WORLD_W - WALL_T/2 + WALL_T, WORLD_H/2, WALL_T*2, WORLD_H * 3, opts) // right wall
   ]);
@@ -294,7 +494,7 @@ function celebrate(x, y){
 
 /* ================= GAME OVER ================= */
 function checkOverLine(dt){
-  const lineY = WORLD_H * OVER_LINE_FRAC;
+  const lineY = BOX_TOP + OVER_LINE_OFF;
   anyOverLine = false;
   for(const b of bodies){
     if(b.position.y - 0 < lineY && b.speed < 4){
@@ -309,15 +509,15 @@ function checkOverLine(dt){
 }
 
 /* ================= RENDER ================= */
-function drawFruitAt(c, x, y, r, tier){
-  const t = TIERS[tier];
-  c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2);
-  c.fillStyle = t.color; c.fill();
-  c.lineWidth = Math.max(1.5, r * 0.06);
-  c.strokeStyle = 'rgba(22,20,18,.55)'; c.stroke();
-  c.font = `${Math.round(r * 1.1)}px serif`;
-  c.textAlign = 'center'; c.textBaseline = 'middle';
-  c.fillText(t.emoji, x, y + r * 0.05);
+function drawFruitAt(c, x, y, r, tier, angle){
+  const s = SPRITES[tier];
+  const d = r * 2 * TIERS[tier].over;
+  c.save();
+  c.translate(x, y);
+  if(angle) c.rotate(angle);
+  c.imageSmoothingEnabled = false;             // razor-sharp pixels
+  c.drawImage(s, -d/2, -d/2, d, d);
+  c.restore();
 }
 function render(now){
   ctx.clearRect(0, 0, cssW, cssH);
@@ -329,14 +529,17 @@ function render(now){
   ctx.save();
   ctx.scale(scale, scale);
 
-  /* walls + floor (ink) */
+  /* the container: ink walls from the rim down + floor; a small lip
+     marks the rim so the box reads as a vessel sitting in open water */
   ctx.fillStyle = '#161412';
-  ctx.fillRect(0, 0, WALL_T, WORLD_H);
-  ctx.fillRect(WORLD_W - WALL_T, 0, WALL_T, WORLD_H);
-  ctx.fillRect(0, WORLD_H - 2, WORLD_W, 2);
+  ctx.fillRect(0, BOX_TOP, WALL_T, WORLD_H - BOX_TOP);
+  ctx.fillRect(WORLD_W - WALL_T, BOX_TOP, WALL_T, WORLD_H - BOX_TOP);
+  ctx.fillRect(0, WORLD_H - 4, WORLD_W, 4);
+  ctx.fillRect(0, BOX_TOP, WALL_T * 2, 4);
+  ctx.fillRect(WORLD_W - WALL_T * 2, BOX_TOP, WALL_T * 2, 4);
 
   /* game-over line — subtle dashes; red flash while threatened */
-  const lineY = WORLD_H * OVER_LINE_FRAC;
+  const lineY = BOX_TOP + OVER_LINE_OFF;
   ctx.save();
   ctx.setLineDash([8, 8]);
   ctx.lineWidth = 2;
@@ -369,7 +572,7 @@ function render(now){
       if(p >= 1){ popTweens.delete(b.id); }
       else { r *= 1 + 0.22 * Math.sin(Math.min(1, p) * Math.PI); }
     }
-    drawFruitAt(ctx, b.position.x, b.position.y, r, b.tier);
+    drawFruitAt(ctx, b.position.x, b.position.y, r, b.tier, b.angle);
   }
 
   /* particles */
@@ -542,7 +745,8 @@ if(location.search.includes('debug=1')){
     state(){ return { score, over, tiers: bodies.map(b => b.tier), n: bodies.length, canDrop }; },
     drop(x){ aimX = x; lastDrop = 0; canDrop = true; drop(); },
     forceAim(x){ aimX = x; },
-    worldH(){ return WORLD_H; }
+    worldH(){ return WORLD_H; },
+    boxTop(){ return BOX_TOP; }
   };
 }
 
