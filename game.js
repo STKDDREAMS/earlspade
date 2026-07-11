@@ -23,99 +23,109 @@ const DROP_COOLDOWN_MS = 500;   // min time between drops (no spamming)
 const OVER_LINE_OFF    = 6;     // game-over line sits this far below the box rim
 const OVER_SECONDS     = 2.0;   // continuous seconds over the line = game over
 const BORN_GRACE_MS    = 800;   // a creature's own first moments don't count
-                                // (so falling PAST the line doesn't insta-lose)
 const MAX_SPAWN_TIER   = 4;     // tiers 0..4 can spawn as drops
 
-/* scoring */
-const MERGE_POINTS = [1,3,6,10,15,21,28,36,45,55,66]; // points for CREATING tier i
-const WHALE_BONUS  = 500;       // two whale sharks vanish -> this bonus
+/* scoring — 12 tiers now; points for CREATING tier i */
+const MERGE_POINTS = [1,3,6,10,15,21,28,36,45,55,66,80];
+const FLOWER_BONUS = 1000;      // two earlspade flowers vanish -> this bonus
 
 /* ===== SCENE: a FIXED logical stage that simply ZOOMS to fit any
-   screen (letterboxed, centered). Gameplay is pixel-identical on
-   every device — the scene never reshapes with the screen ratio. */
+   screen (letterboxed, centered). */
 const SCENE_W = 480;
 const SCENE_H = 760;
-/* the box: a small inset vessel sitting in open water — NOT the phone
-   borders. Snug on purpose: losing should always be close. */
-const WALL_T  = 12;
-const BOX_W   = 344;
-const BOX_H   = 412;
-const BOX_L   = (SCENE_W - BOX_W) / 2;   // left outer edge
-const BOX_R   = BOX_L + BOX_W;           // right outer edge
-const BOX_BOTTOM = SCENE_H - 128;        // interior floor y (box sits higher)
+/* the vessel: an inset rounded box, a touch bigger than before. */
+const WALL_T  = 11;
+const BOX_W   = 366;
+const BOX_H   = 434;
+const BOX_L   = (SCENE_W - BOX_W) / 2;
+const BOX_R   = BOX_L + BOX_W;
+const BOX_BOTTOM = SCENE_H - 122;        // interior floor y
 const BOX_TOP    = BOX_BOTTOM - BOX_H;   // rim y
-const IN_L = BOX_L + WALL_T;             // interior bounds
+const IN_L = BOX_L + WALL_T;
 const IN_R = BOX_R - WALL_T;
-/* the LEGEND: the whole evolution chain in a row under the box. The
-   last two tiers hide behind a "?" secret box until the player has
-   actually created them once (remembered in localStorage). */
-const LEGEND_Y      = SCENE_H - 62;   // center y of the legend row
-const LEGEND_R      = 15;             // mini disc radius
-const LEGEND_GAP    = 40;             // spacing between chain entries
-const SECRET_FROM   = 9;              // tiers 9+ are secret until made
+const CORNER_R = 30;                     // rounded bottom corners
+
+/* the LEGEND: the whole chain in a row under the box. The last FOUR
+   tiers hide behind gold "?" discs until each has been created once
+   (remembered in localStorage). */
+const LEGEND_Y    = SCENE_H - 58;
+const LEGEND_R    = 13;
+const LEGEND_GAP  = 37;
+const SECRET_FROM = 8;                   // tiers 8..11 start hidden
 
 /* ================= THE CAST =================
-   11 round sea creatures, small -> big, ending on the whale shark.
-   Every creature is a VISIBLE CIRCLE: the pixel disc is exactly the
-   physics circle, with hand-placed features (eyes, claws, spikes,
-   fins) stamped on top — some poking just past the rim.
-   fill/dk/lt are the disc colors; feat is the feature overlay. */
+   12 tiers: 8 cute sea creatures, then the four hidden ones — turtle,
+   eagle ray, whale shark, and finally THE EARLSPADE FLOWER itself
+   (the actual logo.png, colliding with its real petal shape).
+   Everything below the flower is a visible circle: smooth shaded disc
+   + pixel features on top. A shared cute FACE (big glinted eyes, tiny
+   smile, blush) is painted in code; feature maps add the species bits
+   and may hang past the rim. */
 const INK = '#161412';
 const PAL = {
   K:INK, E:'#FFFFFF', W:'#F6F1E6', w:'#DDD8CC',
   B:'#2E5E8C', b:'#24496E', L:'#7FB2D9',
   T:'#35706B', t:'#5F9D96', a:'#A6D2CB',
-  R:'#D70000', r:'#9E0000', P:'#E8849C', p:'#C4657E',
+  R:'#D70000', r:'#9E0000', P:'#E8849C', p:'#F2B8C6',
   G:'#E8B33C', g:'#C4922A', O:'#E88A2E', o:'#C46E1E',
   N:'#3E7C4F', n:'#2E5E3F', m:'#8FBF7A',
   V:'#7A5AA0', v:'#5E4380',
+  Y:'#D9C9A6', y:'#C9B68C',
 };
-
-/* sprite grid: 24x24 cells, disc radius 10.5 cells centered at 12,12.
-   Feature maps are {ox, oy, rows} stamped onto the disc canvas —
-   '.' is transparent, any PAL letter paints, 'X' erases (for skirts). */
 const GRID = 24, DISC_R = 10.5, CELL = 10;
 
+/* face kit defaults: eyes row ~9, mouth row ~13, blush beside mouth.
+   Per-tier overrides: face:false (has its own), faceY (shift), blushC. */
 const TIERS = [
-  { name:'bubble',      r:15,  fill:'#A6D2CB', dk:'#7FB5AE', lt:'#CFE8E2',
-    feat:{ ox:6, oy:5, rows:[ 'EEE..', 'EE...', 'E....' ] } },
-
-  { name:'shrimp',      r:21,  fill:'#E8849C', dk:'#C4657E', lt:'#F2B8C6',
+  { name:'bubble', r:14, fill:'#A6D2CB', dk:'#7FB5AE', lt:'#CFE8E2', blushC:'#F2B8C6',
     feat:{ ox:0, oy:0, rows:[
-      '.........K..K...........',
-      '.........K..K...........',
       '........................',
       '........................',
       '........................',
-      '........................',
-      '........................',
-      '........................',
-      '.......KK...KK..........',
-      '.......KK...KK..........',
-      '........................',
-      '....p.......p...........',
-      '....p..KKK..p...........',
-      '....pp.....pp...........',
-      '.....p.....p............',
-      '.....pp...pp............',
+      '.....EEE................',
+      '.....EE.................',
+      '.....E..................',
     ] } },
 
-  { name:'clam',        r:28,  fill:'#F6F1E6', dk:'#C9C0AE', lt:'#FFFFFF',
+  { name:'shrimp', r:19, fill:'#E8849C', dk:'#C4657E', lt:'#F2B8C6', blushC:'#FFFFFF',
+    feat:{ ox:0, oy:0, rows:[
+      '........KK....KK........',
+      '.........K....K.........',
+      '.........K....K.........',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '.......p...p...p........',
+      '.......pp..pp..pp.......',
+      '........................',
+    ] } },
+
+  { name:'clam', r:26, fill:'#F6F1E6', dk:'#C9C0AE', lt:'#FFFFFF', blushC:'#F2B8C6',
     feat:{ ox:0, oy:0, rows:[
       '........................',
       '........................',
-      '...........KK...........',
-      '..........KKK...........',
-      '.......K..KK..K.........',
-      '......KK..KK..KK........',
-      '......K...KK...K........',
-      '.....KK...KK...KK.......',
-      '....KK....KK....KK......',
-      '....K.....KK.....K......',
-      '....K.....KK.....K......',
-      '...KK.....KK.....KK.....',
-      '...K......KK......K.....',
-      '...K......KK......K.....',
+      '...........yy...........',
+      '........y..yy..y........',
+      '.......yy..yy..yy.......',
+      '......yy...yy...yy......',
+      '.....yy....yy....yy.....',
+      '.....y.....yy.....y.....',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
       '........................',
       '........................',
       '........................',
@@ -123,190 +133,186 @@ const TIERS = [
       '........................',
       '........................',
       '.........gGGg...........',
-      '.........KKKK...........',
+      '..........KK............',
     ] } },
 
-  { name:'crab',        r:35,  fill:'#D70000', dk:'#9E0000', lt:'#E8404B',
+  { name:'crab', r:34, fill:'#D70000', dk:'#9E0000', lt:'#E8404B', face:false,
     feat:{ ox:0, oy:0, rows:[
-      '......KK......KK........',
-      '.....KEK......KEK.......',
-      '.....KKK......KKK.......',
-      '......K........K........',
-      '........................',
-      '........................',
+      '......KKK....KKK........',
+      '.....KKEKK..KKEKK.......',
+      '.....KKKKK..KKKKK.......',
+      '......KKK....KKK........',
+      '.......K......K.........',
+      '.......K......K.........',
       '........................',
       '........................',
       'RRK..................RRK',
       'RRRK................RRRK',
       'KRRR................RRRK',
       'RRK..................RRK',
-      '........................',
-      '........................',
-      '......KK.....KK.........',
-      '......KEK...KEK.........',
-      '......KKK...KKK.........',
-      '........................',
-      '.......K.K.K.K..........',
-    ] } },
-
-  { name:'sea urchin',  r:44,  fill:'#7A5AA0', dk:'#5E4380', lt:'#9C7CC4',
-    feat:{ ox:0, oy:0, rows:[
-      '...........KK...........',
-      '...........KK...........',
-      '....KK.....KK.....KK....',
-      '.....KK..........KK.....',
-      '......KK........KK......',
-      '........................',
-      '........................',
-      '........................',
-      '........................',
-      '........................',
-      '.........KK...KK........',
-      'KKK......KK...KK.....KKK',
-      'KKK..................KKK',
-      '.........KKKKKK.........',
-      '........................',
-      '........................',
-      '........................',
-      '........................',
-      '......KK........KK......',
-      '.....KK..........KK.....',
-      '....KK.....KK.....KK....',
-      '...........KK...........',
-      '...........KK...........',
-    ] } },
-
-  { name:'pufferfish',  r:54,  fill:'#E88A2E', dk:'#C46E1E', lt:'#F2AC5E',
-    feat:{ ox:0, oy:0, rows:[
-      '...........KK...........',
-      '...........KK...........',
-      '.....KK...........KK....',
-      '......KK.........KK.....',
-      '........................',
-      '........................',
-      '........................',
-      '......KKK....KKK........',
-      '......KEK....KEK........',
-      '......KKK....KKK........',
-      'KKK..................KKK',
-      'KKK..................KKK',
-      '..........KKK...........',
-      '..........K.K...........',
-      '..........KKK...........',
-      '........................',
-      '........................',
-      '......KK.........KK.....',
-      '.....KK...........KK....',
-      '...........KK...........',
-      '...........KK...........',
-    ] } },
-
-  { name:'jellyfish',   r:64,  fill:'#9C7CC4', dk:'#7A5AA0', lt:'#BFA6DC',
-    feat:{ ox:0, oy:0, rows:[
-      '........................',
-      '........................',
-      '........................',
-      '........................',
-      '........................',
-      '........................',
-      '........................',
-      '.......KK.....KK........',
-      '.......KEK...KEK........',
-      '.......KKK...KKK........',
-      '........................',
+      '......EE......EE........',
+      '......EE......EE........',
+      '........K....K..........',
       '.........KKKK...........',
       '........................',
-      '........................',
-      '...vvv..vvv..vvv..vvv...',
-      '........................',
-      '...v.v...v....v...v.v...',
-      '....v....v....v....v....',
-      '....v...v......v...v....',
-      '.........v....v.........',
-      '....v.....v....v...v....',
-      '..........v....v........',
-      '.....v.............v....',
-      '........................',
+      '.......K.K..K.K.........',
     ] } },
 
-  { name:'moorish idol',r:76,  fill:'#F6F1E6', dk:'#C9C0AE', lt:'#FFFFFF',
+  { name:'sea urchin', r:43, fill:'#7A5AA0', dk:'#5E4380', lt:'#9C7CC4', blushC:'#F2B8C6',
     feat:{ ox:0, oy:0, rows:[
-      '........KKK.............',
-      '........KKK.............',
-      '.......KKKGG............',
-      '.......KKKGG............',
-      '......KKKKGG............',
-      '......KKKKGGG...........',
-      '.....KKKKKGGG...........',
-      '.....KKKKKGGG...........',
-      '.....KKKK..GGG..........',
-      '....KKKK...GGG..........',
-      '....KKKK...GGG......KKK.',
-      '.KK.KKKK...GGG......KKKK',
-      'KEK.KKKK...GGG......KKKK',
-      'KKK.KKKK...GGG......KKK.',
-      '....KKKK...GGG..........',
-      '....KKKKK..GGG..........',
-      '.....KKKK..GGG..........',
-      '.....KKKKKGGGG..........',
-      '......KKKKGGG...........',
-      '.......KKKGG............',
-      '........KKK.............',
+      '...........KK...........',
+      '...........KK...........',
+      '....KK.....KK.....KK....',
+      '.....KK..........KK.....',
+      '......KK........KK......',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      'KKK..................KKK',
+      'KKK..................KKK',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '......KK........KK......',
+      '.....KK..........KK.....',
+      '....KK.....KK.....KK....',
+      '...........KK...........',
+      '...........KK...........',
     ] } },
 
-  { name:'sea turtle',  r:89,  fill:'#3E7C4F', dk:'#2E5E3F', lt:'#8FBF7A',
+  { name:'pufferfish', r:53, fill:'#E88A2E', dk:'#C46E1E', lt:'#F2AC5E', blushC:'#F2B8C6',
     feat:{ ox:0, oy:0, rows:[
+      '...........KK...........',
+      '...........KK...........',
+      '.....KK...........KK....',
+      '......KK.........KK.....',
       '........................',
-      '........KKKKKKK.........',
-      '......KK.......KK.......',
-      '.....K...........K......',
-      '....K..G..K..G....K.....',
-      '...K...KKKKKKK.....K....',
-      '...K..K.......K....K....',
-      '..K..K....G....K....K...',
-      '..K..K.........K..KKKKK.',
-      '..K..K....G....K..KKEKK.',
-      '..K...K.......K...KKKKK.',
-      '...K...KKKKKKK.....KKK..',
-      '...K.....G..........K...',
-      '....K..G....G.....K.....',
-      '.....K...........K......',
-      '......KK.......KK.......',
-      '........KKKKKKK.........',
-      '..mm................m...',
-      '..mmm..............mm...',
       '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      'KKK..................KKK',
+      'KKK..................KKK',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '......KK.........KK.....',
+      '.....KK...........KK....',
+      '...........KK...........',
+      '...........KK...........',
     ] } },
 
-  { name:'eagle ray',   r:103, fill:'#4B84B4', dk:'#2E5E8C', lt:'#7FB2D9',
+  { name:'jellyfish', r:64, fill:'#9C7CC4', dk:'#7A5AA0', lt:'#BFA6DC', blushC:'#F2B8C6',
     feat:{ ox:0, oy:0, rows:[
       '........................',
       '........................',
       '........................',
-      '.....KK......KK.........',
-      '.....KEK....KEK.........',
-      '.....KKK....KKK.........',
       '........................',
-      '..EE........EE..........',
-      '..EE........EE..........',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '...vvv...vv...vv..vvv...',
+      '........................',
+      '...v.v...v.....v..v.v...',
+      '....v....v.....v...v....',
+      '....v...v.......v..v....',
+      '.........v.....v........',
+      '....v.....v...v....v....',
+      '...........v.v..........',
+    ] } },
+
+  { name:'moorish idol', r:76, fill:'#F6F1E6', dk:'#C9C0AE', lt:'#FFFFFF', blushC:'#F2B8C6',
+    feat:{ ox:0, oy:0, rows:[
+      '..........GGGG..........',
+      '..........GGGG..........',
+      '...KK.....GGGG.....KK...',
+      '...KKK....GGGG....KKK...',
+      '....KKK....GG....KKK....',
+      '....KKK..........KKK....',
+      '.....KK..........KK.....',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '.GG..................GG.',
+      '.GGG................GGG.',
+      '..GG..................GG',
+      '........................',
+    ] } },
+
+  /* ===== the four hidden ones ===== */
+  { name:'sea turtle', r:89, fill:'#3E7C4F', dk:'#2E5E3F', lt:'#8FBF7A', faceY:2, blushC:'#F2B8C6',
+    feat:{ ox:0, oy:0, rows:[
+      '........................',
+      '........nnnnnnnn........',
+      '......nnnnnnnnnnnn......',
+      '.....nnnGGnnnnGGnnn.....',
+      '....nnnnnnnnnnnnnnnn....',
+      '....nnnnnGGnnGGnnnnn....',
+      '...nnnnnnnnnnnnnnnnnn...',
+      '...mmmmmmmmmmmmmmmmmm...',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      'mm....................mm',
+      'mmm..................mmm',
+      '........................',
+    ] } },
+
+  { name:'eagle ray', r:102, fill:'#4B84B4', dk:'#2E5E8C', lt:'#7FB2D9', faceY:-2, blushC:'#A9CBE4',
+    feat:{ ox:0, oy:0, rows:[
+      '........................',
+      '........................',
+      '........................',
       '......EE........EE......',
-      'bbb...EE........EE...bbb',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      'bbb..................bbb',
       'bbbb................bbbb',
-      'bbbb.EE....EE....EEbbbbb',
-      'bbb..EE....EE....EE..bbb',
+      'bbbb................bbbb',
+      'bbb..................bbb',
       '........................',
-      '...EE.....EE......EE....',
-      '...EE.....EE......EE....',
       '........................',
-      '........KKK.............',
-      '..........KKK...........',
-      '............KKK.........',
-      '..............KKK.......',
-      '................KK......',
+      '.....EE....EE....EE.....',
+      '........................',
+      '...EE....EE....EE....EE.',
+      '........................',
+      '........EE....EE........',
+      '........................',
+      '........................',
       '........................',
     ] } },
 
-  { name:'whale shark', r:118, fill:'#2E5E8C', dk:'#24496E', lt:'#7FB2D9',
+  { name:'whale shark', r:114, fill:'#2E5E8C', dk:'#24496E', lt:'#7FB2D9', faceY:-1, blushC:'#A9CBE4',
     featClip:{ ox:0, oy:0, rows:[
       '........................',
       '........................',
@@ -324,7 +330,7 @@ const TIERS = [
       '........................',
       '........................',
       '........................',
-      'WWWWWWWWWWWWWWWWWWWWWWWW',
+      '........................',
       'WWWWWWWWWWWWWWWWWWWWWWWW',
       'WWWWWWWWWWWWWWWWWWWWWWWW',
       'WWWWWWWWWWWWWWWWWWWWWWWW',
@@ -336,22 +342,22 @@ const TIERS = [
     feat:{ ox:0, oy:0, rows:[
       '........................',
       '........................',
-      '.....EE......EE.........',
+      '.......EE......EE.......',
       '........................',
-      '..EE......EE......EE....',
+      '....EE....EE....EE......',
       '........................',
-      '......EE......EE........',
-      '..EE..............EE....',
+      '..EE................EE..',
       '........................',
-      '....EE.....EE.....EE....',
-      '.....................KKK',
-      '..KK.................KKK',
-      '..KEK................KKK',
-      '..KKK...............KKK.',
       '........................',
-      '...KKKKKKKKK.........KKK',
-      '............KK.......KKK',
-      '.....................KKK',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '........................',
+      '.....EE....EE....EE.....',
+      '........................',
+      '...EE......EE......EE...',
+      '........................',
       '........................',
       '........................',
       '........................',
@@ -359,25 +365,30 @@ const TIERS = [
       '........................',
       '........................',
     ] } },
+
+  /* the final tier: the earlspade flower itself. Rendered from
+     logo.png and colliding with its REAL shape (a compound body:
+     center disc + six petal discs). */
+  { name:'earlspade', r:126, flower:true },
 ];
 /* spawn odds for tiers 0..4 — favor the small ones */
 const SPAWN_WEIGHTS = [5,3,2,1,1];
 
-/* ===== sprite builder: a perfect pixel DISC (fill + ink outline +
-   light/shade arcs) rasterised once per tier, features stamped on
-   top. Drawn per frame with drawImage + imageSmoothing off, so the
-   circle you SEE is exactly the circle the physics uses. ===== */
-const SPRITES = TIERS.map(buildSprite);
+/* the flower image (the site logo) */
+const FLOWER_IMG = new Image();
+FLOWER_IMG.src = 'logo.png';
+
+/* ===== sprite builder: smooth shaded disc + cute face + pixel
+   features. The painted circle is exactly the physics circle. ===== */
+const SPRITES = TIERS.map(t => t.flower ? null : buildSprite(t));
 function buildSprite(t){
   const cv = document.createElement('canvas');
   cv.width = cv.height = GRID * CELL;
   const g = cv.getContext('2d');
-  const cpx = GRID * CELL / 2;              // center in px
-  const Rpx = DISC_R * CELL;                // disc radius in px
-  const ring = CELL * 1.05;                 // ink outline thickness
+  const cpx = GRID * CELL / 2;
+  const Rpx = DISC_R * CELL;
+  const ring = CELL * 1.05;
 
-  /* SMOOTH round body: soft radial shading (light falls top-left)
-     inside a clean ink ring. The pixels live ON TOP of this. */
   const grad = g.createRadialGradient(cpx - Rpx*0.35, cpx - Rpx*0.35, Rpx*0.15, cpx, cpx, Rpx);
   grad.addColorStop(0, t.lt);
   grad.addColorStop(0.55, t.fill);
@@ -388,13 +399,29 @@ function buildSprite(t){
   g.strokeStyle = INK;
   g.stroke();
 
+  const cell = (x, y, col) => { g.fillStyle = col; g.fillRect(x*CELL, y*CELL, CELL, CELL); };
+
+  /* the shared CUTE FACE: two big glinted eyes, a tiny smile, blush. */
+  if(t.face !== false){
+    const fy = 9 + (t.faceY || 0);
+    for(const ex of [7, 14]){
+      for(let yy = 0; yy < 3; yy++){ cell(ex, fy+yy, INK); cell(ex+1, fy+yy, INK); }
+      cell(ex, fy, '#FFFFFF');                 // glint
+    }
+    cell(11, fy+4, INK); cell(12, fy+4, INK);  // smile
+    cell(10, fy+3, INK); cell(13, fy+3, INK);  // smile corners
+    const bl = t.blushC || '#F2B8C6';
+    cell(4, fy+3, bl); cell(5, fy+3, bl);
+    cell(18, fy+3, bl); cell(19, fy+3, bl);
+  }
+
   const cx = GRID / 2, cy = GRID / 2;
   function stamp(f, clip){
     if(!f) return;
     if(clip){
       g.save();
       g.beginPath(); g.arc(cpx, cpx, Rpx - ring, 0, Math.PI*2);
-      g.clip();                              // pixel layers clipped by the smooth circle
+      g.clip();
     }
     for(let ry = 0; ry < f.rows.length; ry++){
       const row = f.rows[ry];
@@ -404,46 +431,41 @@ function buildSprite(t){
         const x = f.ox + rx, y = f.oy + ry;
         if(x < 0 || y < 0 || x >= GRID || y >= GRID) continue;
         if(ch === 'X'){ g.clearRect(x*CELL, y*CELL, CELL, CELL); continue; }
-        g.fillStyle = PAL[ch] || INK;
-        g.fillRect(x*CELL, y*CELL, CELL, CELL);
+        cell(x, y, PAL[ch] || INK);
       }
     }
     if(clip) g.restore();
   }
-  stamp(t.featClip, true);   // clipped layer first (bellies, bands)
-  stamp(t.feat, false);      // then free layer (claws, tails, spikes —
-                             // allowed to hang a little past the edge)
+  stamp(t.featClip, true);
+  stamp(t.feat, false);
   return cv;
 }
-/* the disc is 21 of 24 grid cells wide, so the sprite box must be
-   drawn GRID/(2*DISC_R) larger than the collision diameter for the
-   painted circle to line up exactly with the physics circle. */
 const SPRITE_OVER = GRID / (2 * DISC_R);
 
-/* the secret-tier disc: an ink circle with a paper "?" */
+/* the secret disc: ink body, gold "?" — the legend keeps its secrets */
 const SECRET_SPRITE = buildSprite({
-  fill:'#161412', dk:'#161412', lt:'#3A342E',
+  fill:'#161412', dk:'#161412', lt:'#3A342E', face:false,
   feat:{ ox:7, oy:5, rows:[
-    '..WWWWW..',
-    '.WW...WW.',
-    '.....WW..',
-    '....WW...',
-    '....WW...',
+    '..GGGGG..',
+    '.GG...GG.',
+    '.....GG..',
+    '....GG...',
+    '....GG...',
     '.........',
-    '....WW...',
-    '....WW...',
+    '....GG...',
+    '....GG...',
   ] }
 });
 
 /* effects budgets (kept cheap for phones) */
 const MAX_PARTICLES = 80;
-const SHAKE_TIER    = 7;   // merges creating tier >= this shake the screen
+const SHAKE_TIER    = 8;
 
 /* localStorage keys */
 const KEY_BEST  = 'earlspade_game_best_v1';
 const KEY_NAME  = 'earlspade_player_v1';
 const KEY_SOUND = 'earlspade_game_sound_v1';
-const KEY_SEEN  = 'earlspade_game_seen_v1';   // furthest tier ever created
+const KEY_SEEN  = 'earlspade_game_seen_v1';
 
 /* ================= STATE ================= */
 const playEl  = document.getElementById('play');
@@ -454,7 +476,7 @@ const nextCtx = nextCv.getContext('2d');
 
 let engine, world;
 let cssW = 0, cssH = 0;
-let scale = 1, offX = 0, offY = 0;     // letterboxed zoom of the fixed scene
+let scale = 1, offX = 0, offY = 0;
 let running = false, over = false;
 let score = 0, best = +(localStorage.getItem(KEY_BEST) || 0);
 let maxMade = Math.min(TIERS.length - 1, +(localStorage.getItem(KEY_SEEN) || 0));
@@ -489,7 +511,7 @@ function blip(freq0, freq1, dur, gain){
   o.start(t); o.stop(t + dur + 0.02);
 }
 const sndDrop  = () => blip(180, 90, 0.1, 0.08);
-const sndMerge = (tier) => blip(240 + tier * 60, 480 + tier * 80, 0.16, 0.1);
+const sndMerge = (tier) => blip(240 + tier * 55, 480 + tier * 75, 0.16, 0.1);
 const sndBig   = () => { blip(320, 900, 0.35, 0.12); blip(200, 600, 0.5, 0.08); };
 
 const muteBtn = document.getElementById('muteBtn');
@@ -509,7 +531,6 @@ function resize(){
   canvas.width  = Math.round(cssW * dpr);
   canvas.height = Math.round(cssH * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  /* zoom the fixed scene to fit, centered (letterboxed) */
   scale = Math.min(cssW / SCENE_W, cssH / SCENE_H);
   offX = (cssW - SCENE_W * scale) / 2;
   offY = (cssH - SCENE_H * scale) / 2;
@@ -522,9 +543,13 @@ function buildWorld(){
   world = engine.world;
   const opts = { isStatic: true, friction: FRICTION, restitution: 0 };
   Composite.add(world, [
-    Bodies.rectangle((BOX_L+BOX_R)/2, BOX_BOTTOM + WALL_T/2, BOX_W + WALL_T*2, WALL_T, opts),  // floor
-    Bodies.rectangle(BOX_L + WALL_T/2, BOX_TOP + BOX_H/2 - 200, WALL_T, BOX_H + 400, opts),    // left wall (extends up)
-    Bodies.rectangle(BOX_R - WALL_T/2, BOX_TOP + BOX_H/2 - 200, WALL_T, BOX_H + 400, opts),    // right wall
+    Bodies.rectangle((BOX_L+BOX_R)/2, BOX_BOTTOM + WALL_T/2, BOX_W + WALL_T*2, WALL_T, opts),
+    Bodies.rectangle(BOX_L + WALL_T/2, BOX_TOP + BOX_H/2 - 200, WALL_T, BOX_H + 400, opts),
+    Bodies.rectangle(BOX_R - WALL_T/2, BOX_TOP + BOX_H/2 - 200, WALL_T, BOX_H + 400, opts),
+    /* 45-degree chamfers behind the rounded corners, so nothing wedges
+       into a square corner the player can't see */
+    Bodies.rectangle(IN_L + CORNER_R*0.35, BOX_BOTTOM - CORNER_R*0.35, CORNER_R*1.7, WALL_T, { ...opts, angle: -Math.PI/4 }),
+    Bodies.rectangle(IN_R - CORNER_R*0.35, BOX_BOTTOM - CORNER_R*0.35, CORNER_R*1.7, WALL_T, { ...opts, angle: Math.PI/4 }),
   ]);
   Events.on(engine, 'collisionStart', onCollisions);
   Events.on(engine, 'collisionActive', onCollisions);
@@ -532,16 +557,29 @@ function buildWorld(){
 
 function fruitBody(tier, x, y){
   const t = TIERS[tier];
-  const b = Bodies.circle(x, y, t.r, {
-    restitution: RESTITUTION,
-    friction: FRICTION,
-    frictionStatic: FRICTION_STATIC,
-    frictionAir: AIR_FRICTION,
+  const common = {
+    restitution: RESTITUTION, friction: FRICTION,
+    frictionStatic: FRICTION_STATIC, frictionAir: AIR_FRICTION,
     density: 0.0012,
-  });
+  };
+  let b;
+  if(t.flower){
+    /* the flower collides with its REAL shape: a compound of the
+       center disc + six petal discs (matches the logo silhouette). */
+    const r = t.r;
+    const parts = [Bodies.circle(x, y, r*0.52, common)];
+    for(let k = 0; k < 6; k++){
+      const a = k * Math.PI/3 + Math.PI/6;
+      parts.push(Bodies.circle(x + Math.cos(a)*r*0.55, y + Math.sin(a)*r*0.55, r*0.43, common));
+    }
+    b = Body.create({ parts, restitution: RESTITUTION, friction: FRICTION,
+      frictionStatic: FRICTION_STATIC, frictionAir: AIR_FRICTION });
+  }else{
+    b = Bodies.circle(x, y, t.r, common);
+  }
   b.tier = tier;
   b.merging = false;
-  b.bornAt = performance.now();   // grace period for the over-line rule
+  b.bornAt = performance.now();
   return b;
 }
 
@@ -549,10 +587,13 @@ function fruitBody(tier, x, y){
 function onCollisions(ev){
   if(over) return;
   for(const pair of ev.pairs){
-    const a = pair.bodyA, b = pair.bodyB;
+    /* compound bodies (the flower) report their PARTS — resolve up */
+    const a = pair.bodyA.parent || pair.bodyA;
+    const b = pair.bodyB.parent || pair.bodyB;
     if(a.tier === undefined || b.tier === undefined) continue;
+    if(a === b) continue;
     if(a.tier !== b.tier) continue;
-    if(a.merging || b.merging) continue;   // guard: 3 touching -> only one pair merges
+    if(a.merging || b.merging) continue;
     a.merging = b.merging = true;
     const tier = a.tier;
     const mx = (a.position.x + b.position.x) / 2;
@@ -562,14 +603,14 @@ function onCollisions(ev){
     removeFruit(a); removeFruit(b);
 
     if(tier === TIERS.length - 1){
-      addScore(WHALE_BONUS, mx, my);
+      addScore(FLOWER_BONUS, mx, my);
       celebrate(mx, my);
       sndBig();
       shake = reduceMotion ? 0 : 14;
       continue;
     }
     const nt = tier + 1;
-    if(nt > maxMade){                       // legend unlock (persists)
+    if(nt > maxMade){
       maxMade = nt;
       try{ localStorage.setItem(KEY_SEEN, String(maxMade)); }catch(e){}
     }
@@ -579,7 +620,7 @@ function onCollisions(ev){
     bodies.push(nb);
     popTweens.set(nb.id, performance.now());
     addScore(MERGE_POINTS[nt], mx, my - TIERS[nt].r);
-    burst(mx, my, TIERS[nt].fill, Math.min(12, 5 + nt));
+    burst(mx, my, TIERS[nt].fill || '#D70000', Math.min(12, 5 + nt));
     sndMerge(nt);
     if(nt >= SHAKE_TIER && !reduceMotion) shake = Math.max(shake, 6);
   }
@@ -640,8 +681,6 @@ function drop(){
 }
 
 /* ================= INPUT ================= */
-/* Touch: drag anywhere on the play area to aim; release drops.
-   Mouse: move to aim, click to drop. */
 function eventWorldX(e){
   const r = canvas.getBoundingClientRect();
   let cx;
@@ -675,17 +714,13 @@ function celebrate(x, y){
   }
 }
 
-/* ================= GAME OVER (strict) =================
-   THE RULE: once a creature has existed longer than its birth grace,
-   any moment its center is above the line COUNTS toward its 2s timer.
-   There is NO settle/speed condition — jostling the pile by spamming
-   drops cannot stop the clock. If it's over the line, you lose. */
+/* ================= GAME OVER (strict) ================= */
 function checkOverLine(dt){
   const lineY = BOX_TOP + OVER_LINE_OFF;
   const now = performance.now();
   anyOverLine = false;
   for(const b of bodies){
-    if(now - b.bornAt < BORN_GRACE_MS) continue;   // still falling in
+    if(now - b.bornAt < BORN_GRACE_MS) continue;
     if(b.position.y < lineY){
       anyOverLine = true;
       const t = (overTimers.get(b.id) || 0) + dt;
@@ -699,14 +734,40 @@ function checkOverLine(dt){
 
 /* ================= RENDER ================= */
 function drawFruitAt(c, x, y, r, tier, angle){
-  const s = SPRITES[tier];
-  const d = r * 2 * SPRITE_OVER;
+  const t = TIERS[tier];
   c.save();
   c.translate(x, y);
   if(angle) c.rotate(angle);
-  c.imageSmoothingEnabled = true;   // smooth round bodies (pixels are big enough to stay crisp)
-  c.drawImage(s, -d/2, -d/2, d, d);
+  c.imageSmoothingEnabled = true;
+  if(t.flower){
+    /* the logo, at its true aspect (329x360), sized to the bounding r */
+    if(FLOWER_IMG.complete && FLOWER_IMG.naturalWidth){
+      const h = r * 2 * 1.02;
+      const w = h * (FLOWER_IMG.naturalWidth / FLOWER_IMG.naturalHeight);
+      c.drawImage(FLOWER_IMG, -w/2, -h/2, w, h);
+    }else{
+      c.beginPath(); c.arc(0, 0, r, 0, Math.PI*2);
+      c.fillStyle = '#D70000'; c.fill();
+    }
+  }else{
+    const s = SPRITES[tier];
+    const d = r * 2 * SPRITE_OVER;
+    c.drawImage(s, -d/2, -d/2, d, d);
+  }
   c.restore();
+}
+
+/* the vessel: pixel-shadowed rounded box in the site's dialog style */
+function vesselPath(inset){
+  const l = BOX_L + inset, r = BOX_R - inset, b = BOX_BOTTOM + WALL_T - inset, t = BOX_TOP;
+  const cr = Math.max(6, CORNER_R - inset);
+  ctx.beginPath();
+  ctx.moveTo(l, t);
+  ctx.lineTo(l, b - cr);
+  ctx.quadraticCurveTo(l, b, l + cr, b);
+  ctx.lineTo(r - cr, b);
+  ctx.quadraticCurveTo(r, b, r, b - cr);
+  ctx.lineTo(r, t);
 }
 function render(now){
   ctx.clearRect(0, 0, cssW, cssH);
@@ -719,13 +780,18 @@ function render(now){
   ctx.translate(offX, offY);
   ctx.scale(scale, scale);
 
-  /* the vessel: ink walls + floor + rim lips, inset in open paper */
-  ctx.fillStyle = INK;
-  ctx.fillRect(BOX_L, BOX_TOP, WALL_T, BOX_H + WALL_T);
-  ctx.fillRect(BOX_R - WALL_T, BOX_TOP, WALL_T, BOX_H + WALL_T);
-  ctx.fillRect(BOX_L, BOX_BOTTOM, BOX_W, WALL_T);
-  ctx.fillRect(BOX_L - 4, BOX_TOP, WALL_T + 8, 4);
-  ctx.fillRect(BOX_R - WALL_T - 4, BOX_TOP, WALL_T + 8, 4);
+  /* hard offset shadow (same language as the site's pixel dialogs) */
+  ctx.save();
+  ctx.translate(6, 6);
+  vesselPath(0);
+  ctx.fillStyle = 'rgba(22,20,18,.16)';
+  ctx.fill();
+  ctx.restore();
+
+  /* interior: slightly deeper paper */
+  vesselPath(WALL_T/2);
+  ctx.fillStyle = '#E2DDD2';
+  ctx.fill();
 
   /* game-over line — subtle dashes; red flash while threatened */
   const lineY = BOX_TOP + OVER_LINE_OFF;
@@ -764,17 +830,29 @@ function render(now){
     drawFruitAt(ctx, b.position.x, b.position.y, r, b.tier, b.angle);
   }
 
-  /* THE LEGEND — the whole chain under the box; secret tiers show
-     the "?" box until the player has created them once. */
+  /* the vessel walls: ink stroke with rounded bottom corners + rim lips */
+  vesselPath(WALL_T/2);
+  ctx.lineWidth = WALL_T;
+  ctx.strokeStyle = INK;
+  ctx.stroke();
+  ctx.fillStyle = INK;
+  ctx.fillRect(BOX_L - 4, BOX_TOP, WALL_T + 8, 4);
+  ctx.fillRect(BOX_R - WALL_T - 4, BOX_TOP, WALL_T + 8, 4);
+
+  /* THE LEGEND — the chain under the box; the last four keep their
+     secret behind a gold "?" until each is created. */
   {
     const startX = SCENE_W/2 - LEGEND_GAP * (TIERS.length - 1) / 2;
     ctx.imageSmoothingEnabled = true;
     for(let i = 0; i < TIERS.length; i++){
       const lx = startX + i * LEGEND_GAP;
       const secret = i >= SECRET_FROM && i > maxMade;
-      const spr = secret ? SECRET_SPRITE : SPRITES[i];
-      const d = LEGEND_R * 2 * SPRITE_OVER;
-      ctx.drawImage(spr, lx - d/2, LEGEND_Y - d/2, d, d);
+      if(secret){
+        const d = LEGEND_R * 2 * SPRITE_OVER;
+        ctx.drawImage(SECRET_SPRITE, lx - d/2, LEGEND_Y - d/2, d, d);
+      }else{
+        drawFruitAt(ctx, lx, LEGEND_Y, LEGEND_R, i, 0);
+      }
     }
   }
 
@@ -948,8 +1026,7 @@ if(location.search.includes('debug=1')){
     box(){ return { top: BOX_TOP, bottom: BOX_BOTTOM, inL: IN_L, inR: IN_R, sceneW: SCENE_W, sceneH: SCENE_H }; },
     maxMade(){ return maxMade; },
     clearSeen(){ maxMade = 0; try{ localStorage.removeItem('earlspade_game_seen_v1'); }catch(e){} },
-    worldH(){ return BOX_BOTTOM; },
-    boxTop(){ return BOX_TOP; }
+    tiers(){ return TIERS.length; }
   };
 }
 
