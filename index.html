@@ -394,34 +394,18 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    its breathing "coming soon") */
 .hb-top{font-size:.38rem;font-weight:400;letter-spacing:.14em;text-indent:.14em;opacity:.5}
 
-/* ===== THE DEEP TEN — live leaderboard card under the game object.
-   Only appears once real scores arrive; offline it simply never shows. */
-.board-card{display:block;width:min(430px,calc(100% - 2*var(--pad)));margin:clamp(1.6rem,4vw,2.6rem) auto 0;
-  background:var(--paper);border:2px solid var(--ink);box-shadow:5px 5px 0 0 rgba(22,20,18,.22);
-  padding:.95rem 1rem 1rem;text-decoration:none;color:var(--ink);
-  font-family:'Press Start 2P',var(--mono);
-  opacity:0;transform:translateY(14px);transition:opacity .55s var(--ease),transform .55s var(--ease)}
-.board-card.in{opacity:1;transform:none}
-@media(hover:hover){.board-card:hover{transform:translateY(-3px)}.board-card.in:hover{transform:translateY(-3px)}}
-.board-card:active{transform:scale(.98)}
-.board-head{display:flex;align-items:center;gap:.55rem;margin-bottom:.8rem}
-.board-title{font-size:.5rem;letter-spacing:.08em;text-transform:uppercase}
-.board-live{margin-left:auto;display:flex;align-items:center;gap:.32rem;font-size:.34rem;letter-spacing:.12em;color:var(--ink-soft)}
-.board-live::before{content:"";width:6px;height:6px;background:#D70000;animation:liveBlink 1.6s steps(2,end) infinite}
-@keyframes liveBlink{0%,45%{opacity:1}55%,100%{opacity:.25}}
-.board-rows{list-style:none;margin:0 0 .85rem;padding:0}
-.board-rows li{display:flex;align-items:baseline;gap:.55rem;font-size:.44rem;line-height:2.5;
-  border-bottom:1px dashed rgba(22,20,18,.14)}
-.board-rows li:last-child{border-bottom:none}
-.board-rows .brk{width:1.6em;color:var(--ink-soft)}
-.board-rows .bnm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
-.board-rows .bsc{font-variant-numeric:tabular-nums}
-.board-rows li:first-child .brk,.board-rows li:first-child .bsc{color:#D70000}
-.board-cta{display:block;font-size:.38rem;letter-spacing:.08em;color:var(--ink-soft);text-transform:uppercase}
-@media(max-width:560px){
-  .board-card{padding:.85rem .8rem .9rem}
-  .board-rows li{font-size:.4rem}
-}
+/* ===== mini leaderboard — a whisper above the play button:
+   a trophy, then the top three names. Appears only with real scores. */
+.mini-board{display:flex;align-items:center;justify-content:center;gap:.5rem;
+  margin-bottom:.9rem;font-family:'Press Start 2P',var(--mono);font-size:.36rem;
+  letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;
+  opacity:0;transform:translateY(8px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.mini-board.in{opacity:1;transform:none}
+.mini-board .mbn{color:var(--ink-soft)}
+.mini-board .mbn:first-of-type{color:#D70000}
+.mini-board .mbd{color:var(--ink-soft);opacity:.45}
+.mini-board svg{flex:none}
+@media(max-width:560px){.mini-board{font-size:.3rem;gap:.38rem;margin-bottom:.7rem}}
 
 /* SERIES 3 — a pixel-art treasure chest moored below the archive.
    Press it: the lid swaps open, the gold inside twinkles, and the
@@ -977,6 +961,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     </a>
 
     <a class="thing" href="game.html" aria-label="Play our game">
+      <span class="mini-board" id="miniBoard" hidden><svg width="13" height="13" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="8" height="1" fill="#E8B33C"/><rect x="2" y="2" width="8" height="3" fill="#E8B33C"/><rect x="0" y="2" width="2" height="1" fill="#E8B33C"/><rect x="10" y="2" width="2" height="1" fill="#E8B33C"/><rect x="0" y="3" width="1" height="2" fill="#E8B33C"/><rect x="11" y="3" width="1" height="2" fill="#E8B33C"/><rect x="1" y="5" width="1" height="1" fill="#E8B33C"/><rect x="10" y="5" width="1" height="1" fill="#E8B33C"/><rect x="3" y="5" width="6" height="2" fill="#C4922A"/><rect x="4" y="7" width="4" height="1" fill="#E8B33C"/><rect x="5" y="8" width="2" height="2" fill="#C4922A"/><rect x="3" y="10" width="6" height="1" fill="#E8B33C"/><rect x="6" y="3" width="1" height="1" fill="#F2CC70"/></svg><span class="mbn" id="mb1"></span><span class="mbd">&middot;</span><span class="mbn" id="mb2"></span><span class="mbd">&middot;</span><span class="mbn" id="mb3"></span></span>
       <svg class="thing-art" viewBox="0 0 120 102" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true"><ellipse cx="60" cy="94" rx="32" ry="5.5" fill="url(#gShadow)"/><g class="pc-float" style="animation-delay:.5s"><rect x="45" y="14" width="30" height="5" fill="#2A1D10"/><rect x="35" y="19" width="10" height="5" fill="#2A1D10"/><rect x="45" y="19" width="5" height="5" fill="#D70000"/><rect x="50" y="19" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="19" width="5" height="5" fill="#5F9D96"/><rect x="75" y="19" width="10" height="5" fill="#2A1D10"/><rect x="30" y="24" width="5" height="5" fill="#2A1D10"/><rect x="35" y="24" width="15" height="5" fill="#D70000"/><rect x="50" y="24" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="24" width="15" height="5" fill="#5F9D96"/><rect x="85" y="24" width="5" height="5" fill="#2A1D10"/><rect x="25" y="29" width="5" height="5" fill="#2A1D10"/><rect x="30" y="29" width="20" height="5" fill="#D70000"/><rect x="50" y="29" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="29" width="20" height="5" fill="#5F9D96"/><rect x="90" y="29" width="5" height="5" fill="#2A1D10"/><rect x="25" y="34" width="5" height="5" fill="#2A1D10"/><rect x="30" y="34" width="15" height="5" fill="#D70000"/><rect x="45" y="34" width="5" height="5" fill="#FFFFFF"/><rect x="50" y="34" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="34" width="20" height="5" fill="#5F9D96"/><rect x="90" y="34" width="5" height="5" fill="#2A1D10"/><rect x="20" y="39" width="5" height="5" fill="#2A1D10"/><rect x="25" y="39" width="15" height="5" fill="#D70000"/><rect x="40" y="39" width="10" height="5" fill="#FFFFFF"/><rect x="50" y="39" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="39" width="25" height="5" fill="#5F9D96"/><rect x="95" y="39" width="5" height="5" fill="#2A1D10"/><rect x="20" y="44" width="5" height="5" fill="#2A1D10"/><rect x="25" y="44" width="20" height="5" fill="#D70000"/><rect x="45" y="44" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="44" width="20" height="5" fill="#5F9D96"/><rect x="95" y="44" width="5" height="5" fill="#2A1D10"/><rect x="20" y="49" width="5" height="5" fill="#2A1D10"/><rect x="25" y="49" width="20" height="5" fill="#D70000"/><rect x="45" y="49" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="49" width="20" height="5" fill="#5F9D96"/><rect x="95" y="49" width="5" height="5" fill="#2A1D10"/><rect x="20" y="54" width="5" height="5" fill="#2A1D10"/><rect x="25" y="54" width="20" height="5" fill="#D70000"/><rect x="45" y="54" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="54" width="20" height="5" fill="#5F9D96"/><rect x="95" y="54" width="5" height="5" fill="#2A1D10"/><rect x="20" y="59" width="5" height="5" fill="#2A1D10"/><rect x="25" y="59" width="5" height="5" fill="#9E0000"/><rect x="30" y="59" width="15" height="5" fill="#D70000"/><rect x="45" y="59" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="59" width="10" height="5" fill="#5F9D96"/><rect x="85" y="59" width="5" height="5" fill="#35706B"/><rect x="90" y="59" width="5" height="5" fill="#5F9D96"/><rect x="95" y="59" width="5" height="5" fill="#2A1D10"/><rect x="25" y="64" width="5" height="5" fill="#2A1D10"/><rect x="30" y="64" width="5" height="5" fill="#9E0000"/><rect x="35" y="64" width="15" height="5" fill="#D70000"/><rect x="50" y="64" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="64" width="10" height="5" fill="#5F9D96"/><rect x="80" y="64" width="10" height="5" fill="#35706B"/><rect x="90" y="64" width="5" height="5" fill="#2A1D10"/><rect x="25" y="69" width="5" height="5" fill="#2A1D10"/><rect x="30" y="69" width="10" height="5" fill="#9E0000"/><rect x="40" y="69" width="10" height="5" fill="#D70000"/><rect x="50" y="69" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="69" width="5" height="5" fill="#5F9D96"/><rect x="75" y="69" width="15" height="5" fill="#35706B"/><rect x="90" y="69" width="5" height="5" fill="#2A1D10"/><rect x="30" y="74" width="5" height="5" fill="#2A1D10"/><rect x="35" y="74" width="10" height="5" fill="#9E0000"/><rect x="45" y="74" width="5" height="5" fill="#D70000"/><rect x="50" y="74" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="74" width="5" height="5" fill="#5F9D96"/><rect x="75" y="74" width="10" height="5" fill="#35706B"/><rect x="85" y="74" width="5" height="5" fill="#2A1D10"/><rect x="35" y="79" width="10" height="5" fill="#2A1D10"/><rect x="45" y="79" width="5" height="5" fill="#9E0000"/><rect x="50" y="79" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="79" width="5" height="5" fill="#35706B"/><rect x="75" y="79" width="10" height="5" fill="#2A1D10"/><rect x="45" y="84" width="30" height="5" fill="#2A1D10"/></g></svg>
       <span class="hb-caption"><span class="hb-top">take a break</span><span class="hb-series">play our game</span></span>
     </a>
@@ -988,16 +973,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
   </div>
 
-  <!-- THE DEEP TEN — live scores from the game, right under the play button -->
-  <a class="board-card" id="boardCard" href="game.html" hidden aria-label="Play the game and take a spot on the leaderboard">
-    <span class="board-head">
-      <svg width="16" height="16" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="8" height="1" fill="#E8B33C"/><rect x="2" y="2" width="8" height="3" fill="#E8B33C"/><rect x="0" y="2" width="2" height="1" fill="#E8B33C"/><rect x="10" y="2" width="2" height="1" fill="#E8B33C"/><rect x="0" y="3" width="1" height="2" fill="#E8B33C"/><rect x="11" y="3" width="1" height="2" fill="#E8B33C"/><rect x="1" y="5" width="1" height="1" fill="#E8B33C"/><rect x="10" y="5" width="1" height="1" fill="#E8B33C"/><rect x="3" y="5" width="6" height="2" fill="#C4922A"/><rect x="4" y="7" width="4" height="1" fill="#E8B33C"/><rect x="5" y="8" width="2" height="2" fill="#C4922A"/><rect x="3" y="10" width="6" height="1" fill="#E8B33C"/><rect x="6" y="3" width="1" height="1" fill="#F2CC70"/></svg>
-      <span class="board-title">the deep ten</span>
-      <span class="board-live">LIVE</span>
-    </span>
-    <ol class="board-rows" id="boardRows"></ol>
-    <span class="board-cta">think you can beat them? play &rarr;</span>
-  </a>
 </div>
 
 </section>
@@ -2284,48 +2259,34 @@ document.addEventListener('touchstart', function(e){
    Edge/Bing never shows the Visual Search hover icon on it). */
 (function(){ var hl=document.getElementById('heroLogo'); if(hl) hl.style.backgroundImage='url("hero-flower.webp")'; })();
 
-/* THE DEEP TEN — live leaderboard card. Fetches lazily when the row
-   scrolls near, refreshes quietly while the tab is visible, and never
-   shows at all if the API is offline or empty (no sad empty box). */
+/* mini leaderboard — the top three names above the play button.
+   Fetched lazily, refreshed quietly; offline it simply never appears. */
 (function(){
-  var card = document.getElementById('boardCard');
-  var rowsEl = document.getElementById('boardRows');
-  if(!card || !window.fetch || !('IntersectionObserver' in window)) return;
-  var timer = null;
-  function paint(rows){
-    rowsEl.innerHTML = '';
-    rows.slice(0, 5).forEach(function(r){
-      var li = document.createElement('li');
-      var rk = document.createElement('span'); rk.className = 'brk'; rk.textContent = r.rank;
-      var nm = document.createElement('span'); nm.className = 'bnm'; nm.textContent = r.name;
-      var sc = document.createElement('span'); sc.className = 'bsc'; sc.textContent = r.score;
-      li.appendChild(rk); li.appendChild(nm); li.appendChild(sc);
-      rowsEl.appendChild(li);
-    });
-  }
+  var strip = document.getElementById('miniBoard');
+  if(!strip || !window.fetch || !('IntersectionObserver' in window)) return;
+  var slots = [document.getElementById('mb1'), document.getElementById('mb2'), document.getElementById('mb3')];
   function load(){
     fetch('/api/leaderboard', { cache: 'no-store' })
       .then(function(res){ if(!res.ok) throw 0; return res.json(); })
       .then(function(rows){
         if(!Array.isArray(rows) || !rows.length) throw 0;
-        paint(rows);
-        if(card.hidden){
-          card.hidden = false;
-          requestAnimationFrame(function(){ requestAnimationFrame(function(){ card.classList.add('in'); }); });
+        for(var i = 0; i < 3; i++) slots[i].textContent = rows[i] ? rows[i].name : '—';
+        if(strip.hidden){
+          strip.hidden = false;
+          requestAnimationFrame(function(){ requestAnimationFrame(function(){ strip.classList.add('in'); }); });
         }
       })
-      .catch(function(){ /* offline: the card just never appears */ });
+      .catch(function(){});
   }
-  var row = document.querySelector('.things-row');
   var io = new IntersectionObserver(function(entries){
     entries.forEach(function(e){
       if(!e.isIntersecting) return;
       io.disconnect();
       load();
-      timer = setInterval(function(){ if(!document.hidden) load(); }, 45000);
+      setInterval(function(){ if(!document.hidden) load(); }, 45000);
     });
   }, { rootMargin: '300px' });
-  io.observe(row || card);
+  io.observe(document.querySelector('.things-row') || strip);
 })();
 
 </script>
