@@ -38,14 +38,21 @@ const SCENE_H = 760;
 /* the box: a small inset vessel sitting in open water — NOT the phone
    borders. Snug on purpose: losing should always be close. */
 const WALL_T  = 12;
-const BOX_W   = 380;
-const BOX_H   = 465;
+const BOX_W   = 344;
+const BOX_H   = 412;
 const BOX_L   = (SCENE_W - BOX_W) / 2;   // left outer edge
 const BOX_R   = BOX_L + BOX_W;           // right outer edge
-const BOX_BOTTOM = SCENE_H - 70;         // interior floor y
+const BOX_BOTTOM = SCENE_H - 128;        // interior floor y (box sits higher)
 const BOX_TOP    = BOX_BOTTOM - BOX_H;   // rim y
 const IN_L = BOX_L + WALL_T;             // interior bounds
 const IN_R = BOX_R - WALL_T;
+/* the LEGEND: the whole evolution chain in a row under the box. The
+   last two tiers hide behind a "?" secret box until the player has
+   actually created them once (remembered in localStorage). */
+const LEGEND_Y      = SCENE_H - 62;   // center y of the legend row
+const LEGEND_R      = 15;             // mini disc radius
+const LEGEND_GAP    = 40;             // spacing between chain entries
+const SECRET_FROM   = 9;              // tiers 9+ are secret until made
 
 /* ================= THE CAST =================
    11 round sea creatures, small -> big, ending on the whale shark.
@@ -407,6 +414,21 @@ function buildSprite(t){
    painted circle to line up exactly with the physics circle. */
 const SPRITE_OVER = GRID / (2 * DISC_R);
 
+/* the secret-tier disc: an ink circle with a paper "?" */
+const SECRET_SPRITE = buildSprite({
+  fill:'#161412', dk:'#161412', lt:'#3A342E',
+  feat:{ ox:7, oy:5, rows:[
+    '..WWWWW..',
+    '.WW...WW.',
+    '.....WW..',
+    '....WW...',
+    '....WW...',
+    '.........',
+    '....WW...',
+    '....WW...',
+  ] }
+});
+
 /* effects budgets (kept cheap for phones) */
 const MAX_PARTICLES = 80;
 const SHAKE_TIER    = 7;   // merges creating tier >= this shake the screen
@@ -415,6 +437,7 @@ const SHAKE_TIER    = 7;   // merges creating tier >= this shake the screen
 const KEY_BEST  = 'earlspade_game_best_v1';
 const KEY_NAME  = 'earlspade_player_v1';
 const KEY_SOUND = 'earlspade_game_sound_v1';
+const KEY_SEEN  = 'earlspade_game_seen_v1';   // furthest tier ever created
 
 /* ================= STATE ================= */
 const playEl  = document.getElementById('play');
@@ -428,6 +451,7 @@ let cssW = 0, cssH = 0;
 let scale = 1, offX = 0, offY = 0;     // letterboxed zoom of the fixed scene
 let running = false, over = false;
 let score = 0, best = +(localStorage.getItem(KEY_BEST) || 0);
+let maxMade = Math.min(TIERS.length - 1, +(localStorage.getItem(KEY_SEEN) || 0));
 let heldTier = 0, nextTier = 0;
 let aimX = SCENE_W / 2;
 let canDrop = true, lastDrop = 0, dropped = false;
@@ -539,6 +563,10 @@ function onCollisions(ev){
       continue;
     }
     const nt = tier + 1;
+    if(nt > maxMade){                       // legend unlock (persists)
+      maxMade = nt;
+      try{ localStorage.setItem(KEY_SEEN, String(maxMade)); }catch(e){}
+    }
     const nb = fruitBody(nt, mx, my);
     Body.setVelocity(nb, { x: vx, y: vy });
     Composite.add(world, nb);
@@ -730,6 +758,20 @@ function render(now){
     drawFruitAt(ctx, b.position.x, b.position.y, r, b.tier, b.angle);
   }
 
+  /* THE LEGEND — the whole chain under the box; secret tiers show
+     the "?" box until the player has created them once. */
+  {
+    const startX = SCENE_W/2 - LEGEND_GAP * (TIERS.length - 1) / 2;
+    ctx.imageSmoothingEnabled = false;
+    for(let i = 0; i < TIERS.length; i++){
+      const lx = startX + i * LEGEND_GAP;
+      const secret = i >= SECRET_FROM && i > maxMade;
+      const spr = secret ? SECRET_SPRITE : SPRITES[i];
+      const d = LEGEND_R * 2 * SPRITE_OVER;
+      ctx.drawImage(spr, lx - d/2, LEGEND_Y - d/2, d, d);
+    }
+  }
+
   /* particles (square = pixel confetti) */
   for(let i = particles.length - 1; i >= 0; i--){
     const p = particles[i];
@@ -898,6 +940,8 @@ if(location.search.includes('debug=1')){
     drop(x){ aimX = x; lastDrop = 0; canDrop = true; drop(); },
     forceAim(x){ aimX = x; },
     box(){ return { top: BOX_TOP, bottom: BOX_BOTTOM, inL: IN_L, inR: IN_R, sceneW: SCENE_W, sceneH: SCENE_H }; },
+    maxMade(){ return maxMade; },
+    clearSeen(){ maxMade = 0; try{ localStorage.removeItem('earlspade_game_seen_v1'); }catch(e){} },
     worldH(){ return BOX_BOTTOM; },
     boxTop(){ return BOX_TOP; }
   };
