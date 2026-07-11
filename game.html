@@ -110,6 +110,38 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 .dialog .row2{display:flex;gap:.6rem}
 .dialog .row2 .px-btn{flex:1}
 
+/* ===== LOADER — the curtain. Paper, a bouncing pixel flower, dots. ===== */
+.loader{position:fixed;inset:0;z-index:40;background:var(--paper);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;
+  opacity:1;visibility:visible;transition:opacity .5s steps(6,end),visibility 0s linear .5s}
+.loader.done{opacity:0;visibility:hidden}
+.loader-flower{width:56px;height:61px;image-rendering:pixelated;animation:loaderBob 1.15s ease-in-out infinite}
+@keyframes loaderBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-9px) rotate(4deg)}}
+.loader-text{font-family:var(--px);font-size:.5rem;letter-spacing:.14em;color:var(--ink)}
+.loader-text .ld{display:inline-block;animation:ldBlink 1.2s steps(2,end) infinite}
+.loader-text .ld:nth-child(2){animation-delay:.2s}
+.loader-text .ld:nth-child(3){animation-delay:.4s}
+@keyframes ldBlink{0%,40%{opacity:0}60%,100%{opacity:1}}
+
+/* ===== micro-animations ===== */
+#score.bump{animation:scoreBump .28s steps(4,end)}
+@keyframes scoreBump{0%{transform:scale(1)}35%{transform:scale(1.28)}100%{transform:scale(1)}}
+#score{display:inline-block;transform-origin:left bottom}
+#nextPrev.pop{animation:nextPop .22s steps(3,end)}
+@keyframes nextPop{0%{transform:scale(.55)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+
+/* dialog entrance: rise + settle, rows stagger in */
+.dialog{transform:translateX(-50%) translateY(14px) scale(.97)}
+.dialog.show{transform:translateX(-50%) translateY(0) scale(1);
+  transition:opacity .16s steps(3,end),transform .26s cubic-bezier(.2,1.4,.5,1)}
+.dialog.show .lb-row{animation:rowIn .32s both}
+.dialog.show .lb-row:nth-child(1){animation-delay:.03s}.dialog.show .lb-row:nth-child(2){animation-delay:.07s}
+.dialog.show .lb-row:nth-child(3){animation-delay:.11s}.dialog.show .lb-row:nth-child(4){animation-delay:.15s}
+.dialog.show .lb-row:nth-child(5){animation-delay:.19s}.dialog.show .lb-row:nth-child(6){animation-delay:.23s}
+.dialog.show .lb-row:nth-child(7){animation-delay:.27s}.dialog.show .lb-row:nth-child(8){animation-delay:.31s}
+.dialog.show .lb-row:nth-child(9){animation-delay:.35s}.dialog.show .lb-row:nth-child(10){animation-delay:.39s}
+@keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
@@ -154,6 +186,9 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
   </div>
   <div class="hud-right">
     <div class="next-wrap"><span class="next-label">NEXT</span><canvas id="nextPrev" width="60" height="60"></canvas></div>
+    <button class="mute-btn" id="boardBtn" aria-haspopup="dialog" aria-controls="boardDialog" aria-label="Leaderboard">
+      <svg width="18" height="18" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="8" height="1" fill="#E8B33C"/><rect x="2" y="2" width="8" height="3" fill="#E8B33C"/><rect x="0" y="2" width="2" height="1" fill="#E8B33C"/><rect x="10" y="2" width="2" height="1" fill="#E8B33C"/><rect x="0" y="3" width="1" height="2" fill="#E8B33C"/><rect x="11" y="3" width="1" height="2" fill="#E8B33C"/><rect x="1" y="5" width="1" height="1" fill="#E8B33C"/><rect x="10" y="5" width="1" height="1" fill="#E8B33C"/><rect x="3" y="5" width="6" height="2" fill="#C4922A"/><rect x="4" y="7" width="4" height="1" fill="#E8B33C"/><rect x="5" y="8" width="2" height="2" fill="#C4922A"/><rect x="3" y="10" width="6" height="1" fill="#E8B33C"/><rect x="6" y="3" width="1" height="1" fill="#F2CC70"/></svg>
+    </button>
     <button class="mute-btn" id="muteBtn" aria-pressed="true" aria-label="Toggle sound">&#9834;</button>
   </div>
 </header>
@@ -175,8 +210,22 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
       </div>
       <button class="px-btn wide" id="againBtn">PLAY AGAIN</button>
     </div>
+
+    <!-- THE BOARD — mid-game leaderboard -->
+    <div class="dialog" id="boardDialog" role="dialog" aria-modal="true" aria-label="Leaderboard">
+      <h2>THE DEEP TEN</h2>
+      <div class="lb-note" id="bdStatus">loading the board&hellip;</div>
+      <div class="lb" id="bdList" style="display:none"></div>
+      <button class="px-btn wide" id="bdClose">BACK TO THE GAME</button>
+    </div>
   </div>
 </main>
+
+<!-- the curtain: covers the first janky frames while fonts/physics warm up -->
+<div class="loader" id="loader" aria-hidden="true">
+  <img class="loader-flower" src="logo.png" alt="" width="56" height="61"/>
+  <div class="loader-text">LOADING<span class="ld">.</span><span class="ld">.</span><span class="ld">.</span></div>
+</div>
 
 <script src="matter.min.js"></script>
 <script src="game.js"></script>

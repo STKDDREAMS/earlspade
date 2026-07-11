@@ -394,6 +394,35 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    its breathing "coming soon") */
 .hb-top{font-size:.38rem;font-weight:400;letter-spacing:.14em;text-indent:.14em;opacity:.5}
 
+/* ===== THE DEEP TEN — live leaderboard card under the game object.
+   Only appears once real scores arrive; offline it simply never shows. */
+.board-card{display:block;width:min(430px,calc(100% - 2*var(--pad)));margin:clamp(1.6rem,4vw,2.6rem) auto 0;
+  background:var(--paper);border:2px solid var(--ink);box-shadow:5px 5px 0 0 rgba(22,20,18,.22);
+  padding:.95rem 1rem 1rem;text-decoration:none;color:var(--ink);
+  font-family:'Press Start 2P',var(--mono);
+  opacity:0;transform:translateY(14px);transition:opacity .55s var(--ease),transform .55s var(--ease)}
+.board-card.in{opacity:1;transform:none}
+@media(hover:hover){.board-card:hover{transform:translateY(-3px)}.board-card.in:hover{transform:translateY(-3px)}}
+.board-card:active{transform:scale(.98)}
+.board-head{display:flex;align-items:center;gap:.55rem;margin-bottom:.8rem}
+.board-title{font-size:.5rem;letter-spacing:.08em;text-transform:uppercase}
+.board-live{margin-left:auto;display:flex;align-items:center;gap:.32rem;font-size:.34rem;letter-spacing:.12em;color:var(--ink-soft)}
+.board-live::before{content:"";width:6px;height:6px;background:#D70000;animation:liveBlink 1.6s steps(2,end) infinite}
+@keyframes liveBlink{0%,45%{opacity:1}55%,100%{opacity:.25}}
+.board-rows{list-style:none;margin:0 0 .85rem;padding:0}
+.board-rows li{display:flex;align-items:baseline;gap:.55rem;font-size:.44rem;line-height:2.5;
+  border-bottom:1px dashed rgba(22,20,18,.14)}
+.board-rows li:last-child{border-bottom:none}
+.board-rows .brk{width:1.6em;color:var(--ink-soft)}
+.board-rows .bnm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
+.board-rows .bsc{font-variant-numeric:tabular-nums}
+.board-rows li:first-child .brk,.board-rows li:first-child .bsc{color:#D70000}
+.board-cta{display:block;font-size:.38rem;letter-spacing:.08em;color:var(--ink-soft);text-transform:uppercase}
+@media(max-width:560px){
+  .board-card{padding:.85rem .8rem .9rem}
+  .board-rows li{font-size:.4rem}
+}
+
 /* SERIES 3 — a pixel-art treasure chest moored below the archive.
    Press it: the lid swaps open, the gold inside twinkles, and the
    note drops with the question. Every few seconds it gives a little
@@ -958,6 +987,17 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     </button>
 
   </div>
+
+  <!-- THE DEEP TEN — live scores from the game, right under the play button -->
+  <a class="board-card" id="boardCard" href="game.html" hidden aria-label="Play the game and take a spot on the leaderboard">
+    <span class="board-head">
+      <svg width="16" height="16" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="8" height="1" fill="#E8B33C"/><rect x="2" y="2" width="8" height="3" fill="#E8B33C"/><rect x="0" y="2" width="2" height="1" fill="#E8B33C"/><rect x="10" y="2" width="2" height="1" fill="#E8B33C"/><rect x="0" y="3" width="1" height="2" fill="#E8B33C"/><rect x="11" y="3" width="1" height="2" fill="#E8B33C"/><rect x="1" y="5" width="1" height="1" fill="#E8B33C"/><rect x="10" y="5" width="1" height="1" fill="#E8B33C"/><rect x="3" y="5" width="6" height="2" fill="#C4922A"/><rect x="4" y="7" width="4" height="1" fill="#E8B33C"/><rect x="5" y="8" width="2" height="2" fill="#C4922A"/><rect x="3" y="10" width="6" height="1" fill="#E8B33C"/><rect x="6" y="3" width="1" height="1" fill="#F2CC70"/></svg>
+      <span class="board-title">the deep ten</span>
+      <span class="board-live">LIVE</span>
+    </span>
+    <ol class="board-rows" id="boardRows"></ol>
+    <span class="board-cta">think you can beat them? play &rarr;</span>
+  </a>
 </div>
 
 </section>
@@ -2243,6 +2283,50 @@ document.addEventListener('touchstart', function(e){
 /* Paint the hero flower as a background (it's a <span>, not an <img>, so
    Edge/Bing never shows the Visual Search hover icon on it). */
 (function(){ var hl=document.getElementById('heroLogo'); if(hl) hl.style.backgroundImage='url("hero-flower.webp")'; })();
+
+/* THE DEEP TEN — live leaderboard card. Fetches lazily when the row
+   scrolls near, refreshes quietly while the tab is visible, and never
+   shows at all if the API is offline or empty (no sad empty box). */
+(function(){
+  var card = document.getElementById('boardCard');
+  var rowsEl = document.getElementById('boardRows');
+  if(!card || !window.fetch || !('IntersectionObserver' in window)) return;
+  var timer = null;
+  function paint(rows){
+    rowsEl.innerHTML = '';
+    rows.slice(0, 5).forEach(function(r){
+      var li = document.createElement('li');
+      var rk = document.createElement('span'); rk.className = 'brk'; rk.textContent = r.rank;
+      var nm = document.createElement('span'); nm.className = 'bnm'; nm.textContent = r.name;
+      var sc = document.createElement('span'); sc.className = 'bsc'; sc.textContent = r.score;
+      li.appendChild(rk); li.appendChild(nm); li.appendChild(sc);
+      rowsEl.appendChild(li);
+    });
+  }
+  function load(){
+    fetch('/api/leaderboard', { cache: 'no-store' })
+      .then(function(res){ if(!res.ok) throw 0; return res.json(); })
+      .then(function(rows){
+        if(!Array.isArray(rows) || !rows.length) throw 0;
+        paint(rows);
+        if(card.hidden){
+          card.hidden = false;
+          requestAnimationFrame(function(){ requestAnimationFrame(function(){ card.classList.add('in'); }); });
+        }
+      })
+      .catch(function(){ /* offline: the card just never appears */ });
+  }
+  var row = document.querySelector('.things-row');
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      io.disconnect();
+      load();
+      timer = setInterval(function(){ if(!document.hidden) load(); }, 45000);
+    });
+  }, { rootMargin: '300px' });
+  io.observe(row || card);
+})();
 
 </script>
 </body>

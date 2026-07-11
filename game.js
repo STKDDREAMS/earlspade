@@ -35,7 +35,7 @@ const SCENE_W = 480;
 const SCENE_H = 760;
 /* the vessel: an inset rounded box, a touch bigger than before. */
 const WALL_T  = 11;
-const BOX_W   = 366;
+const BOX_W   = 350;                     // a touch tighter = every drop matters
 const BOX_H   = 434;
 const BOX_L   = (SCENE_W - BOX_W) / 2;
 const BOX_R   = BOX_L + BOX_W;
@@ -854,7 +854,9 @@ function buildSprite(t){
 }
 const SPRITE_OVER = GRID / (2 * DISC_R);
 
-/* the secret disc: ink body, gold "?" — the legend keeps its secrets */
+/* the secret disc: ink body, gold "?" — the legend keeps its secrets.
+   The FINAL TWO tiers get an inverted gold disc that the legend renders
+   with a pulsing glow and orbiting sparks: clearly something special. */
 const SECRET_SPRITE = buildSprite({
   fill:'#161412', dk:'#161412', lt:'#3A342E', face:false,
   feat:{ ox:0, oy:0, rows:[
@@ -881,6 +883,33 @@ const SECRET_SPRITE = buildSprite({
       '................GG..................',
     ] }
 });
+const SECRET_GOLD_SPRITE = buildSprite({
+  fill:'#E8B33C', dk:'#C4922A', lt:'#F2CC70', face:false,
+  feat:{ ox:0, oy:0, rows:[
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '.............KKKKKKKK...............',
+      '............KKK....KKK..............',
+      '............KK......KK..............',
+      '....................KK..............',
+      '...................KKK..............',
+      '.................KKK................',
+      '................KKK.................',
+      '................KK..................',
+      '................KK..................',
+      '....................................',
+      '....................................',
+      '................KK..................',
+      '................KK..................',
+    ] }
+});
+
 
 /* effects budgets (kept cheap for phones) */
 const MAX_PARTICLES = 80;
@@ -895,7 +924,7 @@ const KEY_SEEN  = 'earlspade_game_seen_v1';
 /* ================= STATE ================= */
 const playEl  = document.getElementById('play');
 const canvas  = document.getElementById('game');
-const ctx     = canvas.getContext('2d');
+const ctx     = canvas.getContext('2d', { alpha: false });
 const nextCv  = document.getElementById('nextPrev');
 const nextCtx = nextCv.getContext('2d');
 
@@ -912,8 +941,12 @@ let bodies = [];
 let overTimers = new Map();
 let anyOverLine = false;
 let particles = [], popups = [];
+let rings = [];                 // expanding merge rings
+let ambient = [];               // slow bubbles drifting up the vessel
 let shake = 0;
 let popTweens = new Map();
+let shownScore = 0;             // HUD score ticks up toward the real score
+let uiModal = false;            // a dialog is open — swallow drops
 let rafId = null, lastT = 0, acc = 0;
 const STEP = 1000 / 60;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -952,7 +985,7 @@ paintMute();
 function resize(){
   const r = playEl.getBoundingClientRect();
   cssW = r.width; cssH = r.height;
-  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);   // 3x buys nothing here and triples fill cost
   canvas.width  = Math.round(cssW * dpr);
   canvas.height = Math.round(cssH * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -967,17 +1000,27 @@ function buildWorld(){
   engine.gravity.y = GRAVITY_Y;
   world = engine.world;
   const opts = { isStatic: true, friction: FRICTION, restitution: 0 };
+  /* VERY thick static bodies whose inner faces sit exactly at the
+     visible walls — thin walls let fast bodies tunnel straight through
+     on a janky first-load frame. Thickness costs nothing. */
+  const T = 90;
+  /* the 45-degree corner chamfers are tangent to the drawn rounded
+     corner: inner face touches the visual arc at its midpoint, angled
+     along (1,1) on the left / (1,-1) on the right, pushed OUTWARD by
+     half their thickness so nothing invisible pokes into the play area */
+  const Ri  = CORNER_R - WALL_T/2;          // interior corner radius
+  const k   = Ri * (1 - Math.SQRT1_2);      // arc midpoint offset
+  const out = (T/2) * Math.SQRT1_2;         // recess by half thickness
   Composite.add(world, [
-    Bodies.rectangle((BOX_L+BOX_R)/2, BOX_BOTTOM + WALL_T/2, BOX_W + WALL_T*2, WALL_T, opts),
-    Bodies.rectangle(BOX_L + WALL_T/2, BOX_TOP + BOX_H/2 - 200, WALL_T, BOX_H + 400, opts),
-    Bodies.rectangle(BOX_R - WALL_T/2, BOX_TOP + BOX_H/2 - 200, WALL_T, BOX_H + 400, opts),
-    /* 45-degree chamfers behind the rounded corners, so nothing wedges
-       into a square corner the player can't see */
-    Bodies.rectangle(IN_L + CORNER_R*0.35, BOX_BOTTOM - CORNER_R*0.35, CORNER_R*1.7, WALL_T, { ...opts, angle: -Math.PI/4 }),
-    Bodies.rectangle(IN_R - CORNER_R*0.35, BOX_BOTTOM - CORNER_R*0.35, CORNER_R*1.7, WALL_T, { ...opts, angle: Math.PI/4 }),
+    Bodies.rectangle((BOX_L+BOX_R)/2, BOX_BOTTOM + T/2, BOX_W + T*4, T, opts),
+    Bodies.rectangle(IN_L - T/2, BOX_TOP - 400, T, (BOX_H + 900) * 2, opts),
+    Bodies.rectangle(IN_R + T/2, BOX_TOP - 400, T, (BOX_H + 900) * 2, opts),
+    Bodies.rectangle(IN_L + k - out, BOX_BOTTOM - k + out, Ri * 2.4, T, { ...opts, angle:  Math.PI/4 }),
+    Bodies.rectangle(IN_R - k + out, BOX_BOTTOM - k + out, Ri * 2.4, T, { ...opts, angle: -Math.PI/4 }),
   ]);
   Events.on(engine, 'collisionStart', onCollisions);
   Events.on(engine, 'collisionActive', onCollisions);
+  Events.on(engine, 'collisionStart', onFirstTouch);
 }
 
 function fruitBody(tier, x, y){
@@ -1035,10 +1078,12 @@ function onCollisions(ev){
       continue;
     }
     const nt = tier + 1;
+    const maxMade0 = maxMade;
     if(nt > maxMade){
       maxMade = nt;
       try{ localStorage.setItem(KEY_SEEN, String(maxMade)); }catch(e){}
     }
+    const unlock = nt > maxMade0 && nt >= SECRET_FROM;
     const nb = fruitBody(nt, mx, my);
     Body.setVelocity(nb, { x: vx, y: vy });
     Composite.add(world, nb);
@@ -1046,8 +1091,33 @@ function onCollisions(ev){
     popTweens.set(nb.id, performance.now());
     addScore(MERGE_POINTS[nt], mx, my - TIERS[nt].r);
     burst(mx, my, TIERS[nt].fill || '#D70000', Math.min(12, 5 + nt));
+    if(!reduceMotion) rings.push({ x: mx, y: my, r: TIERS[nt].r * .7, t: 0, color: TIERS[nt].fill || '#D70000' });
+    if(unlock){
+      /* a brand-new creature: gold sparkle on its legend slot */
+      const lx = SCENE_W/2 - LEGEND_GAP * (TIERS.length - 1) / 2 + nt * LEGEND_GAP;
+      burst(lx, LEGEND_Y, '#E8B33C', 12);
+      rings.push({ x: lx, y: LEGEND_Y, r: LEGEND_R, t: 0, color: '#E8B33C' });
+    }
     sndMerge(nt);
     if(nt >= SHAKE_TIER && !reduceMotion) shake = Math.max(shake, 6);
+  }
+}
+/* a tiny dust puff the first time a creature touches anything */
+function onFirstTouch(ev){
+  if(reduceMotion) return;
+  for(const pair of ev.pairs){
+    for(const raw of [pair.bodyA, pair.bodyB]){
+      const b = raw.parent || raw;
+      if(b.tier === undefined || b.puffed) continue;
+      b.puffed = true;
+      if(b.speed < 3.2) continue;
+      const s = pair.collision && pair.collision.supports && pair.collision.supports[0];
+      const px = s ? s.x : b.position.x, py = s ? s.y : b.position.y + TIERS[b.tier].r;
+      for(let i = 0; i < 4 && particles.length < MAX_PARTICLES; i++){
+        const a = -Math.PI/2 + (Math.random() - .5) * 2.2, sp = .6 + Math.random() * 1.4;
+        particles.push({ x: px, y: py, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp * .5, r: 1.5 + Math.random()*2, color: 'rgba(107,104,98,.55)', life: .5 });
+      }
+    }
   }
 }
 function removeFruit(b){
@@ -1063,9 +1133,17 @@ const scoreEl = document.getElementById('score');
 const bestEl  = document.getElementById('best');
 function addScore(n, x, y){
   score += n;
-  scoreEl.textContent = score;
   if(score > best){ best = score; bestEl.textContent = best; localStorage.setItem(KEY_BEST, String(best)); }
   popups.push({ x, y, n, t: 0 });
+  scoreEl.classList.remove('bump');
+  void scoreEl.offsetWidth;              // restart the pop animation
+  scoreEl.classList.add('bump');
+}
+function tickScore(){
+  if(shownScore === score) return;
+  const d = score - shownScore;
+  shownScore += d > 0 ? Math.max(1, Math.ceil(d * 0.22)) : d;
+  scoreEl.textContent = shownScore;
 }
 bestEl.textContent = best;
 
@@ -1080,6 +1158,9 @@ function paintNext(){
   const s = nextCv.width;
   nextCtx.clearRect(0,0,s,s);
   drawFruitAt(nextCtx, s/2, s/2, s*0.36, nextTier, 0);
+  nextCv.classList.remove('pop');
+  void nextCv.offsetWidth;
+  nextCv.classList.add('pop');
 }
 function promoteNext(){
   heldTier = nextTier;
@@ -1092,7 +1173,7 @@ function clampAim(x){
 }
 function heldY(){ return Math.min(BOX_TOP - TIERS[heldTier].r - 14, 150); }
 function drop(){
-  if(!canDrop || over) return;
+  if(!canDrop || over || uiModal) return;
   const now = performance.now();
   if(now - lastDrop < DROP_COOLDOWN_MS) return;
   lastDrop = now; canDrop = false;
@@ -1136,6 +1217,21 @@ function celebrate(x, y){
     const a = Math.random() * Math.PI * 2, sp = 2 + Math.random() * 5;
     particles.push({ x, y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp - 3, r: 2.5 + Math.random()*3.5,
       color: colors[i % colors.length], life: 1.6 });
+  }
+}
+
+/* slow ambient bubbles inside the vessel — the sea breathing */
+function initAmbient(){
+  ambient = [];
+  if(reduceMotion) return;
+  for(let i = 0; i < 7; i++){
+    ambient.push({
+      x: IN_L + 18 + Math.random() * (IN_R - IN_L - 36),
+      y: BOX_TOP + 30 + Math.random() * (BOX_H - 60),
+      r: 1.6 + Math.random() * 2.6,
+      sp: 0.18 + Math.random() * 0.3,
+      ph: Math.random() * Math.PI * 2,
+    });
   }
 }
 
@@ -1195,7 +1291,8 @@ function vesselPath(inset){
   ctx.lineTo(r, t);
 }
 function render(now){
-  ctx.clearRect(0, 0, cssW, cssH);
+  ctx.fillStyle = '#E9E6DF';
+  ctx.fillRect(0, 0, cssW, cssH);
   ctx.save();
   if(shake > 0){
     ctx.translate((Math.random()-.5) * shake, (Math.random()-.5) * shake);
@@ -1218,6 +1315,29 @@ function render(now){
   ctx.fillStyle = '#E2DDD2';
   ctx.fill();
 
+  /* ambient bubbles + danger glow live INSIDE the vessel */
+  ctx.save();
+  vesselPath(WALL_T/2);
+  ctx.clip();
+  for(const a of ambient){
+    a.y -= a.sp;
+    if(a.y < BOX_TOP + 14){ a.y = BOX_BOTTOM - 8; a.x = IN_L + 18 + Math.random() * (IN_R - IN_L - 36); }
+    const ax = a.x + Math.sin(now / 900 + a.ph) * 4;
+    ctx.beginPath(); ctx.arc(ax, a.y, a.r, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(107,104,98,.18)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+  }
+  if(anyOverLine && !over){
+    const g = ctx.createLinearGradient(0, BOX_TOP, 0, BOX_TOP + 130);
+    const a = 0.10 + 0.07 * Math.sin(now / 130);
+    g.addColorStop(0, 'rgba(215,0,0,' + a.toFixed(3) + ')');
+    g.addColorStop(1, 'rgba(215,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(BOX_L, BOX_TOP, BOX_W, 130);
+  }
+  ctx.restore();
+
   /* game-over line — subtle dashes; red flash while threatened */
   const lineY = BOX_TOP + OVER_LINE_OFF;
   ctx.save();
@@ -1231,7 +1351,8 @@ function render(now){
 
   /* aim guide + held creature */
   if(!over){
-    const hx = clampAim(aimX), hr = TIERS[heldTier].r, hy = heldY();
+    const hx = clampAim(aimX), hr = TIERS[heldTier].r;
+    const hy = heldY() + (reduceMotion ? 0 : Math.sin(now / 480) * 3);
     ctx.save();
     ctx.globalAlpha = 0.25;
     ctx.setLineDash([4, 8]);
@@ -1273,13 +1394,49 @@ function render(now){
       const lx = startX + i * LEGEND_GAP;
       const secret = i >= SECRET_FROM && i > maxMade;
       if(secret){
+        const special = i >= TIERS.length - 2;   // the final two mysteries
         const d = LEGEND_R * 2 * SPRITE_OVER;
-        ctx.drawImage(SECRET_SPRITE, lx - d/2, LEGEND_Y - d/2, d, d);
+        if(special){
+          /* gold box, breathing glow, two orbiting sparks — clearly
+             something worth chasing (without saying a word) */
+          const pulse = reduceMotion ? 1 : 1 + 0.09 * Math.sin(now / 260 + i * 2);
+          ctx.save();
+          ctx.globalAlpha = 0.28 + (reduceMotion ? 0 : 0.16 * Math.sin(now / 260 + i * 2));
+          ctx.strokeStyle = '#E8B33C';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.arc(lx, LEGEND_Y, LEGEND_R * 1.55 + (reduceMotion ? 0 : Math.sin(now / 260 + i * 2) * 1.6), 0, Math.PI * 2); ctx.stroke();
+          ctx.restore();
+          const dd = d * pulse;
+          ctx.drawImage(SECRET_GOLD_SPRITE, lx - dd/2, LEGEND_Y - dd/2, dd, dd);
+          if(!reduceMotion){
+            ctx.fillStyle = '#E8B33C';
+            for(const k of [0, 1]){
+              const ang = now / 650 + i + k * Math.PI;
+              const sx = lx + Math.cos(ang) * LEGEND_R * 1.8;
+              const sy = LEGEND_Y + Math.sin(ang) * LEGEND_R * 1.8;
+              ctx.fillRect(sx - 1.5, sy - 1.5, 3, 3);
+            }
+          }
+        }else{
+          ctx.drawImage(SECRET_SPRITE, lx - d/2, LEGEND_Y - d/2, d, d);
+        }
       }else{
         drawFruitAt(ctx, lx, LEGEND_Y, LEGEND_R, i, 0);
       }
     }
   }
+
+  /* expanding merge rings */
+  for(let i = rings.length - 1; i >= 0; i--){
+    const rg = rings[i];
+    rg.t += 0.055;
+    if(rg.t >= 1){ rings.splice(i, 1); continue; }
+    ctx.globalAlpha = (1 - rg.t) * 0.55;
+    ctx.lineWidth = 3 - rg.t * 2;
+    ctx.strokeStyle = rg.color;
+    ctx.beginPath(); ctx.arc(rg.x, rg.y, rg.r + rg.t * 46, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
 
   /* particles (square = pixel confetti) */
   for(let i = particles.length - 1; i >= 0; i--){
@@ -1323,6 +1480,17 @@ function loop(now){
     acc -= STEP; steps++;
   }
   if(steps === 3) acc = 0;
+  /* belt-and-braces: if anything ever escapes the vessel (a pathological
+     frame spike), lift it gently back in rather than losing it */
+  for(const b of bodies){
+    const r = TIERS[b.tier].r;
+    if(b.position.y - r > BOX_BOTTOM + 4 || b.position.x < IN_L - r - 40 || b.position.x > IN_R + r + 40){
+      Body.setPosition(b, { x: Math.max(IN_L + r, Math.min(IN_R - r, b.position.x)), y: BOX_TOP + r + 10 });
+      Body.setVelocity(b, { x: 0, y: 0 });
+      b.bornAt = performance.now();
+    }
+  }
+  tickScore();
   render(now);
 }
 function pause(){ if(rafId){ cancelAnimationFrame(rafId); rafId = null; lastT = 0; acc = 0; } }
@@ -1349,15 +1517,19 @@ function endGame(){
   loadBoard();
 }
 
-async function fetchBoard(){
+let boardCache = null, boardCacheAt = 0;
+async function fetchBoard(force){
+  const now = Date.now();
+  if(!force && boardCache && now - boardCacheAt < 25000) return boardCache;
   const res = await fetch('/api/leaderboard', { cache: 'no-store' });
   if(!res.ok) throw new Error('offline');
   const data = await res.json();
   if(!Array.isArray(data)) throw new Error('offline');
+  boardCache = data; boardCacheAt = now;
   return data;
 }
-function renderBoard(rows, meName){
-  lbList.innerHTML = '';
+function renderBoardInto(listEl, rows, meName){
+  listEl.innerHTML = '';
   rows.forEach(r => {
     const div = document.createElement('div');
     div.className = 'lb-row' + (meName && r.name === meName ? ' me' : '');
@@ -1365,10 +1537,11 @@ function renderBoard(rows, meName){
     const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = r.name;
     const sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = r.score;
     div.append(rk, nm, sc);
-    lbList.appendChild(div);
+    listEl.appendChild(div);
   });
-  lbList.style.display = 'block';
+  listEl.style.display = 'block';
 }
+function renderBoard(rows, meName){ renderBoardInto(lbList, rows, meName); }
 async function loadBoard(){
   lbStatus.textContent = 'loading the board…';
   lbStatus.style.display = 'block';
@@ -1402,7 +1575,7 @@ async function submitScore(){
       body: JSON.stringify({ name, score })
     });
     if(!res.ok) throw new Error('bad');
-    const rows = await fetchBoard();
+    const rows = await fetchBoard(true);
     renderBoard(rows, name);
     lbStatus.style.display = 'none';
     nameRow.style.display = 'none';
@@ -1419,15 +1592,51 @@ nameInput.addEventListener('focus', () => {
   setTimeout(() => { try{ nameInput.scrollIntoView({ block: 'center', behavior: 'smooth' }); }catch(e){} }, 250);
 });
 
+/* ================= THE BOARD (mid-game leaderboard) ================= */
+const boardDialog = document.getElementById('boardDialog');
+const boardBtn = document.getElementById('boardBtn');
+const bdStatus = document.getElementById('bdStatus');
+const bdList = document.getElementById('bdList');
+const bdClose = document.getElementById('bdClose');
+if(boardBtn){
+  boardBtn.addEventListener('click', async () => {
+    uiModal = true;
+    boardDialog.classList.add('show');
+    pause();
+    bdStatus.textContent = 'loading the board…';
+    bdStatus.style.display = 'block';
+    bdList.style.display = 'none';
+    try{
+      const rows = await fetchBoard();
+      if(rows.length){
+        renderBoardInto(bdList, rows, localStorage.getItem(KEY_NAME) || '');
+        bdStatus.style.display = 'none';
+      }else{
+        bdStatus.textContent = 'no scores yet — be first';
+      }
+    }catch(e){
+      bdStatus.textContent = 'leaderboard offline';
+    }
+  });
+  bdClose.addEventListener('click', () => {
+    boardDialog.classList.remove('show');
+    /* small delay so the closing tap can't fire a drop */
+    setTimeout(() => { uiModal = false; }, 150);
+    resume();
+  });
+}
+
 /* ================= RESET / START ================= */
 function reset(){
   if(engine){ Events.off(engine); Engine.clear(engine); }
   bodies = []; overTimers.clear(); popTweens.clear();
   particles = []; popups = [];
-  score = 0; scoreEl.textContent = '0';
+  score = 0; shownScore = 0; scoreEl.textContent = '0';
+  rings = [];
   over = false; shake = 0; canDrop = true; lastDrop = 0;
   overDialog.classList.remove('show');
   buildWorld();
+  initAmbient();
   heldTier = rollSpawnTier();
   nextTier = rollSpawnTier();
   paintNext();
@@ -1449,13 +1658,34 @@ if(location.search.includes('debug=1')){
     drop(x){ aimX = x; lastDrop = 0; canDrop = true; drop(); },
     forceAim(x){ aimX = x; },
     box(){ return { top: BOX_TOP, bottom: BOX_BOTTOM, inL: IN_L, inR: IN_R, sceneW: SCENE_W, sceneH: SCENE_H }; },
+    yeet(tier, x, y, vy){ const b = fruitBody(tier, x, y); Body.setVelocity(b, { x: 0, y: vy }); Composite.add(world, b); bodies.push(b); return b.id; },
+    info(){ return bodies.map(b => ({ x: b.position.x, y: b.position.y, tier: b.tier })); },
     maxMade(){ return maxMade; },
     clearSeen(){ maxMade = 0; try{ localStorage.removeItem('earlspade_game_seen_v1'); }catch(e){} },
     tiers(){ return TIERS.length; }
   };
 }
 
-/* go */
-resize();
-reset();
+/* ================= BOOT =================
+   Curtain up only when everything is actually ready: fonts, the flower
+   image, the world built, and a couple of frames rendered behind the
+   loader. First impressions don't get to stutter. */
+(async function boot(){
+  const loader = document.getElementById('loader');
+  const t0 = performance.now();
+  resize();
+  reset();
+  try{ await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1800))]); }catch(e){}
+  if(!FLOWER_IMG.complete){
+    await new Promise(r => { FLOWER_IMG.addEventListener('load', r, { once: true }); FLOWER_IMG.addEventListener('error', r, { once: true }); setTimeout(r, 1500); });
+  }
+  /* two clean frames behind the curtain, then reveal */
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  const wait = Math.max(0, 650 - (performance.now() - t0));
+  setTimeout(() => {
+    if(loader) loader.classList.add('done');
+    /* warm the leaderboard cache while the player aims their first drop */
+    setTimeout(() => { fetchBoard().catch(() => {}); }, 1200);
+  }, wait);
+})();
 })();
