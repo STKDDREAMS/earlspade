@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="description" content="earlspade — the fruit game. drop, merge, chase the melon."/>
+<meta name="robots" content="noimageindex"/>
+<title>earlspade — the game</title>
+<link rel="icon" href="logo.png"/>
+<link rel="apple-touch-icon" href="logo.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   earlspade — the game. Same paper/ink/pixel language as the
+   main site: paper background, ink pixel dialogs, Press Start 2P.
+   Mobile-first: HUD bar on top, the play area owns the rest of
+   the screen. Nothing scrolls; nothing zooms.
+============================================================ */
+:root{
+  --paper:#E9E6DF;
+  --paper-2:#DDD8CC;
+  --ink:#161412;
+  --ink-soft:#6B6862;
+  --red:#D70000;
+  --gold:#E8B33C;
+  --mono:'Space Mono',ui-monospace,monospace;
+  --px:'Press Start 2P',var(--mono);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--paper)}
+body{
+  background:var(--paper);color:var(--ink);font-family:var(--mono);
+  height:100vh;height:var(--vh100,100dvh);
+  overflow:hidden;               /* the game owns the screen — no scroll */
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior:none;      /* no pull-to-refresh */
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top);
+}
+/* paper grain, same recipe as the main site (no blend mode) */
+body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ===== HUD ===== */
+.hud{flex:none;display:flex;align-items:center;justify-content:space-between;gap:.6rem;
+  padding:.55rem .8rem .5rem;border-bottom:2px solid var(--ink)}
+.hud-left{display:flex;align-items:center;gap:.7rem;min-width:0}
+.back{font-family:var(--px);font-size:.5rem;color:var(--ink);text-decoration:none;letter-spacing:.04em;white-space:nowrap}
+.back:active{opacity:.6}
+.hud-stats{display:flex;align-items:baseline;gap:.85rem;font-family:var(--px)}
+.hud-stat{display:flex;flex-direction:column;gap:.28rem;align-items:flex-start}
+.hud-label{font-size:.34rem;color:var(--ink-soft);letter-spacing:.08em}
+.hud-value{font-size:.62rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.hud-right{display:flex;align-items:center;gap:.55rem}
+/* next-fruit preview: a small pixel-framed swatch */
+.next-wrap{display:flex;flex-direction:column;align-items:center;gap:.24rem}
+.next-label{font-family:var(--px);font-size:.34rem;color:var(--ink-soft);letter-spacing:.08em}
+#nextPrev{width:30px;height:30px;display:block}
+.mute-btn{width:38px;height:38px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);
+  font-family:var(--px);font-size:.6rem;cursor:pointer;box-shadow:2px 2px 0 0 rgba(22,20,18,.28);line-height:1}
+.mute-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 rgba(22,20,18,.28)}
+.mute-btn[aria-pressed="false"]{color:var(--ink-soft)}
+
+/* ===== PLAY AREA ===== */
+.stage{flex:1;min-height:0;position:relative;display:flex;justify-content:center;
+  padding:0 0 env(safe-area-inset-bottom)}
+.play{position:relative;height:100%;width:100%;max-width:520px}
+canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
+  touch-action:none;             /* the finger belongs to the game */
+  cursor:crosshair}
+
+/* one-line how-to under the top of the play area; fades after first drop */
+.howto{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:3;pointer-events:none;
+  font-family:var(--px);font-size:.4rem;letter-spacing:.06em;color:var(--ink-soft);white-space:nowrap;
+  transition:opacity .6s ease}
+.howto.off{opacity:0}
+
+/* ===== PIXEL DIALOG (same look as the site's fauna cards) ===== */
+.dialog{position:absolute;left:50%;top:12%;transform:translateX(-50%);z-index:10;
+  width:min(320px,88vw);background:var(--paper);color:var(--ink);
+  padding:1.1rem 1rem 1.15rem;border:2px solid var(--ink);box-shadow:5px 5px 0 0 rgba(22,20,18,.28);
+  font-family:var(--px);text-align:center;
+  opacity:0;visibility:hidden;transition:opacity .16s steps(3,end),visibility 0s linear .16s}
+.dialog.show{opacity:1;visibility:visible;transition:opacity .16s steps(3,end)}
+.dialog h2{font-size:.66rem;font-weight:400;margin-bottom:.85rem;letter-spacing:.04em}
+.dialog .big-score{font-size:1.1rem;color:var(--red);margin-bottom:.8rem;font-variant-numeric:tabular-nums}
+.dialog .sub{font-size:.4rem;color:var(--ink-soft);line-height:2;margin-bottom:.75rem}
+.lb{margin:0 0 .85rem;text-align:left}
+.lb-row{display:flex;align-items:baseline;gap:.5rem;font-size:.42rem;line-height:2.3;color:var(--ink)}
+.lb-row .rk{width:1.6em;color:var(--ink-soft)}
+.lb-row .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-row .sc{font-variant-numeric:tabular-nums}
+.lb-row.me{color:var(--red)}
+.lb-note{font-size:.38rem;color:var(--ink-soft);line-height:2;margin-bottom:.8rem}
+.name-row{display:flex;gap:.5rem;margin-bottom:.85rem}
+#nameInput{flex:1;min-width:0;border:2px solid var(--ink);background:#fff;color:var(--ink);
+  font-family:var(--px);font-size:.5rem;padding:.55rem .5rem;letter-spacing:.04em;border-radius:0;-webkit-appearance:none}
+#nameInput:focus{outline:2px solid var(--red);outline-offset:1px}
+.px-btn{border:2px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;
+  font-family:var(--px);font-size:.5rem;padding:.65rem .9rem;letter-spacing:.04em;
+  box-shadow:3px 3px 0 0 rgba(22,20,18,.28)}
+.px-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 rgba(22,20,18,.28)}
+.px-btn:disabled{opacity:.55;cursor:default}
+.px-btn.ghost{background:var(--paper);color:var(--ink)}
+.px-btn.wide{width:100%;padding:.8rem .9rem;font-size:.56rem}
+.dialog .row2{display:flex;gap:.6rem}
+.dialog .row2 .px-btn{flex:1}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+<script>
+/* Freeze the viewport height like the main site (large-viewport probe,
+   ignore height-only resizes = in-app chrome moving). Keeps the play
+   area rock steady on Instagram's browser and under iOS's glass bar. */
+(function(){
+  var w=window.innerWidth;
+  function measure(){
+    var h=window.innerHeight;
+    try{
+      var pr=document.createElement('div');
+      pr.style.cssText='position:fixed;top:0;left:0;width:1px;height:100lvh;visibility:hidden;pointer-events:none';
+      (document.body||document.documentElement).appendChild(pr);
+      if(pr.offsetHeight>h) h=pr.offsetHeight;
+      pr.remove();
+    }catch(e){}
+    return h;
+  }
+  function set(){document.documentElement.style.setProperty('--vh100',measure()+'px');}
+  set();
+  window.addEventListener('resize',function(){
+    if(window.innerWidth!==w){w=window.innerWidth;set();}
+  },{passive:true});
+  window.addEventListener('orientationchange',function(){
+    setTimeout(function(){w=window.innerWidth;set();},300);
+  },{passive:true});
+})();
+</script>
+</head>
+<body>
+
+<header class="hud">
+  <div class="hud-left">
+    <a class="back" href="/">&larr; earlspade</a>
+    <div class="hud-stats">
+      <div class="hud-stat"><span class="hud-label">SCORE</span><span class="hud-value" id="score">0</span></div>
+      <div class="hud-stat"><span class="hud-label">BEST</span><span class="hud-value" id="best">0</span></div>
+    </div>
+  </div>
+  <div class="hud-right">
+    <div class="next-wrap"><span class="next-label">NEXT</span><canvas id="nextPrev" width="60" height="60"></canvas></div>
+    <button class="mute-btn" id="muteBtn" aria-pressed="true" aria-label="Toggle sound">&#9834;</button>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="play" id="play">
+    <canvas id="game"></canvas>
+    <p class="howto" id="howto">DRAG TO AIM &middot; RELEASE TO DROP &middot; MATCH 2</p>
+
+    <!-- GAME OVER / LEADERBOARD dialog -->
+    <div class="dialog" id="overDialog" role="dialog" aria-modal="true" aria-label="Game over">
+      <h2>GAME OVER</h2>
+      <div class="big-score" id="finalScore">0</div>
+      <div class="lb-note" id="lbStatus">loading the board&hellip;</div>
+      <div class="lb" id="lbList" style="display:none"></div>
+      <div class="name-row" id="nameRow" style="display:none">
+        <input id="nameInput" maxlength="16" placeholder="YOUR NAME" autocomplete="off" enterkeyhint="send"/>
+        <button class="px-btn" id="submitBtn">SAVE</button>
+      </div>
+      <button class="px-btn wide" id="againBtn">PLAY AGAIN</button>
+    </div>
+  </div>
+</main>
+
+<script src="matter.min.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
