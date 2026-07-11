@@ -23,7 +23,7 @@ const DROP_COOLDOWN_MS = 500;   // min time between drops (no spamming)
 const OVER_LINE_OFF    = 6;     // game-over line sits this far below the box rim
 const OVER_SECONDS     = 2.0;   // continuous seconds over the line = game over
 const BORN_GRACE_MS    = 800;   // a creature's own first moments don't count
-const MAX_SPAWN_TIER   = 4;     // tiers 0..4 can spawn as drops
+const MAX_SPAWN_TIER   = 3;     // tiers 0..3 can spawn as drops — the penguin is EARNED
 
 /* scoring — 12 tiers now; points for CREATING tier i */
 const MERGE_POINTS = [1,3,6,10,15,21,28,36,45,55,66,80];
@@ -51,7 +51,7 @@ const CORNER_R = 30;                     // rounded bottom corners
 const LEGEND_Y    = SCENE_H - 58;
 const LEGEND_R    = 13;
 const LEGEND_GAP  = 37;
-const SECRET_FROM = 8;                   // tiers 8..11 start hidden
+const SECRET_FROM = 4;                   // penguin onward starts hidden
 
 /* ================= THE CAST =================
    12 tiers: 8 cute sea creatures, then the four hidden ones — turtle,
@@ -745,7 +745,7 @@ const TIERS = [
   { name:'earlspade', r:126, flower:true },
 ];
 /* spawn odds for tiers 0..4 — favor the small ones */
-const SPAWN_WEIGHTS = [5,3,2,1,1];
+const SPAWN_WEIGHTS = [5,3,2,1];
 
 /* the flower image (the site logo) */
 const FLOWER_IMG = new Image();
@@ -1437,8 +1437,9 @@ function render(now){
   ctx.fillRect(BOX_L - 4, BOX_TOP, WALL_T + 8, 4);
   ctx.fillRect(BOX_R - WALL_T - 4, BOX_TOP, WALL_T + 8, 4);
 
-  /* THE LEGEND — the chain under the box; the last four keep their
-     secret behind a gold "?" until each is created. */
+  /* THE LEGEND — the chain under the box; everything from the penguin
+     onward hides behind a "?" until first created (the final two in
+     gold — those are the ones worth dreaming about). */
   {
     const startX = SCENE_W/2 - LEGEND_GAP * (TIERS.length - 1) / 2;
     ctx.imageSmoothingEnabled = true;
