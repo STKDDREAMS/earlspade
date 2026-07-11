@@ -70,7 +70,8 @@ const PAL = {
   N:'#3E7C4F', n:'#2E5E3F', m:'#8FBF7A',
   H:'#5FA052', h:'#3F7A38',
   C:'#A5744A', c:'#6B4226', U:'#7A5230', u:'#4E2F16',
-  Z:'#D96A2E', z:'#B04E1C',
+  Z:'#B34A22', z:'#8E3616',
+  J:'#8D8A84', j:'#6E6B66',
   D:'#D9B98C', d:'#B8905F', F:'#C8863C', Q:'#EFE0C2',
   Y:'#D9C9A6', y:'#C9B68C',
 };
@@ -82,69 +83,25 @@ const GRID = 36, DISC_R = 13, CELL = 8;
    over the face kit). Ears, horns, spouts and spikes live in the rows
    above the disc — they render but do NOT collide. */
 const TIERS = [
-  { name:'frog', r:14, fill:'#5FA052', dk:'#417838', lt:'#7FBF6E', face:false,
-    featClip:{ ox:0, oy:0, rows:[
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '.....mmmmmmmmmmmmmmmmmmmmmmmmmm.....',
-      '.....mmmmmmmmmmmmmmmmmmmmmmmmmm.....',
-      '.....mmmmmmmmmmmmmmmmmmmmmmmmmm.....',
-      '.....mmmmmmmmmmmmmmmmmmmmmmmmmm.....',
-      '.....mmmmmmmmmmmmmmmmmmmmmmmmmm.....',
-      '.....mmmmmmmmmmmmmmmmmmmmmmmmmm.....',
-      '.....mmmmmmmmmmmmmmmmmmmmmmmmmm.....',
-      '.....mmmmmmmmmmmmmmmmmmmmmmmmmm.....',
-    ] },
+  { name:'axolotl', r:14, fill:'#F2B0C0', dk:'#D98BA0', lt:'#FFD3DE',
     feat:{ ox:0, oy:0, rows:[
       '....................................',
-      '...........HHHH......HHHH...........',
-      '..........HHHHHH....HHHHHH..........',
-      '..........HHEKHH....HHKEHH..........',
-      '..........HHKKHH....HHKKHH..........',
-      '..........HHHHHH....HHHHHH..........',
       '....................................',
       '....................................',
       '....................................',
       '....................................',
-      '...............K....K...............',
       '....................................',
       '....................................',
-      '........pp................pp........',
-      '...........K............K...........',
-      '............KKKKKKKKKKKK............',
-    ] } },
-
-  { name:'bunny', r:19, fill:'#F6F1E6', dk:'#D9D2C2', lt:'#FFFFFF',
-    feat:{ ox:0, oy:0, rows:[
-      '...........KWWK......KWWK...........',
-      '..........KWppWK....KWppWK..........',
-      '..........KWppWK....KWppWK..........',
-      '..........KWppWK....KWppWK..........',
-      '..........KWppWK....KWppWK..........',
-      '..........KWppWK....KWppWK..........',
-      '............pp........pp............',
+      '.......PPP................PPP.......',
+      '.....PPPPP................PPPPP.....',
+      '....................................',
+      '....................................',
+      '...PPPP......................PPPP...',
+      '..PPPP........................PPPP..',
+      '....................................',
+      '....................................',
+      '..PPP..........................PPP..',
+      '.PPPP..........................PPPP.',
     ] },
     feat2:{ ox:0, oy:0, rows:[
       '....................................',
@@ -165,10 +122,47 @@ const TIERS = [
       '....................................',
       '....................................',
       '....................................',
-      '.................pp.................',
-      '.................KK.................',
-      '................KEEK................',
-      '................KEEK................',
+      '....................................',
+      '...............K....K...............',
+      '................KKKK................',
+    ] } },
+
+  { name:'koala', r:19, fill:'#8D8A84', dk:'#6E6B66', lt:'#ABA8A2', eyeY:-1,
+    feat:{ ox:0, oy:0, rows:[
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '......JJJJ................JJJJ......',
+      '.....JJEEJJ..............JJEEJJ.....',
+      '.....JEEEEJ..............JEEEEJ.....',
+      '.....JEEEEJ..............JEEEEJ.....',
+      '......JJEEJJ............JJEEJJ......',
+      '.......JJJ................JJJ.......',
+    ] },
+    feat2:{ ox:0, oy:0, rows:[
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '................KKKK................',
+      '...............KKKKKK...............',
+      '...............KKKKKK...............',
+      '...............KKKKKK...............',
+      '................KKKK................',
+      '....................................',
+      '....................................',
       '.................KK.................',
     ] } },
 
@@ -429,56 +423,33 @@ const TIERS = [
       '................KKKK................',
     ] } },
 
-  { name:'fox', r:64, fill:'#D96A2E', dk:'#B04E1C', lt:'#E8874E', eyeY:-1, blush:false,
-    featClip:{ ox:0, oy:0, rows:[
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '.....WW......................WW.....',
-      '....WWW......................WWW....',
-      '....WWWWW.......WWWW.......WWWWW....',
-      '....WWWWWW.....WWWWWW.....WWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-      '....WWWWWWWWWWWWWWWWWWWWWWWWWWWW....',
-    ] },
+  { name:'red panda', r:64, fill:'#B34A22', dk:'#8E3616', lt:'#CC6B3E', eyeY:-1,
     feat:{ ox:0, oy:0, rows:[
-      '........KK................KK........',
-      '.......KKK................KKK.......',
-      '.......KZZK..............KZZK.......',
-      '......KZZDDK............KDDZZK......',
-      '......KZZDDZK..........KZDDZZK......',
-      '......ZZZDDZZ..........ZZDDZZZ......',
+      '........WW................WW........',
+      '.......WWWW..............WWWW.......',
+      '.......WzzW..............WzzW.......',
+      '......WzzzzW............WzzzzW......',
+      '......WzzzzzW..........WzzzzzW......',
+      '......ZZZZZZZ..........ZZZZZZZ......',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '............EE........EE............',
       '....................................',
       '....................................',
       '....................................',
       '....................................',
       '....................................',
-      '....................................',
-      '....................................',
-      '.......pp..................pp.......',
+      '..........zz...WWWWWW...zz..........',
+      '..........zz..WWWWWWWW..zz..........',
+      '.........zz..WWWWWWWWWW..zz.........',
+      '.........zz..WWWWWWWWWW..zz.........',
+      '........zz...WWWWWWWWWW...zz........',
+      '.............WWWWWWWWWW.............',
+      '.............WWWWWWWWWW.............',
+      '..............WWWWWWWW..............',
+      '...............WWWWWW...............',
     ] },
     feat2:{ ox:0, oy:0, rows:[
       '....................................',
@@ -499,43 +470,34 @@ const TIERS = [
       '....................................',
       '....................................',
       '....................................',
-      '....................................',
-      '................KKKK................',
       '................KKKK................',
       '.................KK.................',
+      '....................................',
       '...............K....K...............',
       '................KKKK................',
     ] } },
 
-  { name:'bear', r:76, fill:'#A5744A', dk:'#86592F', lt:'#BC8E60', eyeY:-1,
+  { name:'panda', r:76, fill:'#F2EDE2', dk:'#D8D2C2', lt:'#FFFFFF', face:false,
     feat:{ ox:0, oy:0, rows:[
       '....................................',
-      '........CCCC............CCCC........',
-      '.......CCCCCC..........CCCCCC.......',
-      '.......CccccC..........CccccC.......',
-      '.......CccccC..........CccccC.......',
-      '.......CCCCCC..........CCCCCC.......',
+      '........KKKK............KKKK........',
+      '.......KKKKKK..........KKKKKK.......',
+      '.......KKKKKK..........KKKKKK.......',
+      '.......KKKKKK..........KKKKKK.......',
+      '........KKKKK..........KKKKK........',
+      '.........KKKK..........KKKK.........',
+      '..........KKK..........KKK..........',
       '....................................',
       '....................................',
       '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '..............DDDDDDDD..............',
-      '.............DDDDDDDDDD.............',
-      '............DDDDDDDDDDDD............',
-      '............DDDDDDDDDDDD............',
-      '............DDDDDDDDDDDD............',
-      '............DDDDDDDDDDDD............',
-      '............DDDDDDDDDDDD............',
-      '............DDDDDDDDDDDD............',
-      '.............DDDDDDDDDD.............',
-      '..............DDDDDDDD..............',
+      '..........KKKK........KKKK..........',
+      '.........KEEEEK......KEEEEK.........',
+      '.........KEKKEKK....KKEKKEK.........',
+      '.........KEKKEKK....KKEKKEK.........',
+      '.........KEEEEKK....KKEEEEK.........',
+      '..........KKKKK......KKKKK..........',
+      '...........KKK........KKK...........',
+      '......pp....................pp......',
     ] },
     feat2:{ ox:0, oy:0, rows:[
       '....................................',
@@ -556,7 +518,7 @@ const TIERS = [
       '....................................',
       '....................................',
       '....................................',
-      '................KKKK................',
+      '....................................',
       '................KKKK................',
       '.................KK.................',
       '....................................',
@@ -854,9 +816,7 @@ function buildSprite(t){
 }
 const SPRITE_OVER = GRID / (2 * DISC_R);
 
-/* the secret disc: ink body, gold "?" — the legend keeps its secrets.
-   The FINAL TWO tiers get an inverted gold disc that the legend renders
-   with a pulsing glow and orbiting sparks: clearly something special. */
+/* the secret disc: ink body, gold "?" — the legend keeps its secrets */
 const SECRET_SPRITE = buildSprite({
   fill:'#161412', dk:'#161412', lt:'#3A342E', face:false,
   feat:{ ox:0, oy:0, rows:[
@@ -883,6 +843,8 @@ const SECRET_SPRITE = buildSprite({
       '................GG..................',
     ] }
 });
+
+/* the gold twin: what the final two mysteries hide behind */
 const SECRET_GOLD_SPRITE = buildSprite({
   fill:'#E8B33C', dk:'#C4922A', lt:'#F2CC70', face:false,
   feat:{ ox:0, oy:0, rows:[
@@ -910,10 +872,91 @@ const SECRET_GOLD_SPRITE = buildSprite({
     ] }
 });
 
-
 /* effects budgets (kept cheap for phones) */
 const MAX_PARTICLES = 80;
 const SHAKE_TIER    = 8;
+
+/* ================= THE BEACH =================
+   A pixel beach lives behind the vessel: quiet sky bands, a blocky
+   sun, drifting clouds, stepped waves, warm sand. Every tone sits
+   within a whisper of the paper so the game always reads first.
+   Motion is quantized to chunky steps — pixels don't glide, they hop. */
+const HORIZON = 322, SAND_Y = 566, PX = 8;
+const SUN_X = SCENE_W - 92, SUN_Y = 98;
+const SUN_BLOCKS = (() => {
+  const b = [];
+  for(let y = -3; y <= 3; y++) for(let x = -3; x <= 3; x++)
+    if(x*x + y*y <= 10.5) b.push([x, y]);
+  return b;
+})();
+const SUN_RAYS = [[-5,0],[5,0],[0,-5],[-4,-4],[4,-4]];
+const CLOUDS = [
+  { y: 70,  sp: 0.0040, base: 40,  blocks: [[0,0,5],[1,-1,3],[3,1,4]] },
+  { y: 150, sp: 0.0026, base: 260, blocks: [[0,0,4],[1,-1,2],[2,1,3]] },
+  { y: 226, sp: 0.0033, base: 150, blocks: [[0,0,6],[2,-1,3],[3,1,4]] },
+];
+const SPECKLES = (() => {
+  const s = [];
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for(let i = 0; i < 26; i++) s.push([rnd() * SCENE_W, SAND_Y + 14 + rnd() * (SCENE_H - SAND_Y - 20)]);
+  return s;
+})();
+function drawBeach(now){
+  const sx = v => offX + v * scale;
+  const sy = v => offY + v * scale;
+  const snap = (v, q) => Math.floor(v / q) * q;
+  /* sky bands */
+  ctx.fillStyle = '#DFE0D4'; ctx.fillRect(0, 0, cssW, sy(150));
+  ctx.fillStyle = '#E4E3D7'; ctx.fillRect(0, sy(150), cssW, sy(244) - sy(150));
+  ctx.fillStyle = '#E8E5DB'; ctx.fillRect(0, sy(244), cssW, sy(HORIZON) - sy(244));
+  /* sun: blocky disc + twinkling rays */
+  const p = PX * scale;
+  ctx.fillStyle = '#EBD494';
+  for(const [bx, by] of SUN_BLOCKS) ctx.fillRect(sx(SUN_X + bx*PX), sy(SUN_Y + by*PX), p + .5, p + .5);
+  if(Math.floor(now / 700) % 2){
+    ctx.fillStyle = 'rgba(235,212,148,.55)';
+    for(const [bx, by] of SUN_RAYS) ctx.fillRect(sx(SUN_X + bx*PX), sy(SUN_Y + by*PX), p + .5, p + .5);
+  }
+  /* clouds: chunky, hopping westward-to-east 8px at a time */
+  for(const cl of CLOUDS){
+    const cxs = snap((cl.base + now * cl.sp) % (SCENE_W + 200), PX) - 100;
+    ctx.fillStyle = '#F2EFE5';
+    for(const [row, dx, w] of cl.blocks)
+      ctx.fillRect(sx(cxs + dx*PX), sy(cl.y + row*PX), w*p + .5, p + .5);
+  }
+  /* the sea: quiet band + stepped two-tone wave dashes */
+  ctx.fillStyle = '#CBDBD3';
+  ctx.fillRect(0, sy(HORIZON), cssW, Math.max(0, sy(SAND_Y) - sy(HORIZON)));
+  ctx.fillStyle = '#DAE5DF';
+  ctx.fillRect(0, sy(HORIZON), cssW, Math.max(1.5, 3 * scale));
+  for(let row = 0; row < 9; row++){
+    const wy = HORIZON + 22 + row * 26;
+    if(wy > SAND_Y - 10) break;
+    const dir = row % 2 ? 1 : -1;
+    const off = snap(now * 0.02 * dir + row * 37, PX) % 64;
+    ctx.fillStyle = row % 2 ? '#BCD0C8' : '#D8E3DD';
+    for(let wx = -64 + off; wx < SCENE_W + 64; wx += 64)
+      ctx.fillRect(sx(wx), sy(wy), 20 * scale, 3.2 * scale);
+  }
+  /* a tiny sailboat out on the water, bobbing in whole pixels */
+  {
+    const bx = snap((now * 0.0045) % (SCENE_W + 120), 4) - 60;
+    const bob = Math.floor(now / 800) % 2 ? 2 : 0;
+    const by = HORIZON + 10 + bob;
+    ctx.fillStyle = '#8A867E';
+    ctx.fillRect(sx(bx - 10), sy(by), 22 * scale, 5 * scale);   // hull
+    ctx.fillRect(sx(bx), sy(by - 17), 2.5 * scale, 17 * scale); // mast
+    ctx.fillStyle = '#F2EFE6';
+    ctx.fillRect(sx(bx + 3), sy(by - 16), 9 * scale, 5 * scale);  // sail
+    ctx.fillRect(sx(bx + 3), sy(by - 11), 6 * scale, 5 * scale);
+  }
+  /* warm sand with speckles */
+  ctx.fillStyle = '#E4D6B9';
+  ctx.fillRect(0, sy(SAND_Y), cssW, Math.max(0, cssH - sy(SAND_Y)));
+  ctx.fillStyle = '#D6C4A0';
+  for(const [px2, py2] of SPECKLES) ctx.fillRect(sx(px2), sy(py2), 3.5 * scale, 3.5 * scale);
+}
 
 /* localStorage keys */
 const KEY_BEST  = 'earlspade_game_best_v1';
@@ -1111,6 +1154,7 @@ function onFirstTouch(ev){
       if(b.tier === undefined || b.puffed) continue;
       b.puffed = true;
       if(b.speed < 3.2) continue;
+      b.squashAt = performance.now();
       const s = pair.collision && pair.collision.supports && pair.collision.supports[0];
       const px = s ? s.x : b.position.x, py = s ? s.y : b.position.y + TIERS[b.tier].r;
       for(let i = 0; i < 4 && particles.length < MAX_PARTICLES; i++){
@@ -1254,10 +1298,11 @@ function checkOverLine(dt){
 }
 
 /* ================= RENDER ================= */
-function drawFruitAt(c, x, y, r, tier, angle){
+function drawFruitAt(c, x, y, r, tier, angle, sqx, sqy){
   const t = TIERS[tier];
   c.save();
   c.translate(x, y);
+  if(sqx !== undefined && (sqx !== 1 || sqy !== 1)) c.scale(sqx, sqy);
   if(angle) c.rotate(angle);
   c.imageSmoothingEnabled = true;
   if(t.flower){
@@ -1298,6 +1343,7 @@ function render(now){
     ctx.translate((Math.random()-.5) * shake, (Math.random()-.5) * shake);
     shake *= 0.85; if(shake < .4) shake = 0;
   }
+  drawBeach(now);
   ctx.save();
   ctx.translate(offX, offY);
   ctx.scale(scale, scale);
@@ -1373,7 +1419,13 @@ function render(now){
       if(p >= 1){ popTweens.delete(b.id); }
       else { r *= 1 + 0.22 * Math.sin(Math.min(1, p) * Math.PI); }
     }
-    drawFruitAt(ctx, b.position.x, b.position.y, r, b.tier, b.angle);
+    let sqx = 1, sqy = 1;
+    if(!reduceMotion && b.squashAt){
+      const sp = (now - b.squashAt) / 190;
+      if(sp >= 1){ b.squashAt = 0; }
+      else { const k = Math.sin(sp * Math.PI); sqx = 1 + 0.13 * k; sqy = 1 - 0.16 * k; }
+    }
+    drawFruitAt(ctx, b.position.x, b.position.y, r, b.tier, b.angle, sqx, sqy);
   }
 
   /* the vessel walls: ink stroke with rounded bottom corners + rim lips */
