@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
-<meta name="description" content="earlspade — the fruit game. drop, merge, chase the melon."/>
+<meta name="description" content="earlspade — the sea game. drop, merge, chase the flower."/>
 <meta name="robots" content="noimageindex"/>
 <title>earlspade — the game</title>
 <link rel="icon" href="logo.png"/>
@@ -48,7 +48,8 @@ body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opa
 .hud{flex:none;display:flex;align-items:center;justify-content:space-between;gap:.6rem;
   padding:.55rem .8rem .5rem;border-bottom:2px solid var(--ink)}
 .hud-left{display:flex;align-items:center;gap:.7rem;min-width:0}
-.back{font-family:var(--px);font-size:.5rem;color:var(--ink);text-decoration:none;letter-spacing:.04em;white-space:nowrap}
+.back{display:flex;align-items:center;gap:.45rem;font-family:var(--px);font-size:.5rem;color:var(--ink);text-decoration:none;letter-spacing:.04em;white-space:nowrap}
+.back-logo{image-rendering:pixelated;width:20px;height:22px;flex:none}
 .back:active{opacity:.6}
 .hud-stats{display:flex;align-items:baseline;gap:.85rem;font-family:var(--px)}
 .hud-stat{display:flex;flex-direction:column;gap:.28rem;align-items:flex-start}
@@ -145,7 +146,7 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 
 <header class="hud">
   <div class="hud-left">
-    <a class="back" href="/">&larr; earlspade</a>
+    <a class="back" href="/"><img class="back-logo" src="logo.png" alt="" width="20" height="22"/>&larr; earlspade</a>
     <div class="hud-stats">
       <div class="hud-stat"><span class="hud-label">SCORE</span><span class="hud-value" id="score">0</span></div>
       <div class="hud-stat"><span class="hud-label">BEST</span><span class="hud-value" id="best">0</span></div>
