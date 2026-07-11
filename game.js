@@ -74,7 +74,7 @@ const PAL = {
 /* sprite grid: 24x24 cells, disc radius 10.5 cells centered at 12,12.
    Feature maps are {ox, oy, rows} stamped onto the disc canvas —
    '.' is transparent, any PAL letter paints, 'X' erases (for skirts). */
-const GRID = 24, DISC_R = 10.5, CELL = 8;
+const GRID = 24, DISC_R = 10.5, CELL = 10;
 
 const TIERS = [
   { name:'bubble',      r:15,  fill:'#A6D2CB', dk:'#7FB5AE', lt:'#CFE8E2',
@@ -372,22 +372,30 @@ function buildSprite(t){
   const cv = document.createElement('canvas');
   cv.width = cv.height = GRID * CELL;
   const g = cv.getContext('2d');
+  const cpx = GRID * CELL / 2;              // center in px
+  const Rpx = DISC_R * CELL;                // disc radius in px
+  const ring = CELL * 1.05;                 // ink outline thickness
+
+  /* SMOOTH round body: soft radial shading (light falls top-left)
+     inside a clean ink ring. The pixels live ON TOP of this. */
+  const grad = g.createRadialGradient(cpx - Rpx*0.35, cpx - Rpx*0.35, Rpx*0.15, cpx, cpx, Rpx);
+  grad.addColorStop(0, t.lt);
+  grad.addColorStop(0.55, t.fill);
+  grad.addColorStop(1, t.dk);
+  g.beginPath(); g.arc(cpx, cpx, Rpx - ring/2, 0, Math.PI*2);
+  g.fillStyle = grad; g.fill();
+  g.lineWidth = ring;
+  g.strokeStyle = INK;
+  g.stroke();
+
   const cx = GRID / 2, cy = GRID / 2;
-  for(let y = 0; y < GRID; y++){
-    for(let x = 0; x < GRID; x++){
-      const dx = x + .5 - cx, dy = y + .5 - cy;
-      const d = Math.sqrt(dx*dx + dy*dy);
-      if(d > DISC_R) continue;
-      let col = t.fill;
-      if(d > DISC_R - 1.15) col = INK;                                   // outline ring
-      else if(d > DISC_R - 2.6 && dx < 0 && dy < 0) col = t.lt;          // top-left light
-      else if(d > DISC_R - 2.6 && dx > 0 && dy > 0) col = t.dk;          // bottom-right shade
-      g.fillStyle = col;
-      g.fillRect(x * CELL, y * CELL, CELL, CELL);
-    }
-  }
   function stamp(f, clip){
     if(!f) return;
+    if(clip){
+      g.save();
+      g.beginPath(); g.arc(cpx, cpx, Rpx - ring, 0, Math.PI*2);
+      g.clip();                              // pixel layers clipped by the smooth circle
+    }
     for(let ry = 0; ry < f.rows.length; ry++){
       const row = f.rows[ry];
       for(let rx = 0; rx < row.length; rx++){
@@ -395,18 +403,16 @@ function buildSprite(t){
         if(ch === '.') continue;
         const x = f.ox + rx, y = f.oy + ry;
         if(x < 0 || y < 0 || x >= GRID || y >= GRID) continue;
-        if(clip){
-          const ddx = x + .5 - cx, ddy = y + .5 - cy;
-          if(Math.sqrt(ddx*ddx + ddy*ddy) > DISC_R - 1.15) continue;  // stay inside the outline
-        }
         if(ch === 'X'){ g.clearRect(x*CELL, y*CELL, CELL, CELL); continue; }
         g.fillStyle = PAL[ch] || INK;
         g.fillRect(x*CELL, y*CELL, CELL, CELL);
       }
     }
+    if(clip) g.restore();
   }
   stamp(t.featClip, true);   // clipped layer first (bellies, bands)
-  stamp(t.feat, false);      // then free layer (claws, tails, spikes)
+  stamp(t.feat, false);      // then free layer (claws, tails, spikes —
+                             // allowed to hang a little past the edge)
   return cv;
 }
 /* the disc is 21 of 24 grid cells wide, so the sprite box must be
@@ -698,7 +704,7 @@ function drawFruitAt(c, x, y, r, tier, angle){
   c.save();
   c.translate(x, y);
   if(angle) c.rotate(angle);
-  c.imageSmoothingEnabled = false;
+  c.imageSmoothingEnabled = true;   // smooth round bodies (pixels are big enough to stay crisp)
   c.drawImage(s, -d/2, -d/2, d, d);
   c.restore();
 }
@@ -762,7 +768,7 @@ function render(now){
      the "?" box until the player has created them once. */
   {
     const startX = SCENE_W/2 - LEGEND_GAP * (TIERS.length - 1) / 2;
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true;
     for(let i = 0; i < TIERS.length; i++){
       const lx = startX + i * LEGEND_GAP;
       const secret = i >= SECRET_FROM && i > maxMade;
