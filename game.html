@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <meta name="description" content="earlspade — the sea game. drop, merge, chase the flower."/>
 <meta name="robots" content="noimageindex"/>
+<meta property="og:title" content="earlspade — the sea game"/>
+<meta property="og:description" content="Drop, merge, chase the flower. A tiny beach game from Malibu."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://earlspade.com/game.html"/>
+<meta property="og:image" content="https://earlspade.com/sea-series.jpg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="earlspade — the sea game"/>
+<meta name="twitter:description" content="Drop, merge, chase the flower. A tiny beach game from Malibu."/>
+<meta name="twitter:image" content="https://earlspade.com/sea-series.jpg"/>
 <title>earlspade — the game</title>
 <link rel="icon" href="logo.png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
@@ -155,6 +164,18 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 .dialog.show .lb-row:nth-child(9){animation-delay:.35s}.dialog.show .lb-row:nth-child(10){animation-delay:.39s}
 @keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
 
+/* game-over extras */
+.over-best{display:inline-block;background:var(--gold);color:var(--ink);border:2px solid var(--ink);
+  font-size:.44rem;letter-spacing:.1em;padding:.4rem .6rem;margin-bottom:.7rem;
+  animation:bestPulse 1s steps(2,end) infinite}
+@keyframes bestPulse{0%,49%{box-shadow:2px 2px 0 0 rgba(22,20,18,.28)}50%,100%{box-shadow:2px 2px 0 0 var(--red)}}
+.over-reach{display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:.75rem}
+#overFruit{width:44px;height:44px;flex:none}
+.over-reach span{font-size:.4rem;color:var(--ink-soft);letter-spacing:.04em;line-height:1.8;text-align:left}
+
+/* keyboard users get the brand outline */
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
@@ -214,14 +235,22 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
     <!-- GAME OVER / LEADERBOARD dialog -->
     <div class="dialog" id="overDialog" role="dialog" aria-modal="true" aria-label="Game over">
       <h2>GAME OVER</h2>
+      <div class="over-best" id="newBest" style="display:none">&#9733; NEW BEST &#9733;</div>
       <div class="big-score" id="finalScore">0</div>
+      <div class="over-reach">
+        <canvas id="overFruit" width="88" height="88"></canvas>
+        <span id="reachTxt">you reached the axolotl</span>
+      </div>
       <div class="lb-note" id="lbStatus">loading the board&hellip;</div>
       <div class="lb" id="lbList" style="display:none"></div>
       <div class="name-row" id="nameRow" style="display:none">
         <input id="nameInput" maxlength="16" placeholder="YOUR NAME" autocomplete="off" enterkeyhint="send"/>
         <button class="px-btn" id="submitBtn">SAVE</button>
       </div>
-      <button class="px-btn wide" id="againBtn">PLAY AGAIN</button>
+      <div class="row2">
+        <button class="px-btn ghost" id="shareBtn">SHARE</button>
+        <button class="px-btn" id="againBtn">PLAY AGAIN</button>
+      </div>
     </div>
 
     <!-- THE BOARD — mid-game leaderboard -->

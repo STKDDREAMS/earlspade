@@ -883,6 +883,38 @@ const SHAKE_TIER    = 8;
    Motion is quantized to chunky steps — pixels don't glide, they hop. */
 const HORIZON = 322, SAND_Y = 566, PX = 8;
 const SUN_X = SCENE_W - 92, SUN_Y = 98;
+
+/* the beach follows the player's clock — dawn, day, golden hour,
+   night. Every palette stays whisper-muted; the vessel never changes. */
+let hourOverride = null;
+function beachPeriod(){
+  const h = hourOverride !== null ? hourOverride : new Date().getHours();
+  if(h >= 5 && h < 8)  return 'dawn';
+  if(h >= 8 && h < 17) return 'day';
+  if(h >= 17 && h < 20) return 'gold';
+  return 'night';
+}
+const BEACH_PAL = {
+  day:   { skyTop:'#DFE0D4', skyMid:'#E4E3D7', skyLow:'#E8E5DB', sea:'#CBDBD3', foam:'#DAE5DF',
+           waveA:'#BCD0C8', waveB:'#D8E3DD', sand:'#E4D6B9', speckle:'#D6C4A0',
+           sun:'#EBD494', ray:'rgba(235,212,148,.55)', cloud:'#F2EFE5', sunY: 98 },
+  dawn:  { skyTop:'#E8DBD4', skyMid:'#EAE0D7', skyLow:'#EDE5DC', sea:'#CDD9D4', foam:'#DEE6E1',
+           waveA:'#C2CFC9', waveB:'#DCE2DD', sand:'#E6D8BC', speckle:'#D8C6A2',
+           sun:'#F0CFA0', ray:'rgba(240,207,160,.5)', cloud:'#F5EFE8', sunY: 196 },
+  gold:  { skyTop:'#E9DCC2', skyMid:'#ECE0CA', skyLow:'#EFE4D1', sea:'#CBD5C9', foam:'#DDE2D6',
+           waveA:'#BFCDBE', waveB:'#DAE0D3', sand:'#E6D5B4', speckle:'#D8C293',
+           sun:'#EDBF7C', ray:'rgba(237,191,124,.55)', cloud:'#F4ECDD', sunY: 238 },
+  night: { skyTop:'#C7CBCC', skyMid:'#CDD1D1', skyLow:'#D3D6D4', sea:'#B9C9C4', foam:'#C9D6D1',
+           waveA:'#ACBEB8', waveB:'#C4D2CC', sand:'#D6C9B0', speckle:'#C6B694',
+           sun:'#EFE9D8', ray:'rgba(239,233,216,.4)', cloud:'#DBDDD7', sunY: 90, moon:true },
+};
+const STARS = (() => {
+  const s = [];
+  let seed = 31;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for(let i = 0; i < 11; i++) s.push([rnd() * SCENE_W, 20 + rnd() * (HORIZON - 90)]);
+  return s;
+})();
 const SUN_BLOCKS = (() => {
   const b = [];
   for(let y = -3; y <= 3; y++) for(let x = -3; x <= 3; x++)
@@ -903,39 +935,54 @@ const SPECKLES = (() => {
   return s;
 })();
 function drawBeach(now){
+  const pal = BEACH_PAL[beachPeriod()];
   const sx = v => offX + v * scale;
   const sy = v => offY + v * scale;
   const snap = (v, q) => Math.floor(v / q) * q;
   /* sky bands */
-  ctx.fillStyle = '#DFE0D4'; ctx.fillRect(0, 0, cssW, sy(150));
-  ctx.fillStyle = '#E4E3D7'; ctx.fillRect(0, sy(150), cssW, sy(244) - sy(150));
-  ctx.fillStyle = '#E8E5DB'; ctx.fillRect(0, sy(244), cssW, sy(HORIZON) - sy(244));
-  /* sun: blocky disc + twinkling rays */
+  ctx.fillStyle = pal.skyTop; ctx.fillRect(0, 0, cssW, sy(150));
+  ctx.fillStyle = pal.skyMid; ctx.fillRect(0, sy(150), cssW, sy(244) - sy(150));
+  ctx.fillStyle = pal.skyLow; ctx.fillRect(0, sy(244), cssW, sy(HORIZON) - sy(244));
   const p = PX * scale;
-  ctx.fillStyle = '#EBD494';
-  for(const [bx, by] of SUN_BLOCKS) ctx.fillRect(sx(SUN_X + bx*PX), sy(SUN_Y + by*PX), p + .5, p + .5);
-  if(Math.floor(now / 700) % 2){
-    ctx.fillStyle = 'rgba(235,212,148,.55)';
-    for(const [bx, by] of SUN_RAYS) ctx.fillRect(sx(SUN_X + bx*PX), sy(SUN_Y + by*PX), p + .5, p + .5);
+  /* night: stars twinkle in whole-pixel blinks */
+  if(pal.moon){
+    ctx.fillStyle = '#F6F1E6';
+    for(let i = 0; i < STARS.length; i++){
+      if((Math.floor(now / 600) + i) % 5 === 0) continue;   // blink
+      ctx.fillRect(sx(STARS[i][0]), sy(STARS[i][1]), 3 * scale, 3 * scale);
+    }
   }
-  /* clouds: chunky, hopping westward-to-east 8px at a time */
+  /* sun by day, moon by night — same blocky disc, different face */
+  const sunY = pal.sunY;
+  ctx.fillStyle = pal.sun;
+  for(const [bx, by] of SUN_BLOCKS) ctx.fillRect(sx(SUN_X + bx*PX), sy(sunY + by*PX), p + .5, p + .5);
+  if(pal.moon){
+    ctx.fillStyle = '#DDD5C0';   // craters
+    ctx.fillRect(sx(SUN_X - PX), sy(sunY - PX), p + .5, p + .5);
+    ctx.fillRect(sx(SUN_X + PX), sy(sunY + PX), p + .5, p + .5);
+    ctx.fillRect(sx(SUN_X), sy(sunY + 2*PX), p + .5, p + .5);
+  }else if(Math.floor(now / 700) % 2){
+    ctx.fillStyle = pal.ray;
+    for(const [bx, by] of SUN_RAYS) ctx.fillRect(sx(SUN_X + bx*PX), sy(sunY + by*PX), p + .5, p + .5);
+  }
+  /* clouds: chunky, hopping across 8px at a time */
   for(const cl of CLOUDS){
     const cxs = snap((cl.base + now * cl.sp) % (SCENE_W + 200), PX) - 100;
-    ctx.fillStyle = '#F2EFE5';
+    ctx.fillStyle = pal.cloud;
     for(const [row, dx, w] of cl.blocks)
       ctx.fillRect(sx(cxs + dx*PX), sy(cl.y + row*PX), w*p + .5, p + .5);
   }
   /* the sea: quiet band + stepped two-tone wave dashes */
-  ctx.fillStyle = '#CBDBD3';
+  ctx.fillStyle = pal.sea;
   ctx.fillRect(0, sy(HORIZON), cssW, Math.max(0, sy(SAND_Y) - sy(HORIZON)));
-  ctx.fillStyle = '#DAE5DF';
+  ctx.fillStyle = pal.foam;
   ctx.fillRect(0, sy(HORIZON), cssW, Math.max(1.5, 3 * scale));
   for(let row = 0; row < 9; row++){
     const wy = HORIZON + 22 + row * 26;
     if(wy > SAND_Y - 10) break;
     const dir = row % 2 ? 1 : -1;
     const off = snap(now * 0.02 * dir + row * 37, PX) % 64;
-    ctx.fillStyle = row % 2 ? '#BCD0C8' : '#D8E3DD';
+    ctx.fillStyle = row % 2 ? pal.waveA : pal.waveB;
     for(let wx = -64 + off; wx < SCENE_W + 64; wx += 64)
       ctx.fillRect(sx(wx), sy(wy), 20 * scale, 3.2 * scale);
   }
@@ -951,10 +998,10 @@ function drawBeach(now){
     ctx.fillRect(sx(bx + 3), sy(by - 16), 9 * scale, 5 * scale);  // sail
     ctx.fillRect(sx(bx + 3), sy(by - 11), 6 * scale, 5 * scale);
   }
-  /* warm sand with speckles */
-  ctx.fillStyle = '#E4D6B9';
+  /* sand with speckles */
+  ctx.fillStyle = pal.sand;
   ctx.fillRect(0, sy(SAND_Y), cssW, Math.max(0, cssH - sy(SAND_Y)));
-  ctx.fillStyle = '#D6C4A0';
+  ctx.fillStyle = pal.speckle;
   for(const [px2, py2] of SPECKLES) ctx.fillRect(sx(px2), sy(py2), 3.5 * scale, 3.5 * scale);
 }
 
@@ -990,6 +1037,10 @@ let shake = 0;
 let popTweens = new Map();
 let shownScore = 0;             // HUD score ticks up toward the real score
 let uiModal = false;            // a dialog is open — swallow drops
+let combo = 0, comboAt = 0;     // merges chained inside COMBO_WINDOW_MS
+let bestAtStart = 0;            // to know when a run sets a NEW BEST
+let runBestTier = 0;            // furthest creature made THIS run
+const COMBO_WINDOW_MS = 2000, COMBO_CAP = 5;
 let rafId = null, lastT = 0, acc = 0;
 const STEP = 1000 / 60;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1132,7 +1183,16 @@ function onCollisions(ev){
     Composite.add(world, nb);
     bodies.push(nb);
     popTweens.set(nb.id, performance.now());
-    addScore(MERGE_POINTS[nt], mx, my - TIERS[nt].r);
+    /* chain merges inside the window build a multiplier */
+    const nowMs = performance.now();
+    combo = (nowMs - comboAt < COMBO_WINDOW_MS) ? Math.min(COMBO_CAP, combo + 1) : 1;
+    comboAt = nowMs;
+    if(nt > runBestTier) runBestTier = nt;
+    addScore(MERGE_POINTS[nt] * combo, mx, my - TIERS[nt].r);
+    if(combo >= 2){
+      popups.push({ x: mx, y: my - TIERS[nt].r - 26, n: 0, t: 0,
+        txt: 'COMBO x' + combo, big: true, gold: combo >= 4 });
+    }
     burst(mx, my, TIERS[nt].fill || '#D70000', Math.min(12, 5 + nt));
     if(!reduceMotion) rings.push({ x: mx, y: my, r: TIERS[nt].r * .7, t: 0, color: TIERS[nt].fill || '#D70000' });
     if(unlock){
@@ -1141,7 +1201,7 @@ function onCollisions(ev){
       burst(lx, LEGEND_Y, '#E8B33C', 12);
       rings.push({ x: lx, y: LEGEND_Y, r: LEGEND_R, t: 0, color: '#E8B33C' });
     }
-    sndMerge(nt);
+    sndMerge(nt + (combo - 1) * 2);
     if(nt >= SHAKE_TIER && !reduceMotion) shake = Math.max(shake, 6);
   }
 }
@@ -1503,15 +1563,21 @@ function render(now){
   ctx.globalAlpha = 1;
 
   /* score popups */
-  ctx.font = '13px "Press Start 2P", monospace';
   ctx.textAlign = 'center';
   for(let i = popups.length - 1; i >= 0; i--){
     const p = popups[i];
-    p.t += 0.02;
+    p.t += p.big ? 0.014 : 0.02;
     if(p.t >= 1){ popups.splice(i, 1); continue; }
     ctx.globalAlpha = 1 - p.t;
-    ctx.fillStyle = INK;
-    ctx.fillText('+' + p.n, p.x, p.y - p.t * 46);
+    if(p.big){
+      ctx.font = '17px "Press Start 2P", monospace';
+      ctx.fillStyle = p.gold ? '#C4922A' : '#D70000';
+      ctx.fillText(p.txt, p.x, p.y - p.t * 40);
+    }else{
+      ctx.font = '13px "Press Start 2P", monospace';
+      ctx.fillStyle = INK;
+      ctx.fillText('+' + p.n, p.x, p.y - p.t * 46);
+    }
   }
   ctx.globalAlpha = 1;
   ctx.restore();
@@ -1566,8 +1632,44 @@ function endGame(){
   running = false;
   blip(300, 80, 0.5, 0.1);
   finalScoreEl.textContent = score;
+  /* the furthest creature this run, drawn into the dialog */
+  const oc = document.getElementById('overFruit');
+  if(oc){
+    const og = oc.getContext('2d');
+    og.clearRect(0, 0, oc.width, oc.height);
+    drawFruitAt(og, oc.width/2, oc.height/2, oc.width * 0.34, runBestTier, 0);
+    const nm = TIERS[runBestTier].flower ? 'the earlspade flower' : 'the ' + TIERS[runBestTier].name;
+    document.getElementById('reachTxt').textContent = 'you reached ' + nm;
+  }
+  const nb = document.getElementById('newBest');
+  if(nb){
+    const isBest = score > 0 && score > bestAtStart;
+    nb.style.display = isBest ? 'block' : 'none';
+    if(isBest && !reduceMotion) celebrate(SCENE_W/2, BOX_TOP + 90);
+  }
   overDialog.classList.add('show');
   loadBoard();
+}
+
+/* SHARE — the Instagram-DM loop. Native sheet where it exists,
+   clipboard everywhere else. */
+const shareBtn = document.getElementById('shareBtn');
+if(shareBtn){
+  shareBtn.addEventListener('click', async () => {
+    const url = location.origin + location.pathname;
+    const text = 'I scored ' + score + ' in the earlspade sea game — beat me';
+    try{
+      if(navigator.share){ await navigator.share({ text, url }); return; }
+      throw 0;
+    }catch(e){
+      try{
+        await navigator.clipboard.writeText(text + ' ' + url);
+        const was = shareBtn.textContent;
+        shareBtn.textContent = 'COPIED!';
+        setTimeout(() => { shareBtn.textContent = was; }, 1400);
+      }catch(e2){}
+    }
+  });
 }
 
 let boardCache = null, boardCacheAt = 0;
@@ -1686,6 +1788,8 @@ function reset(){
   particles = []; popups = [];
   score = 0; shownScore = 0; scoreEl.textContent = '0';
   rings = [];
+  combo = 0; comboAt = 0; runBestTier = 0;
+  bestAtStart = best;
   over = false; shake = 0; canDrop = true; lastDrop = 0;
   overDialog.classList.remove('show');
   buildWorld();
@@ -1711,6 +1815,9 @@ if(location.search.includes('debug=1')){
     drop(x){ aimX = x; lastDrop = 0; canDrop = true; drop(); },
     forceAim(x){ aimX = x; },
     box(){ return { top: BOX_TOP, bottom: BOX_BOTTOM, inL: IN_L, inR: IN_R, sceneW: SCENE_W, sceneH: SCENE_H }; },
+    hour(h){ hourOverride = h; },
+    combo(){ return combo; },
+    runBest(){ return runBestTier; },
     yeet(tier, x, y, vy){ const b = fruitBody(tier, x, y); Body.setVelocity(b, { x: 0, y: vy }); Composite.add(world, b); bodies.push(b); return b.id; },
     info(){ return bodies.map(b => ({ x: b.position.x, y: b.position.y, tier: b.tier })); },
     maxMade(){ return maxMade; },

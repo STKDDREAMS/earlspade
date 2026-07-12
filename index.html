@@ -22,8 +22,8 @@
 <meta name="robots" content="noimageindex"/>
 <title>earlspade</title>
 <link rel="icon" href="logo.png"/>
-<link rel="preload" as="image" href="hero-flower.webp">
-<link rel="preload" as="image" href="wordmark.webp">
+<link rel="preload" as="image" href="hero-flower.webp" fetchpriority="high">
+<link rel="preload" as="image" href="wordmark.webp" fetchpriority="high">
 <link rel="prefetch" href="hero-shark.webp">
 <link rel="prefetch" href="hero-fish.webp">
 <link rel="prefetch" href="hero-manta.webp">
@@ -393,6 +393,9 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* faint static top line for the non-bottle captions (the bottle keeps
    its breathing "coming soon") */
 .hb-top{font-size:.38rem;font-weight:400;letter-spacing:.14em;text-indent:.14em;opacity:.5}
+
+/* keyboard users get the brand outline */
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D70000;outline-offset:2px}
 
 /* ===== mini leaderboard — a whisper above the play button:
    a trophy, then the top three names. Appears only with real scores. */
