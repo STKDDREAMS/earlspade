@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="robots" content="noindex"/>
+<title>earlspade — lost at sea</title>
+<link rel="icon" href="logo.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#E9E6DF;--ink:#161412;--ink-soft:#6B6862;--red:#D70000;
+  --mono:'Space Mono',ui-monospace,monospace;--px:'Press Start 2P',var(--mono)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--mono);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;
+  text-align:center;padding:2rem 1.2rem;-webkit-font-smoothing:antialiased}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.flower{width:56px;height:61px;image-rendering:pixelated;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+h1{font-family:var(--px);font-size:1.5rem;font-weight:400;letter-spacing:.06em}
+.sub{font-family:var(--px);font-size:.5rem;color:var(--ink-soft);letter-spacing:.1em;line-height:2.2}
+.waves{font-family:var(--px);font-size:.5rem;color:var(--ink-soft);letter-spacing:.3em;opacity:.5;
+  animation:drift 3s steps(4,end) infinite}
+@keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+.row{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center;margin-top:.4rem}
+.px-btn{display:inline-block;border:2px solid var(--ink);background:var(--ink);color:var(--paper);
+  font-family:var(--px);font-size:.5rem;padding:.75rem 1rem;letter-spacing:.05em;text-decoration:none;
+  box-shadow:3px 3px 0 0 rgba(22,20,18,.28)}
+.px-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 rgba(22,20,18,.28)}
+.px-btn.ghost{background:var(--paper);color:var(--ink)}
+a:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<img class="flower" src="logo.png" alt="" width="56" height="61"/>
+<h1>404</h1>
+<p class="sub">lost at sea.<br/>this page drifted away with the tide.</p>
+<p class="waves" aria-hidden="true">~ ~ ~ ~ ~</p>
+<div class="row">
+  <a class="px-btn" href="/">BACK TO SHORE</a>
+  <a class="px-btn ghost" href="/game.html">PLAY THE SEA GAME</a>
+</div>
+</body>
+</html>
