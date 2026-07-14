@@ -125,6 +125,10 @@ const TIERS = [
       '....................................',
       '...............K....K...............',
       '................KKKK................',
+      '....................................',
+      '....................................',
+      '..........E.........................',
+      '...........EE.......................',
     ] } },
 
   { name:'koala', r:19, fill:'#8D8A84', dk:'#6E6B66', lt:'#ABA8A2', eyeY:-1,
@@ -134,9 +138,9 @@ const TIERS = [
       '....................................',
       '....................................',
       '......JJJJ................JJJJ......',
-      '.....JJEEJJ..............JJEEJJ.....',
+      '....EJJEEJJ..............JJEEJJE....',
       '.....JEEEEJ..............JEEEEJ.....',
-      '.....JEEEEJ..............JEEEEJ.....',
+      '....EJEEEEJ..............JEEEEJE....',
       '......JJEEJJ............JJEEJJ......',
       '.......JJJ................JJJ.......',
     ] },
@@ -183,16 +187,17 @@ const TIERS = [
       '....................................',
       '....................................',
       '....................................',
-      '..............QQQQQQQQ..............',
-      '............QQQQQQQQQQQQ............',
-      '...........QQQQQQQQQQQQQQ...........',
-      '..........QQQQQQQQQQQQQQQQ..........',
-      '..........QQQQQQQQQQQQQQQQ..........',
-      '..........QQQQQQQQQQQQQQQQ..........',
-      '..........QQQQQQQQQQQQQQQQ..........',
-      '..........QQQQQQQQQQQQQQQQ..........',
-      '...........QQQQQQQQQQQQQQ...........',
-      '.............QQQQQQQQQQ.............',
+      '.............uQQQQQQQQu.............',
+      '...........uQQQQQQQQQQQQu...........',
+      '..........uQQQQQQQQQQQQQQu..........',
+      '.........uQQQQQQQQQQQQQQQQu.........',
+      '.........uQQQQQQQQQQQQQQQQu.........',
+      '.........uQQQQQQQQQQQQQQQQu.........',
+      '.........uQQQQQQQQQQQQQQQQu.........',
+      '.........uQQQQQQQQQQQQQQQQu.........',
+      '..........uQQQQQQQQQQQQQQu..........',
+      '............uQQQQQQQQQQu............',
+      '.............uuuuuuuuuu.............',
     ] },
     feat2:{ ox:0, oy:0, rows:[
       '....................................',
@@ -367,6 +372,19 @@ const TIERS = [
       '.................GG.................',
       '................GGGG................',
       '.................gg.................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '.............GGG....GGG.............',
+      '.............gg......gg.............',
     ] } },
 
   { name:'tiger cub', r:53, fill:'#ED9A3C', dk:'#C97822', lt:'#F6B968', eyeY:-1, blush:false,
@@ -387,16 +405,17 @@ const TIERS = [
       '....................................',
       '....................................',
       '.....KKK....................KKK.....',
-      '..........pp..WWWWWWWW..pp..........',
-      '.............WWWWWWWWWW.............',
-      '.....KK.....WWWWWWWWWWWW.....KK.....',
-      '............WWWWWWWWWWWW............',
-      '............WWWWWWWWWWWW............',
-      '............WWWWWWWWWWWW............',
-      '............WWWWWWWWWWWW............',
-      '............WWWWWWWWWWWW............',
-      '.............WWWWWWWWWW.............',
-      '..............WWWWWWWW..............',
+      '..........pp.oWWWWWWWWo.pp..........',
+      '............oWWWWWWWWWWo............',
+      '.....KK....oWWWWWWWWWWWWo....KK.....',
+      '...........oWWWWWWWWWWWWo...........',
+      '...........oWWWWWWWWWWWWo...........',
+      '...........oWWWWWWWWWWWWo...........',
+      '...........oWWWWWWWWWWWWo...........',
+      '...........oWWWWWWWWWWWWo...........',
+      '............oWWWWWWWWWWo............',
+      '.............oWWWWWWWWo.............',
+      '..............oooooooo..............',
     ] },
     feat2:{ ox:0, oy:0, rows:[
       '....................................',
@@ -421,6 +440,7 @@ const TIERS = [
       '.................KK.................',
       '...............K....K...............',
       '................KKKK................',
+      '.................pp.................',
     ] } },
 
   { name:'red panda', r:64, fill:'#B34A22', dk:'#8E3616', lt:'#CC6B3E', eyeY:-1,
@@ -442,14 +462,15 @@ const TIERS = [
       '....................................',
       '....................................',
       '..........zz...WWWWWW...zz..........',
-      '..........zz..WWWWWWWW..zz..........',
-      '.........zz..WWWWWWWWWW..zz.........',
-      '.........zz..WWWWWWWWWW..zz.........',
-      '........zz...WWWWWWWWWW...zz........',
-      '.............WWWWWWWWWW.............',
-      '.............WWWWWWWWWW.............',
-      '..............WWWWWWWW..............',
+      '..........zz.zWWWWWWWWz.zz..........',
+      '.........zz.zWWWWWWWWWWz.zz.........',
+      '.........zz.zWWWWWWWWWWz.zz.........',
+      '........zz..zWWWWWWWWWWz..zz........',
+      '............zWWWWWWWWWWz............',
+      '............zWWWWWWWWWWz............',
+      '.............zWWWWWWWWz.............',
       '...............WWWWWW...............',
+      '...............zzzzzz...............',
     ] },
     feat2:{ ox:0, oy:0, rows:[
       '....................................',
@@ -577,15 +598,16 @@ const TIERS = [
       '....................................',
       '....................................',
       '....................................',
-      '..............dddddddd..............',
-      '.............dddddddddd.............',
-      '............dddddddddddd............',
-      '............dddddddddddd............',
-      '............dddddddddddd............',
-      '............dddddddddddd............',
-      '............dddddddddddd............',
-      '.............dddddddddd.............',
+      '.............cddddddddc.............',
+      '............cddddddddddc............',
+      '...........cddddddddddddc...........',
+      '...........cddddddddddddc...........',
+      '...........cddddddddddddc...........',
+      '...........cddddddddddddc...........',
+      '...........cddddddddddddc...........',
+      '............cddddddddddc............',
       '...............dddddd...............',
+      '...............cccccc...............',
     ] },
     feat2:{ ox:0, oy:0, rows:[
       '....................................',
@@ -745,7 +767,7 @@ const TIERS = [
   { name:'earlspade', r:126, flower:true },
 ];
 /* spawn odds for tiers 0..4 — favor the small ones */
-const SPAWN_WEIGHTS = [5,3,2,1];
+const SPAWN_WEIGHTS = [5,3,2,1,1];
 
 /* the flower image (the site logo) */
 const FLOWER_IMG = new Image();
@@ -936,43 +958,44 @@ const SPECKLES = (() => {
 })();
 function drawBeach(now){
   const pal = BEACH_PAL[beachPeriod()];
-  const sx = v => offX + v * scale;
-  const sy = v => offY + v * scale;
-  const snap = (v, q) => Math.floor(v / q) * q;
+  const sy = v => offY + v * scale;                 // scene y -> css y
+  const p = PX * scale;                              // one beach pixel, css
+  const snapC = v => Math.floor(v / p) * p;          // css-space pixel hop
   /* sky bands */
   ctx.fillStyle = pal.skyTop; ctx.fillRect(0, 0, cssW, sy(150));
   ctx.fillStyle = pal.skyMid; ctx.fillRect(0, sy(150), cssW, sy(244) - sy(150));
   ctx.fillStyle = pal.skyLow; ctx.fillRect(0, sy(244), cssW, sy(HORIZON) - sy(244));
-  const p = PX * scale;
-  /* night: stars twinkle in whole-pixel blinks */
+  /* night: stars scattered across the FULL width, twinkling */
   if(pal.moon){
     ctx.fillStyle = '#F6F1E6';
     for(let i = 0; i < STARS.length; i++){
       if((Math.floor(now / 600) + i) % 5 === 0) continue;   // blink
-      ctx.fillRect(sx(STARS[i][0]), sy(STARS[i][1]), 3 * scale, 3 * scale);
+      ctx.fillRect(snapC(STARS[i][0] / SCENE_W * cssW), sy(STARS[i][1]), 3 * scale, 3 * scale);
     }
   }
-  /* sun by day, moon by night — same blocky disc, different face */
+  /* sun by day, moon by night — pinned near the right VIEWPORT edge */
   const sunY = pal.sunY;
+  const sunX = cssW - (SCENE_W - SUN_X) * scale;
   ctx.fillStyle = pal.sun;
-  for(const [bx, by] of SUN_BLOCKS) ctx.fillRect(sx(SUN_X + bx*PX), sy(sunY + by*PX), p + .5, p + .5);
+  for(const [bx, by] of SUN_BLOCKS) ctx.fillRect(sunX + bx*p, sy(sunY + by*PX), p + .5, p + .5);
   if(pal.moon){
     ctx.fillStyle = '#DDD5C0';   // craters
-    ctx.fillRect(sx(SUN_X - PX), sy(sunY - PX), p + .5, p + .5);
-    ctx.fillRect(sx(SUN_X + PX), sy(sunY + PX), p + .5, p + .5);
-    ctx.fillRect(sx(SUN_X), sy(sunY + 2*PX), p + .5, p + .5);
+    ctx.fillRect(sunX - p, sy(sunY - PX), p + .5, p + .5);
+    ctx.fillRect(sunX + p, sy(sunY + PX), p + .5, p + .5);
+    ctx.fillRect(sunX, sy(sunY + 2*PX), p + .5, p + .5);
   }else if(Math.floor(now / 700) % 2){
     ctx.fillStyle = pal.ray;
-    for(const [bx, by] of SUN_RAYS) ctx.fillRect(sx(SUN_X + bx*PX), sy(sunY + by*PX), p + .5, p + .5);
+    for(const [bx, by] of SUN_RAYS) ctx.fillRect(sunX + bx*p, sy(sunY + by*PX), p + .5, p + .5);
   }
-  /* clouds: chunky, hopping across 8px at a time */
+  /* clouds: chunky, hopping the FULL viewport width 8px at a time */
+  const wrapW = cssW + 260 * scale;
   for(const cl of CLOUDS){
-    const cxs = snap((cl.base + now * cl.sp) % (SCENE_W + 200), PX) - 100;
+    const cxs = snapC(((cl.base * scale + now * cl.sp * scale) % wrapW + wrapW) % wrapW) - 130 * scale;
     ctx.fillStyle = pal.cloud;
     for(const [row, dx, w] of cl.blocks)
-      ctx.fillRect(sx(cxs + dx*PX), sy(cl.y + row*PX), w*p + .5, p + .5);
+      ctx.fillRect(cxs + dx*p, sy(cl.y + row*PX), w*p + .5, p + .5);
   }
-  /* the sea: quiet band + stepped two-tone wave dashes */
+  /* the sea: quiet band + stepped two-tone wave dashes, full width */
   ctx.fillStyle = pal.sea;
   ctx.fillRect(0, sy(HORIZON), cssW, Math.max(0, sy(SAND_Y) - sy(HORIZON)));
   ctx.fillStyle = pal.foam;
@@ -981,28 +1004,30 @@ function drawBeach(now){
     const wy = HORIZON + 22 + row * 26;
     if(wy > SAND_Y - 10) break;
     const dir = row % 2 ? 1 : -1;
-    const off = snap(now * 0.02 * dir + row * 37, PX) % 64;
+    const step = 64 * scale;
+    const off = ((snapC(now * 0.02 * dir * scale + row * 37 * scale) % step) + step) % step;
     ctx.fillStyle = row % 2 ? pal.waveA : pal.waveB;
-    for(let wx = -64 + off; wx < SCENE_W + 64; wx += 64)
-      ctx.fillRect(sx(wx), sy(wy), 20 * scale, 3.2 * scale);
+    for(let wx = -step + off; wx < cssW + step; wx += step)
+      ctx.fillRect(wx, sy(wy), 20 * scale, 3.2 * scale);
   }
-  /* a tiny sailboat out on the water, bobbing in whole pixels */
+  /* a tiny sailboat crossing the whole ocean, bobbing in whole pixels */
   {
-    const bx = snap((now * 0.0045) % (SCENE_W + 120), 4) - 60;
+    const span = cssW + 140 * scale;
+    const bx = snapC(((now * 0.0045 * scale) % span + span) % span) - 70 * scale;
     const bob = Math.floor(now / 800) % 2 ? 2 : 0;
     const by = HORIZON + 10 + bob;
     ctx.fillStyle = '#8A867E';
-    ctx.fillRect(sx(bx - 10), sy(by), 22 * scale, 5 * scale);   // hull
-    ctx.fillRect(sx(bx), sy(by - 17), 2.5 * scale, 17 * scale); // mast
+    ctx.fillRect(bx - 10 * scale, sy(by), 22 * scale, 5 * scale);   // hull
+    ctx.fillRect(bx, sy(by - 17), 2.5 * scale, 17 * scale);         // mast
     ctx.fillStyle = '#F2EFE6';
-    ctx.fillRect(sx(bx + 3), sy(by - 16), 9 * scale, 5 * scale);  // sail
-    ctx.fillRect(sx(bx + 3), sy(by - 11), 6 * scale, 5 * scale);
+    ctx.fillRect(bx + 3 * scale, sy(by - 16), 9 * scale, 5 * scale);  // sail
+    ctx.fillRect(bx + 3 * scale, sy(by - 11), 6 * scale, 5 * scale);
   }
-  /* sand with speckles */
+  /* sand with speckles across the full width */
   ctx.fillStyle = pal.sand;
   ctx.fillRect(0, sy(SAND_Y), cssW, Math.max(0, cssH - sy(SAND_Y)));
   ctx.fillStyle = pal.speckle;
-  for(const [px2, py2] of SPECKLES) ctx.fillRect(sx(px2), sy(py2), 3.5 * scale, 3.5 * scale);
+  for(const [px2, py2] of SPECKLES) ctx.fillRect(snapC(px2 / SCENE_W * cssW), sy(py2), 3.5 * scale, 3.5 * scale);
 }
 
 /* localStorage keys */
@@ -1039,6 +1064,7 @@ let shownScore = 0;             // HUD score ticks up toward the real score
 let uiModal = false;            // a dialog is open — swallow drops
 let combo = 0, comboAt = 0;     // merges chained inside COMBO_WINDOW_MS
 let bestAtStart = 0;            // to know when a run sets a NEW BEST
+let goldFlashAt = 0;            // bucket flashes gold on big combos
 let runBestTier = 0;            // furthest creature made THIS run
 const COMBO_WINDOW_MS = 2000, COMBO_CAP = 5;
 let rafId = null, lastT = 0, acc = 0;
@@ -1067,7 +1093,7 @@ const sndMerge = (tier) => blip(240 + tier * 55, 480 + tier * 75, 0.16, 0.1);
 const sndBig   = () => { blip(320, 900, 0.35, 0.12); blip(200, 600, 0.5, 0.08); };
 
 const muteBtn = document.getElementById('muteBtn');
-function paintMute(){ muteBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false'); muteBtn.innerHTML = soundOn ? '&#9834;' : '&#215;'; }
+function paintMute(){ muteBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false'); }
 muteBtn.addEventListener('click', () => {
   soundOn = !soundOn;
   localStorage.setItem(KEY_SOUND, soundOn ? 'on' : 'off');
@@ -1192,6 +1218,14 @@ function onCollisions(ev){
     if(combo >= 2){
       popups.push({ x: mx, y: my - TIERS[nt].r - 26, n: 0, t: 0,
         txt: 'COMBO x' + combo, big: true, gold: combo >= 4 });
+    }
+    if(combo >= 4){
+      goldFlashAt = nowMs;
+      showToast('COMBO x' + combo + '!!', true);
+    }
+    if(unlock){
+      const unm = TIERS[nt].flower ? 'THE FLOWER BLOOMS' : 'THE ' + TIERS[nt].name.toUpperCase() + ' JOINS THE SEA';
+      showToast(unm, false);
     }
     burst(mx, my, TIERS[nt].fill || '#D70000', Math.min(12, 5 + nt));
     if(!reduceMotion) rings.push({ x: mx, y: my, r: TIERS[nt].r * .7, t: 0, color: TIERS[nt].fill || '#D70000' });
@@ -1322,6 +1356,20 @@ function celebrate(x, y){
     particles.push({ x, y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp - 3, r: 2.5 + Math.random()*3.5,
       color: colors[i % colors.length], life: 1.6 });
   }
+}
+
+/* pixel toast — a small announcement chip that slides in under the HUD */
+let toastTimer = null;
+function showToast(txt, gold){
+  const t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = txt;
+  t.classList.toggle('gold', !!gold);
+  t.classList.remove('show');
+  void t.offsetWidth;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1700);
 }
 
 /* slow ambient bubbles inside the vessel — the sea breathing */
@@ -1460,8 +1508,9 @@ function render(now){
     const hx = clampAim(aimX), hr = TIERS[heldTier].r;
     const hy = heldY() + (reduceMotion ? 0 : Math.sin(now / 480) * 3);
     ctx.save();
-    ctx.globalAlpha = 0.25;
+    ctx.globalAlpha = 0.28;
     ctx.setLineDash([4, 8]);
+    if(!reduceMotion) ctx.lineDashOffset = -(now / 34) % 12;   // dashes flow downward
     ctx.strokeStyle = INK; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(hx, hy + hr + 4); ctx.lineTo(hx, BOX_BOTTOM - 2); ctx.stroke();
     ctx.restore();
@@ -1484,18 +1533,80 @@ function render(now){
       const sp = (now - b.squashAt) / 190;
       if(sp >= 1){ b.squashAt = 0; }
       else { const k = Math.sin(sp * Math.PI); sqx = 1 + 0.13 * k; sqy = 1 - 0.16 * k; }
+    }else if(!reduceMotion && b.velocity.y > 6){
+      /* stretch along the fall — classic drop juice */
+      const st = Math.min(0.10, (b.velocity.y - 6) * 0.008);
+      sqy = 1 + st; sqx = 1 - st * 0.7;
     }
     drawFruitAt(ctx, b.position.x, b.position.y, r, b.tier, b.angle, sqx, sqy);
   }
 
-  /* the vessel walls: ink stroke with rounded bottom corners + rim lips */
+  /* THE BEACH BUCKET — a painted red sand pail, not a black-line box.
+     Red band walls with crisp ink edges, a highlight stripe, chunky
+     rim caps with a glint, little wave dashes, and the flower charm
+     hanging off the right rim. Physics untouched. */
   vesselPath(WALL_T/2);
   ctx.lineWidth = WALL_T;
-  ctx.strokeStyle = INK;
+  ctx.strokeStyle = '#C9463B';
   ctx.stroke();
-  ctx.fillStyle = INK;
-  ctx.fillRect(BOX_L - 4, BOX_TOP, WALL_T + 8, 4);
-  ctx.fillRect(BOX_R - WALL_T - 4, BOX_TOP, WALL_T + 8, 4);
+  /* highlight stripe up the left wall */
+  ctx.save();
+  ctx.globalAlpha = 0.75;
+  ctx.strokeStyle = '#E07A6C';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(BOX_L + WALL_T * 0.32, BOX_TOP + 20);
+  ctx.lineTo(BOX_L + WALL_T * 0.32, BOX_BOTTOM - CORNER_R - 8);
+  ctx.stroke();
+  ctx.restore();
+  /* crisp ink edges on both faces of the wall */
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 2.5;
+  vesselPath(0); ctx.stroke();
+  vesselPath(WALL_T); ctx.stroke();
+  /* wave dashes on each wall near the rim */
+  ctx.fillStyle = '#F2EFE6';
+  ctx.fillRect(BOX_L + 2.5, BOX_TOP + 30, WALL_T - 5, 3);
+  ctx.fillRect(BOX_L + 2.5, BOX_TOP + 38, WALL_T - 5, 3);
+  ctx.fillRect(BOX_R - WALL_T + 2.5, BOX_TOP + 30, WALL_T - 5, 3);
+  ctx.fillRect(BOX_R - WALL_T + 2.5, BOX_TOP + 38, WALL_T - 5, 3);
+  /* chunky rim caps with a glint */
+  for(const rx of [BOX_L - 5, BOX_R - WALL_T - 5]){
+    ctx.fillStyle = '#C9463B';
+    ctx.fillRect(rx, BOX_TOP - 6, WALL_T + 10, 13);
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(rx, BOX_TOP - 6, WALL_T + 10, 13);
+    ctx.fillStyle = '#F2EFE6';
+    ctx.fillRect(rx + 3, BOX_TOP - 3, 4, 3);
+  }
+  /* the flower charm on the right rim */
+  if(FLOWER_IMG.complete && FLOWER_IMG.naturalWidth){
+    const chx = BOX_R + 9, chy = BOX_TOP + 20;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(BOX_R + 2, BOX_TOP + 4);
+    ctx.lineTo(chx, chy - 9);
+    ctx.stroke();
+    ctx.save();
+    ctx.translate(chx, chy);
+    ctx.rotate(-0.22 + (reduceMotion ? 0 : Math.sin(now / 1100) * 0.1));
+    const chw = 20, chh = chw * (FLOWER_IMG.naturalHeight / FLOWER_IMG.naturalWidth);
+    ctx.drawImage(FLOWER_IMG, -chw/2, -chh/2 + 9, chw, chh);
+    ctx.restore();
+  }
+  /* gold flash around the bucket on big combos */
+  if(goldFlashAt && now - goldFlashAt < 550 && !reduceMotion){
+    const gp = (now - goldFlashAt) / 550;
+    ctx.save();
+    ctx.globalAlpha = (1 - gp) * 0.7;
+    ctx.strokeStyle = '#E8B33C';
+    ctx.lineWidth = 5 - gp * 3;
+    vesselPath(-4 - gp * 8);
+    ctx.stroke();
+    ctx.restore();
+  }
 
   /* THE LEGEND — the chain under the box; everything from the penguin
      onward hides behind a "?" until first created (the final two in
@@ -1788,7 +1899,7 @@ function reset(){
   particles = []; popups = [];
   score = 0; shownScore = 0; scoreEl.textContent = '0';
   rings = [];
-  combo = 0; comboAt = 0; runBestTier = 0;
+  combo = 0; comboAt = 0; runBestTier = 0; goldFlashAt = 0;
   bestAtStart = best;
   over = false; shake = 0; canDrop = true; lastDrop = 0;
   overDialog.classList.remove('show');
