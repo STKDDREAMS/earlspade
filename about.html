@@ -3,124 +3,108 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
-<meta name="description" content="About earlspade — a small jewelry label from Malibu, California. One run, one season. Scroll the wheel."/>
+<meta name="description" content="About earlspade — a small jewelry label from Malibu, California. One run, one season. Spin the wheel."/>
 <title>earlspade — about us</title>
 <link rel="icon" href="logo.png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
 <meta property="og:title" content="earlspade — about us"/>
-<meta property="og:description" content="A small jewelry label from Malibu. One run, one season. Scroll the wheel."/>
+<meta property="og:description" content="A small jewelry label from Malibu. One run, one season. Spin the wheel."/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://earlspade.com/about.html"/>
 <meta property="og:image" content="https://earlspade.com/sea-series.jpg"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="earlspade — about us"/>
-<meta name="twitter:description" content="A small jewelry label from Malibu. One run, one season. Scroll the wheel."/>
+<meta name="twitter:description" content="A small jewelry label from Malibu. One run, one season. Spin the wheel."/>
 <meta name="twitter:image" content="https://earlspade.com/sea-series.jpg"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   earlspade — ABOUT US. The whole story on one wheel.
-   The wheel is the logo's own six-petal geometry, painted in a
-   soft sunset palette. It stays pinned while you scroll; the
-   scroll turns it, and each petal opens its chapter box.
+   earlspade — ABOUT US. A fixed page and a scroll wheel.
+   Nothing on this page scrolls past you: the whole stage is
+   fixed, and scrolling only TURNS THE WHEEL. Each petal is a
+   section; when a section arrives, its color BLOOMS out of the
+   wheel and becomes the entire background.
 ============================================================ */
 :root{
   --paper:#E9E6DF; --ink:#161412; --ink-soft:#6B6862; --red:#D70000; --gold:#E8B33C;
   --display:'Archivo',sans-serif; --mono:'Space Mono',ui-monospace,monospace;
   --px:'Press Start 2P',var(--mono);
-  /* the sunset six */
-  --c0:#F0A48C; --c1:#F0CB8E; --c2:#ACC79E; --c3:#8FC1B5; --c4:#97B8D6; --c5:#BBA9CF;
-  --d0:#B05B40; --d1:#A97F35; --d2:#5C7A4E; --d3:#3E7A6B; --d4:#44648C; --d5:#6E5A8C;
+  /* the sunset six — full-background strength, still soft */
+  --c0:#F3B49E; --c1:#F2D49E; --c2:#BCD2AE; --c3:#A2CDC1; --c4:#A9C4DE; --c5:#C8B8DA;
+  --d0:#A44E33; --d1:#96702A; --d2:#4F6E41; --d3:#33695B; --d4:#3A587E; --d5:#61507E;
   --ease:cubic-bezier(.22,.9,.32,1);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth;background:var(--paper)}
+html{background:var(--paper)}
 body{background:var(--paper);color:var(--ink);font-family:var(--mono);
   -webkit-font-smoothing:antialiased;overflow-x:clip}
-body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.045;
+body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
-/* soft chapter tint washing the whole page */
-#tint{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.16;background:transparent;
-  transition:background 1s var(--ease)}
+/* the runway: invisible, it only gives the page something to scroll */
+.runway{height:900vh}
 
-/* ===== header ===== */
-.top{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;
-  justify-content:space-between;padding:.9rem clamp(1rem,3vw,2rem);
-  padding-top:calc(.9rem + env(safe-area-inset-top))}
+/* ============ THE FIXED STAGE ============ */
+.stage{position:fixed;inset:0;z-index:1;overflow:hidden}
+/* two background layers: the new color BLOOMS out of the wheel */
+.bg{position:absolute;inset:0}
+#bgA{background:var(--paper)}
+#bgB{background:var(--paper);clip-path:circle(0% at 30% 50%);}
+#bgB.open{clip-path:circle(165% at var(--bx,30%) var(--by,50%));
+  transition:clip-path .9s var(--ease)}
+
+.top{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;
+  justify-content:space-between;padding:.95rem clamp(1rem,3vw,2rem);
+  padding-top:calc(.95rem + env(safe-area-inset-top))}
 .back{display:flex;align-items:center;gap:.5rem;font-family:var(--px);font-size:.5rem;
   color:var(--ink);text-decoration:none;letter-spacing:.04em}
 .back img{width:20px;height:22px;image-rendering:pixelated}
 .back:active{opacity:.6}
 .top-tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
 
-/* ===== sunset stripes (the Aviator ribbon) ===== */
-.stripes{display:flex;flex-direction:column;gap:4px;width:min(300px,60vw)}
-.stripes span{height:6px;border-radius:99px}
-.stripes span:nth-child(1){background:var(--c0)}
-.stripes span:nth-child(2){background:var(--c1)}
-.stripes span:nth-child(3){background:var(--c2)}
-.stripes span:nth-child(4){background:var(--c3)}
-.stripes span:nth-child(5){background:var(--c4)}
-.stripes span:nth-child(6){background:var(--c5)}
-.stripes.grow span{transform:scaleX(0);transform-origin:left;animation:stripeIn .7s var(--ease) forwards}
-.stripes.grow span:nth-child(2){animation-delay:.08s}.stripes.grow span:nth-child(3){animation-delay:.16s}
-.stripes.grow span:nth-child(4){animation-delay:.24s}.stripes.grow span:nth-child(5){animation-delay:.32s}
-.stripes.grow span:nth-child(6){animation-delay:.4s}
-@keyframes stripeIn{to{transform:scaleX(1)}}
-
-/* ===== intro ===== */
-.intro{position:relative;z-index:1;min-height:100svh;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:1.4rem;text-align:center;padding:5rem 1.4rem 3rem}
-.intro-eyebrow{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-soft)}
-.intro h1{font-family:var(--display);font-weight:900;letter-spacing:-.04em;line-height:.92;
-  font-size:clamp(3rem,11vw,6.4rem)}
-.intro h1 em{font-style:normal}
-.intro h1 .w0{color:var(--d0)}.intro h1 .w1{color:var(--d1)}.intro h1 .w2{color:var(--d2)}
-.intro h1 .w3{color:var(--d3)}.intro h1 .w4{color:var(--d4)}.intro h1 .w5{color:var(--d5)}
-.intro-sub{font-size:.72rem;line-height:1.8;letter-spacing:.04em;color:var(--ink-soft);max-width:34ch}
-.scroll-hint{margin-top:1.6rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;
-  font-family:var(--px);font-size:.42rem;letter-spacing:.14em;color:var(--ink-soft)}
-.scroll-hint svg{animation:hintBob 1.4s ease-in-out infinite}
-@keyframes hintBob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
-
-/* ===== the journey: pinned wheel + boxes ===== */
-.journey{position:relative;z-index:1;height:760vh}
-.pin{position:sticky;top:0;height:100svh;display:flex;align-items:center;
-  gap:clamp(1rem,4vw,4rem);padding:0 clamp(1rem,4vw,4rem);max-width:1280px;margin:0 auto}
-.wheel-wrap{flex:0 0 44%;display:flex;flex-direction:column;align-items:center;gap:1rem;min-width:0}
-.wheel{width:min(100%,46svh);aspect-ratio:1;display:block;overflow:visible}
-.wheel-rot{transform-origin:100px 100px;will-change:transform}
+/* stage grid: wheel left, story right */
+.grid{position:absolute;inset:0;display:flex;align-items:center;
+  gap:clamp(1rem,4vw,4rem);padding:0 clamp(1.1rem,4vw,4.5rem);max-width:1280px;margin:0 auto}
+.wheel-wrap{flex:0 0 44%;display:flex;flex-direction:column;align-items:center;gap:.9rem;min-width:0}
+.wheel{width:min(100%,52svh);aspect-ratio:1;display:block;overflow:visible;touch-action:none;cursor:grab}
+.wheel:active{cursor:grabbing}
+.wheel-rot{transform-origin:110px 110px;will-change:transform}
+.petal circle.body{transition:opacity .45s var(--ease),stroke .45s var(--ease),stroke-width .45s var(--ease)}
 .petal{cursor:pointer}
-.petal circle{transition:opacity .45s var(--ease),stroke .45s var(--ease),stroke-width .45s var(--ease)}
-.petal text{font-family:var(--display);font-weight:800;font-size:15px;fill:rgba(22,20,18,.62);
+.petal text{font-family:var(--display);font-weight:800;font-size:15px;fill:rgba(22,20,18,.6);
   text-anchor:middle;dominant-baseline:central;pointer-events:none}
-.petal.dim circle{opacity:.42}
-.petal.on circle{opacity:1;stroke:var(--ink);stroke-width:3}
-@media(hover:hover){.petal:hover circle{opacity:1}}
-.hub-img{pointer-events:none}
+.petal.dim circle.body{opacity:.5}
+.petal.on circle.body{opacity:1;stroke:var(--ink);stroke-width:3.5}
+@media(hover:hover){.petal:hover circle.body{opacity:1}}
+.dial-ring{fill:none;stroke:rgba(255,255,255,.55);stroke-width:7}
+.dial-tick{stroke:rgba(22,20,18,.28);stroke-width:2}
+.pointer{fill:var(--ink)}
+.hub-pulse{transform-origin:110px 110px}
+.hub-pulse.tick{animation:hubTick .4s var(--ease)}
+@keyframes hubTick{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
 .wheel-count{font-family:var(--mono);font-size:.62rem;letter-spacing:.3em;color:var(--ink-soft)}
+.wheel-hint{font-family:var(--px);font-size:.38rem;letter-spacing:.12em;color:var(--ink-soft);opacity:.8}
 
-.boxes{flex:1;position:relative;height:min(70svh,560px);min-width:0}
+.content{flex:1;position:relative;height:min(72svh,580px);min-width:0}
 .box{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
-  opacity:0;transform:translateY(34px) scale(.98);pointer-events:none;
+  opacity:0;transform:translateY(36px) scale(.98);pointer-events:none;
   transition:opacity .5s var(--ease),transform .5s var(--ease)}
 .box.on{opacity:1;transform:none;pointer-events:auto}
-.card{background:rgba(255,255,255,.55);border-radius:22px;padding:clamp(1.3rem,3vw,2.4rem);
-  box-shadow:0 18px 50px -18px rgba(22,20,18,.22);backdrop-filter:blur(2px);position:relative;overflow:hidden}
-.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:9px;background:var(--bar,var(--c0))}
+.card{background:rgba(255,255,255,.66);border-radius:24px;padding:clamp(1.3rem,3vw,2.5rem);
+  box-shadow:0 22px 60px -20px rgba(22,20,18,.28);position:relative;overflow:hidden}
+.card .ghost{position:absolute;right:-.4rem;top:-2.2rem;font-family:var(--display);font-weight:900;
+  font-size:clamp(6rem,14vw,10rem);letter-spacing:-.05em;color:rgba(22,20,18,.055);pointer-events:none;line-height:1}
 .card-kicker{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--kick,var(--d0));margin-bottom:.7rem}
 .card h2{font-family:var(--display);font-weight:900;letter-spacing:-.035em;line-height:.95;
-  font-size:clamp(1.9rem,4.6vw,3.2rem);margin-bottom:1rem;color:var(--ink)}
+  font-size:clamp(1.9rem,4.6vw,3.3rem);margin-bottom:1rem;color:var(--ink)}
 .card h2 span{color:var(--kick,var(--d0))}
-.card p{font-size:.76rem;line-height:1.9;letter-spacing:.02em;color:#3c3934;max-width:46ch}
+.card p{font-size:.76rem;line-height:1.9;letter-spacing:.02em;color:#39362f;max-width:46ch}
 .card .fun{margin-top:1.3rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
 
-/* per-chapter fun bits */
-.patch{height:74px;width:auto;filter:drop-shadow(0 6px 10px rgba(22,20,18,.25));
-  transition:transform .4s var(--ease)}
+/* fun bits */
+.patch{height:74px;width:auto;filter:drop-shadow(0 6px 10px rgba(22,20,18,.25));transition:transform .4s var(--ease)}
 .box.on .patch{animation:patchIn .6s var(--ease) both}
 @keyframes patchIn{from{opacity:0;transform:translateY(14px) rotate(-6deg)}to{opacity:1;transform:none}}
 @media(hover:hover){.patch:hover{transform:translateY(-6px) rotate(4deg)}}
@@ -133,14 +117,14 @@ body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opa
 @media(hover:hover){.chip:hover{transform:translateY(-4px) rotate(-2deg)}}
 .chip s{text-decoration:line-through;color:var(--ink-soft)}
 .stitch{flex-basis:100%;height:2px;background-image:linear-gradient(90deg,var(--ink) 55%,transparent 45%);
-  background-size:12px 2px;background-repeat:repeat-x;opacity:.5;position:relative;overflow:hidden}
+  background-size:12px 2px;background-repeat:repeat-x;opacity:.5}
 .box.on .stitch{animation:stitchIn 1.2s var(--ease) both}
 @keyframes stitchIn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
 .px-btn{display:inline-block;border:2px solid var(--ink);background:var(--ink);color:var(--paper);
   font-family:var(--px);font-size:.5rem;padding:.7rem .95rem;letter-spacing:.05em;text-decoration:none;
   box-shadow:3px 3px 0 0 rgba(22,20,18,.28)}
 .px-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 rgba(22,20,18,.28)}
-.px-btn.ghost{background:rgba(255,255,255,.7);color:var(--ink)}
+.px-btn.ghost-b{background:rgba(255,255,255,.75);color:var(--ink)}
 @media(hover:hover){.px-btn:hover{animation:hop .28s steps(3,end)}}
 @keyframes hop{0%{transform:translateY(0)}40%{transform:translateY(-3px)}100%{transform:translateY(0)}}
 .stamp{font-family:var(--display);font-weight:900;font-size:.86rem;letter-spacing:.08em;
@@ -149,91 +133,126 @@ body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opa
 .box.on .stamp{animation:stampIn .45s cubic-bezier(.2,1.6,.5,1) both .25s}
 @keyframes stampIn{from{opacity:0;transform:rotate(-6deg) scale(1.7)}to{opacity:.9;transform:rotate(-6deg) scale(1)}}
 
-/* ===== outro ===== */
-.outro{position:relative;z-index:1;min-height:70svh;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:1.6rem;text-align:center;padding:4rem 1.4rem 5rem}
-.outro-band{display:flex;flex-direction:column;gap:5px;width:100%;max-width:520px}
+/* ============ INTRO OVERLAY (chapter zero) ============ */
+.intro-o{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1.3rem;text-align:center;padding:1.4rem;background:var(--paper);
+  transition:opacity .5s var(--ease),visibility 0s linear 0s}
+.intro-o.gone{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .5s var(--ease),visibility 0s linear .5s}
+.intro-eyebrow{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-soft)}
+.intro-o h1{font-family:var(--display);font-weight:900;letter-spacing:-.04em;line-height:.92;
+  font-size:clamp(3rem,11vw,6.4rem)}
+.intro-o h1 em{font-style:normal}
+.intro-o h1 .w0{color:var(--d0)}.intro-o h1 .w1{color:var(--d1)}.intro-o h1 .w2{color:var(--d2)}
+.intro-o h1 .w3{color:var(--d3)}.intro-o h1 .w4{color:var(--d4)}.intro-o h1 .w5{color:var(--d5)}
+.stripes{display:flex;flex-direction:column;gap:4px;width:min(300px,60vw)}
+.stripes span{height:6px;border-radius:99px}
+.stripes span:nth-child(1){background:var(--c0)}.stripes span:nth-child(2){background:var(--c1)}
+.stripes span:nth-child(3){background:var(--c2)}.stripes span:nth-child(4){background:var(--c3)}
+.stripes span:nth-child(5){background:var(--c4)}.stripes span:nth-child(6){background:var(--c5)}
+.stripes span{transform:scaleX(0);transform-origin:left;animation:stripeIn .7s var(--ease) forwards}
+.stripes span:nth-child(2){animation-delay:.08s}.stripes span:nth-child(3){animation-delay:.16s}
+.stripes span:nth-child(4){animation-delay:.24s}.stripes span:nth-child(5){animation-delay:.32s}
+.stripes span:nth-child(6){animation-delay:.4s}
+@keyframes stripeIn{to{transform:scaleX(1)}}
+.intro-sub{font-size:.72rem;line-height:1.8;letter-spacing:.04em;color:var(--ink-soft);max-width:36ch}
+.scroll-hint{margin-top:1rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  font-family:var(--px);font-size:.42rem;letter-spacing:.14em;color:var(--ink-soft)}
+.scroll-hint svg{animation:hintBob 1.4s ease-in-out infinite}
+@keyframes hintBob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+
+/* ============ OUTRO OVERLAY ============ */
+.outro-o{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1.5rem;text-align:center;padding:1.4rem;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .5s var(--ease)}
+.outro-o.show{opacity:1;visibility:visible;pointer-events:auto}
+.outro-band{display:flex;flex-direction:column;gap:5px;width:min(520px,80vw)}
 .outro-band span{height:8px;border-radius:99px}
 .outro-band span:nth-child(1){background:var(--c0)}.outro-band span:nth-child(2){background:var(--c1)}
 .outro-band span:nth-child(3){background:var(--c2)}.outro-band span:nth-child(4){background:var(--c3)}
 .outro-band span:nth-child(5){background:var(--c4)}.outro-band span:nth-child(6){background:var(--c5)}
-.outro h2{font-family:var(--display);font-weight:900;letter-spacing:-.035em;font-size:clamp(1.8rem,6vw,3rem)}
-.outro .row{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
+.outro-o h2{font-family:var(--display);font-weight:900;letter-spacing:-.035em;font-size:clamp(1.8rem,6vw,3rem)}
+.outro-o .row{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
 .outro-foot{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
 
-/* ===== mobile: wheel above, box below ===== */
+/* ============ progress dots ============ */
+.dots{position:absolute;right:clamp(.7rem,2vw,1.6rem);top:50%;transform:translateY(-50%);z-index:9;
+  display:flex;flex-direction:column;gap:.65rem}
+.dots button{width:11px;height:11px;border-radius:50%;border:2px solid var(--ink);background:transparent;
+  cursor:pointer;padding:0;transition:background .3s var(--ease),transform .3s var(--ease)}
+.dots button.on{background:var(--ink);transform:scale(1.25)}
+
+/* ============ mobile ============ */
 @media(max-width:820px){
-  .pin{flex-direction:column;justify-content:flex-start;gap:.6rem;
-    padding-top:calc(3.6rem + env(safe-area-inset-top))}
-  .wheel-wrap{flex:none;width:100%}
-  .wheel{width:min(60vw,34svh)}
-  .boxes{width:100%;height:auto;flex:1;min-height:0}
-  .box{justify-content:flex-start;padding-top:.6rem}
+  .grid{flex-direction:column;justify-content:flex-start;gap:.4rem;
+    padding-top:calc(3.4rem + env(safe-area-inset-top));padding-bottom:1rem}
+  .wheel-wrap{flex:none;width:100%;gap:.5rem}
+  .wheel{width:min(56vw,32svh)}
+  .content{width:100%;height:auto;flex:1;min-height:0}
+  .box{justify-content:flex-start;padding-top:.4rem}
   .card p{font-size:.7rem}
-  .patch{height:58px}
+  .patch{height:56px}
+  .dots{right:.55rem}
+  .card .ghost{font-size:5.5rem;top:-1.4rem}
 }
 
 a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 
-/* ===== reduced motion: no pin, everything stacked and visible ===== */
+/* ============ reduced motion: an honest stacked page ============ */
 @media(prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-  .journey{height:auto}
-  .pin{position:static;height:auto;flex-direction:column;padding-top:2rem;padding-bottom:2rem}
-  .boxes{height:auto}
+  *{animation:none!important;transition:none!important}
+  .runway{display:none}
+  .stage{position:static;overflow:visible}
+  .bg,#bgB{display:none}
+  .grid{position:static;flex-direction:column;padding:5rem 1.2rem 2rem}
+  .content{position:static;height:auto}
   .box{position:static;opacity:1;transform:none;pointer-events:auto;margin-bottom:1.4rem}
-  .scroll-hint{display:none}
+  .intro-o{position:static;background:transparent;padding-top:5rem}
+  .outro-o{position:static;opacity:1;visibility:visible}
+  .dots,.scroll-hint,.wheel-hint{display:none}
 }
 </style>
 </head>
 <body>
 
-<div id="tint" aria-hidden="true"></div>
+<!-- ============ THE FIXED STAGE — the page never scrolls, the wheel does ============ -->
+<div class="stage" id="stage">
+  <div class="bg" id="bgA"></div>
+  <div class="bg" id="bgB"></div>
 
-<header class="top">
-  <a class="back" href="/"><img src="logo.png" alt="" width="20" height="22"/>&larr; earlspade</a>
-  <span class="top-tag">Malibu, California</span>
-</header>
+  <header class="top">
+    <a class="back" href="/"><img src="logo.png" alt="" width="20" height="22"/>&larr; earlspade</a>
+    <span class="top-tag">Malibu, California</span>
+  </header>
 
-<!-- ============ INTRO ============ -->
-<section class="intro">
-  <p class="intro-eyebrow">earlspade &mdash; est. malibu</p>
-  <h1><em class="w0">a</em><em class="w1">b</em><em class="w2">o</em><em class="w3">u</em><em class="w4">t</em>&nbsp;<em class="w5">u</em><em class="w0">s</em></h1>
-  <div class="stripes grow" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-  <p class="intro-sub">the whole story fits on one wheel.<br/>scroll, and it turns.</p>
-  <div class="scroll-hint" aria-hidden="true">
-    SCROLL
-    <svg width="16" height="16" viewBox="0 0 12 12" shape-rendering="crispEdges"><rect x="1" y="2" width="2" height="2" fill="#6B6862"/><rect x="3" y="4" width="2" height="2" fill="#6B6862"/><rect x="5" y="6" width="2" height="2" fill="#6B6862"/><rect x="7" y="4" width="2" height="2" fill="#6B6862"/><rect x="9" y="2" width="2" height="2" fill="#6B6862"/></svg>
-  </div>
-</section>
-
-<!-- ============ THE WHEEL JOURNEY ============ -->
-<section class="journey" id="journey">
-  <div class="pin">
-
+  <div class="grid">
     <div class="wheel-wrap">
-      <svg class="wheel" viewBox="0 0 200 200" aria-hidden="true">
+      <svg class="wheel" id="wheelSvg" viewBox="0 0 220 220" aria-hidden="true">
+        <!-- dial housing: ring + ticks + pointer notch (never turns) -->
+        <circle class="dial-ring" cx="110" cy="110" r="99"/>
+        <g id="ticks"></g>
+        <path class="pointer" d="M 219 103 L 207 110 L 219 117 Z"/>
         <g class="wheel-rot" id="wheelRot">
-          <!-- six petals, logo geometry, sunset palette -->
-          <g class="petal" data-i="0"><circle cx="156" cy="100" r="33" fill="#F0A48C"/><text x="156" y="100">01</text></g>
-          <g class="petal" data-i="1"><circle cx="128" cy="148.5" r="33" fill="#F0CB8E"/><text x="128" y="148.5">02</text></g>
-          <g class="petal" data-i="2"><circle cx="72" cy="148.5" r="33" fill="#ACC79E"/><text x="72" y="148.5">03</text></g>
-          <g class="petal" data-i="3"><circle cx="44" cy="100" r="33" fill="#8FC1B5"/><text x="44" y="100">04</text></g>
-          <g class="petal" data-i="4"><circle cx="72" cy="51.5" r="33" fill="#97B8D6"/><text x="72" y="51.5">05</text></g>
-          <g class="petal" data-i="5"><circle cx="128" cy="51.5" r="33" fill="#BBA9CF"/><text x="128" y="51.5">06</text></g>
+          <g class="petal" data-i="0"><circle class="body" cx="166" cy="110" r="33" fill="#F3B49E"/><text x="166" y="110">01</text></g>
+          <g class="petal" data-i="1"><circle class="body" cx="138" cy="158.5" r="33" fill="#F2D49E"/><text x="138" y="158.5">02</text></g>
+          <g class="petal" data-i="2"><circle class="body" cx="82" cy="158.5" r="33" fill="#BCD2AE"/><text x="82" y="158.5">03</text></g>
+          <g class="petal" data-i="3"><circle class="body" cx="54" cy="110" r="33" fill="#A2CDC1"/><text x="54" y="110">04</text></g>
+          <g class="petal" data-i="4"><circle class="body" cx="82" cy="61.5" r="33" fill="#A9C4DE"/><text x="82" y="61.5">05</text></g>
+          <g class="petal" data-i="5"><circle class="body" cx="138" cy="61.5" r="33" fill="#C8B8DA"/><text x="138" y="61.5">06</text></g>
         </g>
-        <!-- the hub never turns: the flower holds still -->
-        <circle cx="100" cy="100" r="30" fill="#E9E6DF"/>
-        <circle cx="100" cy="100" r="30" fill="none" stroke="#161412" stroke-width="2.5"/>
-        <image class="hub-img" href="logo.png" x="84" y="82" width="32" height="35" image-rendering="pixelated"/>
+        <g class="hub-pulse" id="hubPulse">
+          <circle cx="110" cy="110" r="30" fill="#E9E6DF"/>
+          <circle cx="110" cy="110" r="30" fill="none" stroke="#161412" stroke-width="2.5"/>
+          <image href="logo.png" x="94" y="92" width="32" height="35" image-rendering="pixelated"/>
+        </g>
       </svg>
       <span class="wheel-count" id="wheelCount">01 / 06</span>
+      <span class="wheel-hint">SCROLL OR GRAB THE WHEEL</span>
     </div>
 
-    <div class="boxes" id="boxes">
+    <div class="content" id="content">
 
-      <article class="box on" style="--bar:var(--c0);--kick:var(--d0)">
-        <div class="card">
+      <article class="box" style="--kick:var(--d0)">
+        <div class="card"><span class="ghost">01</span>
           <p class="card-kicker">chapter one &mdash; the shore</p>
           <h2>born in <span>malibu</span></h2>
           <p>salt air, long light, slow afternoons. earlspade started twenty steps from the water, and every piece still carries that walk down to the sand. this is not a factory brand &mdash; it&rsquo;s a beach one.</p>
@@ -244,8 +263,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset
         </div>
       </article>
 
-      <article class="box" style="--bar:var(--c1);--kick:var(--d1)">
-        <div class="card">
+      <article class="box" style="--kick:var(--d1)">
+        <div class="card"><span class="ghost">02</span>
           <p class="card-kicker">chapter two &mdash; the series</p>
           <h2>small, <span>numbered</span> runs</h2>
           <p>we don&rsquo;t do endless collections. each series is one small numbered run &mdash; a season&rsquo;s worth, counted piece by piece. when the run sells through, the series closes and moves to the archive.</p>
@@ -257,8 +276,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset
         </div>
       </article>
 
-      <article class="box" style="--bar:var(--c2);--kick:var(--d2)">
-        <div class="card">
+      <article class="box" style="--kick:var(--d2)">
+        <div class="card"><span class="ghost">03</span>
           <p class="card-kicker">chapter three &mdash; the hands</p>
           <h2>made <span>slow</span>, made small</h2>
           <p>small batches only. every piece gets picked up, turned over, and checked before it leaves. if we wouldn&rsquo;t wear it into the water, it doesn&rsquo;t ship.</p>
@@ -268,8 +287,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset
         </div>
       </article>
 
-      <article class="box" style="--bar:var(--c3);--kick:var(--d3)">
-        <div class="card">
+      <article class="box" style="--kick:var(--d3)">
+        <div class="card"><span class="ghost">04</span>
           <p class="card-kicker">chapter four &mdash; the muse</p>
           <h2>the <span>sea</span> series</h2>
           <p>series one belongs to the ocean &mdash; the green sea turtle that swims home to the beach where it hatched, the manta, the moorish idol. the muse lives right outside the door.</p>
@@ -280,8 +299,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset
         </div>
       </article>
 
-      <article class="box" style="--bar:var(--c4);--kick:var(--d4)">
-        <div class="card">
+      <article class="box" style="--kick:var(--d4)">
+        <div class="card"><span class="ghost">05</span>
           <p class="card-kicker">chapter five &mdash; the break</p>
           <h2>we built a <span>game</span></h2>
           <p>because brands don&rsquo;t have to be boring. drop cute creatures into a beach bucket, merge your way to the flower, and take your place in the deep ten.</p>
@@ -291,8 +310,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset
         </div>
       </article>
 
-      <article class="box" style="--bar:var(--c5);--kick:var(--d5)">
-        <div class="card">
+      <article class="box" style="--kick:var(--d5)">
+        <div class="card"><span class="ghost">06</span>
           <p class="card-kicker">chapter six &mdash; the promise</p>
           <h2>sold, <span>then gone</span></h2>
           <p>never mass-made. never re-run. when a series closes it stays closed &mdash; the archive is a museum, not a warehouse. owning one means owning one of a counted few.</p>
@@ -304,44 +323,126 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset
 
     </div>
   </div>
-</section>
 
-<!-- ============ OUTRO ============ -->
-<section class="outro">
-  <div class="outro-band" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-  <h2>that&rsquo;s the whole story.</h2>
-  <div class="row">
-    <a class="px-btn" href="/#series">SHOP THE SERIES</a>
-    <a class="px-btn ghost" href="game.html">PLAY THE GAME</a>
+  <!-- progress dots -->
+  <nav class="dots" id="dots" aria-label="Chapters"></nav>
+
+  <!-- chapter zero -->
+  <div class="intro-o" id="introO">
+    <p class="intro-eyebrow">earlspade &mdash; est. malibu</p>
+    <h1><em class="w0">a</em><em class="w1">b</em><em class="w2">o</em><em class="w3">u</em><em class="w4">t</em>&nbsp;<em class="w5">u</em><em class="w0">s</em></h1>
+    <div class="stripes" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <p class="intro-sub">the whole story fits on one wheel.<br/>the page stays still &mdash; the wheel does the moving.</p>
+    <div class="scroll-hint" aria-hidden="true">
+      SCROLL
+      <svg width="16" height="16" viewBox="0 0 12 12" shape-rendering="crispEdges"><rect x="1" y="2" width="2" height="2" fill="#6B6862"/><rect x="3" y="4" width="2" height="2" fill="#6B6862"/><rect x="5" y="6" width="2" height="2" fill="#6B6862"/><rect x="7" y="4" width="2" height="2" fill="#6B6862"/><rect x="9" y="2" width="2" height="2" fill="#6B6862"/></svg>
+    </div>
   </div>
-  <p class="outro-foot">earlspade &mdash; malibu, california</p>
-</section>
+
+  <!-- the end -->
+  <div class="outro-o" id="outroO">
+    <div class="outro-band" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <h2>that&rsquo;s the whole story.</h2>
+    <div class="row">
+      <a class="px-btn" href="/#series">SHOP THE SERIES</a>
+      <a class="px-btn ghost-b" href="game.html">PLAY THE GAME</a>
+    </div>
+    <p class="outro-foot">earlspade &mdash; malibu, california</p>
+  </div>
+</div>
+
+<div class="runway" aria-hidden="true"></div>
 
 <script>
-/* The wheel: pinned while .journey scrolls by. Scroll progress turns
-   the rotor so the active petal points at the boxes (3 o'clock), the
-   petal lights up, its box opens, and the page takes on its tint. */
+/* THE SCROLL WHEEL.
+   The stage is fixed; the invisible runway below provides scroll.
+   Scroll -> wheel angle. Section locks -> its petal swings to the
+   pointer, the hub ticks, and the section's color BLOOMS out of the
+   wheel to fill the entire background. Grab the wheel to spin it.
+   Keys work too. */
 (function(){
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var journey = document.getElementById('journey');
+  /* backgrounds are a lighter pour of each petal, so the active
+     petal still pops against its own color */
+  var COLORS = ['#F6C9B8','#F5DDBA','#CEDDC5','#BDD9D0','#C2D4E7','#D6CCE4'];
+  var N = 6;
   var rot = document.getElementById('wheelRot');
+  var svg = document.getElementById('wheelSvg');
   var petals = Array.prototype.slice.call(document.querySelectorAll('.petal'));
   var boxes = Array.prototype.slice.call(document.querySelectorAll('.box'));
-  var count = document.getElementById('wheelCount');
-  var tint = document.getElementById('tint');
-  var COLORS = ['#F0A48C','#F0CB8E','#ACC79E','#8FC1B5','#97B8D6','#BBA9CF'];
-  var N = boxes.length;
-  if(reduce){ tint.style.display = 'none'; return; }
+  var countEl = document.getElementById('wheelCount');
+  var introO = document.getElementById('introO');
+  var outroO = document.getElementById('outroO');
+  var bgA = document.getElementById('bgA');
+  var bgB = document.getElementById('bgB');
+  var hub = document.getElementById('hubPulse');
+  var dotsWrap = document.getElementById('dots');
 
-  var target = 0, shown = -1, angle = 0, angleT = 0, raf = null;
+  /* dial ticks */
+  (function(){
+    var g = document.getElementById('ticks');
+    for(var i = 0; i < 24; i++){
+      var a = i / 24 * Math.PI * 2;
+      var l = document.createElementNS('http://www.w3.org/2000/svg','line');
+      var r1 = 95, r2 = i % 4 === 0 ? 88 : 91;
+      l.setAttribute('x1', 110 + Math.cos(a) * r1); l.setAttribute('y1', 110 + Math.sin(a) * r1);
+      l.setAttribute('x2', 110 + Math.cos(a) * r2); l.setAttribute('y2', 110 + Math.sin(a) * r2);
+      l.setAttribute('class','dial-tick');
+      g.appendChild(l);
+    }
+  })();
 
-  function progress(){
-    var r = journey.getBoundingClientRect();
-    var vh = innerHeight;
-    var total = r.height - vh;
-    var p = Math.min(1, Math.max(0, -r.top / total));
-    return p;
+  /* progress dots */
+  var dots = [];
+  for(var i = 0; i < N; i++){
+    (function(i){
+      var b = document.createElement('button');
+      b.setAttribute('aria-label', 'Chapter ' + (i + 1));
+      b.addEventListener('click', function(){ goTo(i); });
+      dotsWrap.appendChild(b);
+      dots.push(b);
+    })(i);
   }
+
+  if(reduce){
+    boxes.forEach(function(b){ b.classList.add('on'); });
+    return;
+  }
+
+  /* scroll geometry: intro [0,.08) · chapters [.08,.92) · outro [.92,1] */
+  var INTRO_END = 0.08, CH_END = 0.92;
+  var shown = -1, introGone = false, outroShown = false;
+  var angle = 0, angleT = 0, raf = null;
+
+  function runwayMax(){ return document.body.scrollHeight - innerHeight; }
+  function progress(){ return Math.min(1, Math.max(0, scrollY / runwayMax())); }
+  function chapterF(p){
+    return Math.min(N - 1, Math.max(0, (p - INTRO_END) / (CH_END - INTRO_END) * N - 0.5));
+  }
+  function chapterScrollPos(i){
+    var p = INTRO_END + (i + 0.5) / N * (CH_END - INTRO_END);
+    return p * runwayMax();
+  }
+  function goTo(i){ scrollTo({ top: chapterScrollPos(i), behavior: 'smooth' }); }
+
+  /* the color bloom: the new background grows out of the wheel hub */
+  function bloom(color){
+    var r = svg.getBoundingClientRect();
+    var cx = (r.left + r.width / 2) / innerWidth * 100;
+    var cy = (r.top + r.height / 2) / innerHeight * 100;
+    bgB.style.setProperty('--bx', cx + '%');
+    bgB.style.setProperty('--by', cy + '%');
+    bgB.classList.remove('open');
+    bgB.style.background = color;
+    void bgB.offsetWidth;
+    bgB.classList.add('open');
+    clearTimeout(bloom.t);
+    bloom.t = setTimeout(function(){
+      bgA.style.background = color;
+      bgB.classList.remove('open');
+    }, 950);
+  }
+
   function setActive(i){
     if(i === shown) return;
     shown = i;
@@ -350,45 +451,86 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset
       pt.classList.toggle('on', k === i);
       pt.classList.toggle('dim', k !== i);
     });
-    count.textContent = '0' + (i + 1) + ' / 0' + N;
-    tint.style.background = COLORS[i];
+    countEl.textContent = '0' + (i + 1) + ' / 0' + N;
+    dots.forEach(function(d, k){ d.classList.toggle('on', k === i); });
+    bloom(COLORS[i]);
+    hub.classList.remove('tick');
+    void hub.getBoundingClientRect();
+    hub.classList.add('tick');
   }
+
   function frame(){
     raf = null;
-    /* ease the rotor toward its target angle — butter */
     angle += (angleT - angle) * 0.14;
     if(Math.abs(angleT - angle) > 0.05) schedule();
     rot.style.transform = 'rotate(' + angle + 'deg)';
-    /* keep the numbers upright */
     petals.forEach(function(pt){
+      var c = pt.querySelector('circle');
       pt.querySelector('text').setAttribute('transform',
-        'rotate(' + (-angle) + ' ' + pt.querySelector('circle').getAttribute('cx') + ' ' + pt.querySelector('circle').getAttribute('cy') + ')');
+        'rotate(' + (-angle) + ' ' + c.getAttribute('cx') + ' ' + c.getAttribute('cy') + ')');
     });
   }
   function schedule(){ if(!raf) raf = requestAnimationFrame(frame); }
-  function onScroll(){
+
+  function update(){
     var p = progress();
-    var f = p * (N - 1);
+    /* intro */
+    if(p > INTRO_END * 0.6 && !introGone){ introGone = true; introO.classList.add('gone'); }
+    if(p <= INTRO_END * 0.6 && introGone){ introGone = false; introO.classList.remove('gone'); }
+    /* outro */
+    if(p > CH_END + 0.015 && !outroShown){ outroShown = true; outroO.classList.add('show'); }
+    if(p <= CH_END + 0.015 && outroShown){ outroShown = false; outroO.classList.remove('show'); }
+    /* chapters */
+    var f = chapterF(p);
     var i = Math.round(f);
     angleT = -i * 60;
-    setActive(i);
+    if(p > INTRO_END * 0.5) setActive(i);
     schedule();
   }
-  addEventListener('scroll', onScroll, { passive: true });
-  addEventListener('resize', onScroll, { passive: true });
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update, { passive: true });
 
-  /* click a petal: sail to its chapter */
+  /* grab the wheel and SPIN it (drag anywhere on the dial) */
+  var dragging = false, lastA = 0;
+  function pointAngle(e){
+    var r = svg.getBoundingClientRect();
+    return Math.atan2(e.clientY - (r.top + r.height/2), e.clientX - (r.left + r.width/2)) * 180 / Math.PI;
+  }
+  svg.addEventListener('pointerdown', function(e){
+    dragging = true; lastA = pointAngle(e);
+    svg.setPointerCapture(e.pointerId);
+  });
+  svg.addEventListener('pointermove', function(e){
+    if(!dragging) return;
+    var a = pointAngle(e);
+    var d = a - lastA;
+    if(d > 180) d -= 360; if(d < -180) d += 360;
+    lastA = a;
+    /* one full petal (60deg) of spin = one chapter of scroll */
+    var perChapter = (CH_END - INTRO_END) / N * runwayMax();
+    scrollBy(0, -d / 60 * perChapter);
+  });
+  addEventListener('pointerup', function(){ dragging = false; });
+
+  /* petal click / keyboard */
   petals.forEach(function(pt){
     pt.addEventListener('click', function(){
-      var i = +pt.getAttribute('data-i');
-      var vh = innerHeight;
-      var top = journey.offsetTop + (journey.offsetHeight - vh) * (i / (N - 1));
-      scrollTo({ top: top + 2, behavior: 'smooth' });
+      if(dragMoved()) return;
+      goTo(+pt.getAttribute('data-i'));
     });
   });
+  var downAt = 0;
+  svg.addEventListener('pointerdown', function(){ downAt = scrollY; });
+  function dragMoved(){ return Math.abs(scrollY - downAt) > 30; }
+  addEventListener('keydown', function(e){
+    if(e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' '){
+      e.preventDefault(); goTo(Math.min(N - 1, Math.max(0, shown) + 1));
+    }else if(e.key === 'ArrowUp' || e.key === 'ArrowLeft'){
+      e.preventDefault(); goTo(Math.max(0, shown - 1));
+    }
+  });
 
-  setActive(0);
-  onScroll();
+  update();
 })();
 </script>
 </body>
