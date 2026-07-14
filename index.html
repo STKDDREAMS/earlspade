@@ -885,7 +885,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 </head>
 <body>
 
-<a class="mark" id="mark" href="#top"><img class="no-vs" src="logo.png" alt=""/>earlspade</a>
+<a class="mark" id="mark" href="#top"><img loading="lazy" decoding="async" class="no-vs" src="logo.png" alt=""/>earlspade</a>
 
 <button class="cart-btn" id="cartBtn" aria-label="View cart" onclick="openCart()">
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1046,7 +1046,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 <div class="gallery-overlay" id="galleryOverlay" role="dialog" aria-modal="true" aria-label="Photo gallery" aria-hidden="true">
   <button class="archive-close" aria-label="Close gallery" onclick="closeGallery()">&times;</button>
   <div class="gal-stage" id="galStage">
-    <img class="gal-img no-vs" id="galImg" alt="earlspade photo"/>
+    <img loading="lazy" decoding="async" class="gal-img no-vs" id="galImg" alt="earlspade photo"/>
   </div>
   <div class="gal-nav">
     <button class="gal-arrow" aria-label="Previous photo" onclick="galStep(-1)">&larr;</button>
@@ -1064,7 +1064,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="mName">
     <span class="modal-grab" aria-hidden="true"></span>
     <button class="modal-close" id="mClose" aria-label="Close" onclick="closeModal()">&times;</button>
-    <div class="modal-img ph" id="mImg"><img src="logo.png" alt=""></div>
+    <div class="modal-img ph" id="mImg"><img loading="lazy" decoding="async" src="logo.png" alt=""></div>
     <div class="modal-body">
       <div class="modal-scroll">
         <p class="modal-eyebrow" id="mEyebrow"></p>
@@ -1104,7 +1104,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 
 <footer class="foot">
   <div class="foot-top"><p class="foot-tag">made by the sea &mdash; malibu, california</p></div>
-  <div class="foot-brand r"><img class="no-vs" src="logo.png" alt=""/>earlspade</div>
+  <div class="foot-brand r"><img loading="lazy" decoding="async" class="no-vs" src="logo.png" alt=""/>earlspade</div>
   <div class="foot-row">
     <nav class="foot-links">
       <a href="https://instagram.com/earlspade" target="_blank" rel="noopener">Instagram</a>
@@ -1202,7 +1202,7 @@ function priceToNumber(str){
 function photoHTML(d,di){
   const inner = d.photo
     ? `<div class="drop-photo-inner" style="background-image:url('${d.photo}')"></div>`
-    : `<div class="drop-photo-inner ph"><img src="${LOGO}" alt=""></div>`;
+    : `<div class="drop-photo-inner ph"><img loading="lazy" decoding="async" src="${LOGO}" alt=""></div>`;
   const top = d.tag ? `<div class="top"><span class="drop-tag${d.live?' live':''}">${d.tag}</span></div>` : '';
   const note = d.photo ? '' : `<span class="ph-note">Campaign image</span>`;
   return `<button class="drop-photo" onclick="toggleDrop(${di})" aria-expanded="false" aria-label="Open ${d.title}">${inner}<div class="drop-scrim"></div>${top}<div class="cap"><h2 class="drop-title">${d.title}</h2><p class="drop-sub">${d.items.length} pieces &mdash; numbered by hand</p></div><span class="drop-hint" aria-hidden="true">tap to open</span>${note}</button>`;
@@ -1306,7 +1306,7 @@ function renderDrops(){
       const colors = it.colors || (it.img ? [{img:it.img}] : null);
       const tileMedia = colors
         ? colors.slice(0,2).map((c,ci)=>`<div class="item-tile-photo${ci?' alt':''}" style="background-image:url('${c.img}')"></div>`).join('')
-        : `<img class="ph" src="${LOGO}" alt="">`;
+        : `<img loading="lazy" decoding="async" class="ph" src="${LOGO}" alt="">`;
       return `<a class="item${it.soldout?' sold':''} r"${open} style="transition-delay:${delay}s">
           <div class="item-tile"><span class="item-num">no. ${num}</span>${tileMedia}${it.soldout?'<div class="tile-soldout"><svg class="tile-soldout-mark" viewBox="0 0 100 100" aria-hidden="true"><g fill="currentColor"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#E9E6DF"/></svg><span class="tile-soldout-stamp">sold out</span></div>':''}</div>
           <div class="item-row"><span class="item-name">${it.name}</span><i class="leader" aria-hidden="true"></i>${tail}</div>
@@ -1356,7 +1356,7 @@ function openProduct(di,i){
     } else { colorWrap.hidden = true; }
   } else {
     colorWrap.hidden = true;
-    img.classList.add('ph'); img.style.backgroundImage=''; img.style.removeProperty('--imgA'); img.style.removeProperty('--imgB'); img.innerHTML=`<img src="${LOGO}" alt="">`;
+    img.classList.add('ph'); img.style.backgroundImage=''; img.style.removeProperty('--imgA'); img.style.removeProperty('--imgB'); img.innerHTML=`<img loading="lazy" decoding="async" src="${LOGO}" alt="">`;
   }
   document.getElementById('mEyebrow').textContent = d.title;
   document.getElementById('mName').textContent = it.name;

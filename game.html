@@ -17,6 +17,7 @@
 <title>earlspade — the game</title>
 <link rel="icon" href="logo.png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
+<link rel="preload" as="image" href="logo.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -54,14 +55,17 @@ body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opa
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
 /* ===== HUD ===== */
-.hud{flex:none;display:flex;align-items:center;justify-content:space-between;gap:.6rem;
+.hud{flex:none;display:flex;justify-content:center;
   padding:.55rem .8rem .5rem;border-bottom:2px solid var(--ink)}
+.hud-in{width:100%;max-width:760px;display:flex;align-items:center;justify-content:space-between;gap:.6rem}
 .hud-left{display:flex;align-items:center;gap:.7rem;min-width:0}
 .back{display:flex;align-items:center;gap:.45rem;font-family:var(--px);font-size:.5rem;color:var(--ink);text-decoration:none;letter-spacing:.04em;white-space:nowrap}
 .back-logo{image-rendering:pixelated;width:20px;height:22px;flex:none}
 .back:active{opacity:.6}
-.hud-stats{display:flex;align-items:baseline;gap:.85rem;font-family:var(--px)}
-.hud-stat{display:flex;flex-direction:column;gap:.28rem;align-items:flex-start}
+.hud-stats{display:flex;align-items:stretch;gap:.5rem;font-family:var(--px)}
+.hud-stat{display:flex;flex-direction:column;gap:.26rem;align-items:flex-start;
+  border:2px solid var(--ink);background:var(--paper);padding:.3rem .5rem .26rem;
+  box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
 .hud-label{font-size:.34rem;color:var(--ink-soft);letter-spacing:.08em}
 .hud-value{font-size:.62rem;color:var(--ink);font-variant-numeric:tabular-nums}
 .hud-right{display:flex;align-items:center;gap:.55rem}
@@ -72,12 +76,21 @@ body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opa
 .mute-btn{width:38px;height:38px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);
   font-family:var(--px);font-size:.6rem;cursor:pointer;box-shadow:2px 2px 0 0 rgba(22,20,18,.28);line-height:1}
 .mute-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 rgba(22,20,18,.28)}
-.mute-btn[aria-pressed="false"]{color:var(--ink-soft)}
+.mute-btn{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.mute-btn[aria-pressed="false"] svg{opacity:.35}
+.mute-btn[aria-pressed="false"]::after{content:"";position:absolute;left:7px;right:7px;top:50%;
+  height:2.5px;background:var(--red);transform:rotate(-32deg)}
+@media(hover:hover){
+  .mute-btn:hover,.px-btn:hover{animation:btnHop .28s steps(3,end)}
+}
+@keyframes btnHop{0%{transform:translateY(0)}40%{transform:translateY(-3px)}100%{transform:translateY(0)}}
+.next-wrap{border:2px solid var(--ink);background:var(--paper);padding:.26rem .45rem .3rem;
+  box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
 
 /* ===== PLAY AREA ===== */
 .stage{flex:1;min-height:0;position:relative;display:flex;justify-content:center;
   padding:0 0 env(safe-area-inset-bottom)}
-.play{position:relative;height:100%;width:100%;max-width:520px}
+.play{position:relative;height:100%;width:100%}
 canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
   touch-action:none;             /* the finger belongs to the game */
   cursor:crosshair}
@@ -164,6 +177,16 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 .dialog.show .lb-row:nth-child(9){animation-delay:.35s}.dialog.show .lb-row:nth-child(10){animation-delay:.39s}
 @keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
 
+/* pixel toast — announcements slide in under the HUD */
+#toast{position:absolute;top:34px;left:50%;transform:translateX(-50%) translateY(-14px);z-index:5;
+  pointer-events:none;font-family:var(--px);font-size:.42rem;letter-spacing:.08em;white-space:nowrap;
+  background:var(--paper);border:2px solid var(--ink);color:var(--ink);
+  padding:.5rem .7rem;box-shadow:3px 3px 0 0 rgba(22,20,18,.25);
+  opacity:0;visibility:hidden}
+#toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);
+  transition:opacity .14s steps(2,end),transform .2s cubic-bezier(.2,1.5,.5,1)}
+#toast.gold{background:var(--gold)}
+
 /* game-over extras */
 .over-best{display:inline-block;background:var(--gold);color:var(--ink);border:2px solid var(--ink);
   font-size:.44rem;letter-spacing:.1em;padding:.4rem .6rem;margin-bottom:.7rem;
@@ -211,6 +234,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 <body>
 
 <header class="hud">
+ <div class="hud-in">
   <div class="hud-left">
     <a class="back" href="/"><img class="back-logo" src="logo.png" alt="" width="20" height="22"/>&larr; earlspade</a>
     <div class="hud-stats">
@@ -223,14 +247,16 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
     <button class="mute-btn" id="boardBtn" aria-haspopup="dialog" aria-controls="boardDialog" aria-label="Leaderboard">
       <svg width="18" height="18" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="8" height="1" fill="#E8B33C"/><rect x="2" y="2" width="8" height="3" fill="#E8B33C"/><rect x="0" y="2" width="2" height="1" fill="#E8B33C"/><rect x="10" y="2" width="2" height="1" fill="#E8B33C"/><rect x="0" y="3" width="1" height="2" fill="#E8B33C"/><rect x="11" y="3" width="1" height="2" fill="#E8B33C"/><rect x="1" y="5" width="1" height="1" fill="#E8B33C"/><rect x="10" y="5" width="1" height="1" fill="#E8B33C"/><rect x="3" y="5" width="6" height="2" fill="#C4922A"/><rect x="4" y="7" width="4" height="1" fill="#E8B33C"/><rect x="5" y="8" width="2" height="2" fill="#C4922A"/><rect x="3" y="10" width="6" height="1" fill="#E8B33C"/><rect x="6" y="3" width="1" height="1" fill="#F2CC70"/></svg>
     </button>
-    <button class="mute-btn" id="muteBtn" aria-pressed="true" aria-label="Toggle sound">&#9834;</button>
+    <button class="mute-btn" id="muteBtn" aria-pressed="true" aria-label="Toggle sound"><svg width="16" height="16" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="4" width="3" height="4" fill="#161412"/><rect x="4" y="3" width="2" height="6" fill="#161412"/><rect x="6" y="2" width="2" height="8" fill="#161412"/><rect x="9" y="4" width="1" height="1" fill="#161412"/><rect x="10" y="5" width="1" height="2" fill="#161412"/><rect x="9" y="7" width="1" height="1" fill="#161412"/></svg></button>
   </div>
+ </div>
 </header>
 
 <main class="stage">
   <div class="play" id="play">
     <canvas id="game"></canvas>
     <p class="howto" id="howto">DRAG TO AIM &middot; RELEASE TO DROP &middot; MATCH 2</p>
+    <div id="toast" role="status" aria-live="polite"></div>
 
     <!-- GAME OVER / LEADERBOARD dialog -->
     <div class="dialog" id="overDialog" role="dialog" aria-modal="true" aria-label="Game over">
