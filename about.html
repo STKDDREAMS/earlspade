@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="description" content="About earlspade — a small jewelry label from Malibu, California. One run, one season. Scroll the wheel."/>
+<title>earlspade — about us</title>
+<link rel="icon" href="logo.png"/>
+<link rel="apple-touch-icon" href="logo.png"/>
+<meta property="og:title" content="earlspade — about us"/>
+<meta property="og:description" content="A small jewelry label from Malibu. One run, one season. Scroll the wheel."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://earlspade.com/about.html"/>
+<meta property="og:image" content="https://earlspade.com/sea-series.jpg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="earlspade — about us"/>
+<meta name="twitter:description" content="A small jewelry label from Malibu. One run, one season. Scroll the wheel."/>
+<meta name="twitter:image" content="https://earlspade.com/sea-series.jpg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   earlspade — ABOUT US. The whole story on one wheel.
+   The wheel is the logo's own six-petal geometry, painted in a
+   soft sunset palette. It stays pinned while you scroll; the
+   scroll turns it, and each petal opens its chapter box.
+============================================================ */
+:root{
+  --paper:#E9E6DF; --ink:#161412; --ink-soft:#6B6862; --red:#D70000; --gold:#E8B33C;
+  --display:'Archivo',sans-serif; --mono:'Space Mono',ui-monospace,monospace;
+  --px:'Press Start 2P',var(--mono);
+  /* the sunset six */
+  --c0:#F0A48C; --c1:#F0CB8E; --c2:#ACC79E; --c3:#8FC1B5; --c4:#97B8D6; --c5:#BBA9CF;
+  --d0:#B05B40; --d1:#A97F35; --d2:#5C7A4E; --d3:#3E7A6B; --d4:#44648C; --d5:#6E5A8C;
+  --ease:cubic-bezier(.22,.9,.32,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;background:var(--paper)}
+body{background:var(--paper);color:var(--ink);font-family:var(--mono);
+  -webkit-font-smoothing:antialiased;overflow-x:clip}
+body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* soft chapter tint washing the whole page */
+#tint{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.16;background:transparent;
+  transition:background 1s var(--ease)}
+
+/* ===== header ===== */
+.top{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;
+  justify-content:space-between;padding:.9rem clamp(1rem,3vw,2rem);
+  padding-top:calc(.9rem + env(safe-area-inset-top))}
+.back{display:flex;align-items:center;gap:.5rem;font-family:var(--px);font-size:.5rem;
+  color:var(--ink);text-decoration:none;letter-spacing:.04em}
+.back img{width:20px;height:22px;image-rendering:pixelated}
+.back:active{opacity:.6}
+.top-tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
+
+/* ===== sunset stripes (the Aviator ribbon) ===== */
+.stripes{display:flex;flex-direction:column;gap:4px;width:min(300px,60vw)}
+.stripes span{height:6px;border-radius:99px}
+.stripes span:nth-child(1){background:var(--c0)}
+.stripes span:nth-child(2){background:var(--c1)}
+.stripes span:nth-child(3){background:var(--c2)}
+.stripes span:nth-child(4){background:var(--c3)}
+.stripes span:nth-child(5){background:var(--c4)}
+.stripes span:nth-child(6){background:var(--c5)}
+.stripes.grow span{transform:scaleX(0);transform-origin:left;animation:stripeIn .7s var(--ease) forwards}
+.stripes.grow span:nth-child(2){animation-delay:.08s}.stripes.grow span:nth-child(3){animation-delay:.16s}
+.stripes.grow span:nth-child(4){animation-delay:.24s}.stripes.grow span:nth-child(5){animation-delay:.32s}
+.stripes.grow span:nth-child(6){animation-delay:.4s}
+@keyframes stripeIn{to{transform:scaleX(1)}}
+
+/* ===== intro ===== */
+.intro{position:relative;z-index:1;min-height:100svh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1.4rem;text-align:center;padding:5rem 1.4rem 3rem}
+.intro-eyebrow{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-soft)}
+.intro h1{font-family:var(--display);font-weight:900;letter-spacing:-.04em;line-height:.92;
+  font-size:clamp(3rem,11vw,6.4rem)}
+.intro h1 em{font-style:normal}
+.intro h1 .w0{color:var(--d0)}.intro h1 .w1{color:var(--d1)}.intro h1 .w2{color:var(--d2)}
+.intro h1 .w3{color:var(--d3)}.intro h1 .w4{color:var(--d4)}.intro h1 .w5{color:var(--d5)}
+.intro-sub{font-size:.72rem;line-height:1.8;letter-spacing:.04em;color:var(--ink-soft);max-width:34ch}
+.scroll-hint{margin-top:1.6rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  font-family:var(--px);font-size:.42rem;letter-spacing:.14em;color:var(--ink-soft)}
+.scroll-hint svg{animation:hintBob 1.4s ease-in-out infinite}
+@keyframes hintBob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+
+/* ===== the journey: pinned wheel + boxes ===== */
+.journey{position:relative;z-index:1;height:760vh}
+.pin{position:sticky;top:0;height:100svh;display:flex;align-items:center;
+  gap:clamp(1rem,4vw,4rem);padding:0 clamp(1rem,4vw,4rem);max-width:1280px;margin:0 auto}
+.wheel-wrap{flex:0 0 44%;display:flex;flex-direction:column;align-items:center;gap:1rem;min-width:0}
+.wheel{width:min(100%,46svh);aspect-ratio:1;display:block;overflow:visible}
+.wheel-rot{transform-origin:100px 100px;will-change:transform}
+.petal{cursor:pointer}
+.petal circle{transition:opacity .45s var(--ease),stroke .45s var(--ease),stroke-width .45s var(--ease)}
+.petal text{font-family:var(--display);font-weight:800;font-size:15px;fill:rgba(22,20,18,.62);
+  text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.petal.dim circle{opacity:.42}
+.petal.on circle{opacity:1;stroke:var(--ink);stroke-width:3}
+@media(hover:hover){.petal:hover circle{opacity:1}}
+.hub-img{pointer-events:none}
+.wheel-count{font-family:var(--mono);font-size:.62rem;letter-spacing:.3em;color:var(--ink-soft)}
+
+.boxes{flex:1;position:relative;height:min(70svh,560px);min-width:0}
+.box{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+  opacity:0;transform:translateY(34px) scale(.98);pointer-events:none;
+  transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.box.on{opacity:1;transform:none;pointer-events:auto}
+.card{background:rgba(255,255,255,.55);border-radius:22px;padding:clamp(1.3rem,3vw,2.4rem);
+  box-shadow:0 18px 50px -18px rgba(22,20,18,.22);backdrop-filter:blur(2px);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:9px;background:var(--bar,var(--c0))}
+.card-kicker{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--kick,var(--d0));margin-bottom:.7rem}
+.card h2{font-family:var(--display);font-weight:900;letter-spacing:-.035em;line-height:.95;
+  font-size:clamp(1.9rem,4.6vw,3.2rem);margin-bottom:1rem;color:var(--ink)}
+.card h2 span{color:var(--kick,var(--d0))}
+.card p{font-size:.76rem;line-height:1.9;letter-spacing:.02em;color:#3c3934;max-width:46ch}
+.card .fun{margin-top:1.3rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+
+/* per-chapter fun bits */
+.patch{height:74px;width:auto;filter:drop-shadow(0 6px 10px rgba(22,20,18,.25));
+  transition:transform .4s var(--ease)}
+.box.on .patch{animation:patchIn .6s var(--ease) both}
+@keyframes patchIn{from{opacity:0;transform:translateY(14px) rotate(-6deg)}to{opacity:1;transform:none}}
+@media(hover:hover){.patch:hover{transform:translateY(-6px) rotate(4deg)}}
+.chip{font-family:var(--mono);font-weight:700;font-size:.66rem;letter-spacing:.14em;
+  background:#fff;border-radius:99px;padding:.5rem .85rem;box-shadow:0 4px 12px -4px rgba(22,20,18,.25);
+  transition:transform .3s var(--ease)}
+.box.on .chip{animation:chipIn .5s var(--ease) both}
+.box.on .chip:nth-child(2){animation-delay:.08s}.box.on .chip:nth-child(3){animation-delay:.16s}
+@keyframes chipIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media(hover:hover){.chip:hover{transform:translateY(-4px) rotate(-2deg)}}
+.chip s{text-decoration:line-through;color:var(--ink-soft)}
+.stitch{flex-basis:100%;height:2px;background-image:linear-gradient(90deg,var(--ink) 55%,transparent 45%);
+  background-size:12px 2px;background-repeat:repeat-x;opacity:.5;position:relative;overflow:hidden}
+.box.on .stitch{animation:stitchIn 1.2s var(--ease) both}
+@keyframes stitchIn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+.px-btn{display:inline-block;border:2px solid var(--ink);background:var(--ink);color:var(--paper);
+  font-family:var(--px);font-size:.5rem;padding:.7rem .95rem;letter-spacing:.05em;text-decoration:none;
+  box-shadow:3px 3px 0 0 rgba(22,20,18,.28)}
+.px-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 rgba(22,20,18,.28)}
+.px-btn.ghost{background:rgba(255,255,255,.7);color:var(--ink)}
+@media(hover:hover){.px-btn:hover{animation:hop .28s steps(3,end)}}
+@keyframes hop{0%{transform:translateY(0)}40%{transform:translateY(-3px)}100%{transform:translateY(0)}}
+.stamp{font-family:var(--display);font-weight:900;font-size:.86rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--red);border:3px solid var(--red);border-radius:10px;
+  padding:.5rem .8rem;transform:rotate(-6deg);opacity:.9}
+.box.on .stamp{animation:stampIn .45s cubic-bezier(.2,1.6,.5,1) both .25s}
+@keyframes stampIn{from{opacity:0;transform:rotate(-6deg) scale(1.7)}to{opacity:.9;transform:rotate(-6deg) scale(1)}}
+
+/* ===== outro ===== */
+.outro{position:relative;z-index:1;min-height:70svh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1.6rem;text-align:center;padding:4rem 1.4rem 5rem}
+.outro-band{display:flex;flex-direction:column;gap:5px;width:100%;max-width:520px}
+.outro-band span{height:8px;border-radius:99px}
+.outro-band span:nth-child(1){background:var(--c0)}.outro-band span:nth-child(2){background:var(--c1)}
+.outro-band span:nth-child(3){background:var(--c2)}.outro-band span:nth-child(4){background:var(--c3)}
+.outro-band span:nth-child(5){background:var(--c4)}.outro-band span:nth-child(6){background:var(--c5)}
+.outro h2{font-family:var(--display);font-weight:900;letter-spacing:-.035em;font-size:clamp(1.8rem,6vw,3rem)}
+.outro .row{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
+.outro-foot{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+
+/* ===== mobile: wheel above, box below ===== */
+@media(max-width:820px){
+  .pin{flex-direction:column;justify-content:flex-start;gap:.6rem;
+    padding-top:calc(3.6rem + env(safe-area-inset-top))}
+  .wheel-wrap{flex:none;width:100%}
+  .wheel{width:min(60vw,34svh)}
+  .boxes{width:100%;height:auto;flex:1;min-height:0}
+  .box{justify-content:flex-start;padding-top:.6rem}
+  .card p{font-size:.7rem}
+  .patch{height:58px}
+}
+
+a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+
+/* ===== reduced motion: no pin, everything stacked and visible ===== */
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .journey{height:auto}
+  .pin{position:static;height:auto;flex-direction:column;padding-top:2rem;padding-bottom:2rem}
+  .boxes{height:auto}
+  .box{position:static;opacity:1;transform:none;pointer-events:auto;margin-bottom:1.4rem}
+  .scroll-hint{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="tint" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="back" href="/"><img src="logo.png" alt="" width="20" height="22"/>&larr; earlspade</a>
+  <span class="top-tag">Malibu, California</span>
+</header>
+
+<!-- ============ INTRO ============ -->
+<section class="intro">
+  <p class="intro-eyebrow">earlspade &mdash; est. malibu</p>
+  <h1><em class="w0">a</em><em class="w1">b</em><em class="w2">o</em><em class="w3">u</em><em class="w4">t</em>&nbsp;<em class="w5">u</em><em class="w0">s</em></h1>
+  <div class="stripes grow" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <p class="intro-sub">the whole story fits on one wheel.<br/>scroll, and it turns.</p>
+  <div class="scroll-hint" aria-hidden="true">
+    SCROLL
+    <svg width="16" height="16" viewBox="0 0 12 12" shape-rendering="crispEdges"><rect x="1" y="2" width="2" height="2" fill="#6B6862"/><rect x="3" y="4" width="2" height="2" fill="#6B6862"/><rect x="5" y="6" width="2" height="2" fill="#6B6862"/><rect x="7" y="4" width="2" height="2" fill="#6B6862"/><rect x="9" y="2" width="2" height="2" fill="#6B6862"/></svg>
+  </div>
+</section>
+
+<!-- ============ THE WHEEL JOURNEY ============ -->
+<section class="journey" id="journey">
+  <div class="pin">
+
+    <div class="wheel-wrap">
+      <svg class="wheel" viewBox="0 0 200 200" aria-hidden="true">
+        <g class="wheel-rot" id="wheelRot">
+          <!-- six petals, logo geometry, sunset palette -->
+          <g class="petal" data-i="0"><circle cx="156" cy="100" r="33" fill="#F0A48C"/><text x="156" y="100">01</text></g>
+          <g class="petal" data-i="1"><circle cx="128" cy="148.5" r="33" fill="#F0CB8E"/><text x="128" y="148.5">02</text></g>
+          <g class="petal" data-i="2"><circle cx="72" cy="148.5" r="33" fill="#ACC79E"/><text x="72" y="148.5">03</text></g>
+          <g class="petal" data-i="3"><circle cx="44" cy="100" r="33" fill="#8FC1B5"/><text x="44" y="100">04</text></g>
+          <g class="petal" data-i="4"><circle cx="72" cy="51.5" r="33" fill="#97B8D6"/><text x="72" y="51.5">05</text></g>
+          <g class="petal" data-i="5"><circle cx="128" cy="51.5" r="33" fill="#BBA9CF"/><text x="128" y="51.5">06</text></g>
+        </g>
+        <!-- the hub never turns: the flower holds still -->
+        <circle cx="100" cy="100" r="30" fill="#E9E6DF"/>
+        <circle cx="100" cy="100" r="30" fill="none" stroke="#161412" stroke-width="2.5"/>
+        <image class="hub-img" href="logo.png" x="84" y="82" width="32" height="35" image-rendering="pixelated"/>
+      </svg>
+      <span class="wheel-count" id="wheelCount">01 / 06</span>
+    </div>
+
+    <div class="boxes" id="boxes">
+
+      <article class="box on" style="--bar:var(--c0);--kick:var(--d0)">
+        <div class="card">
+          <p class="card-kicker">chapter one &mdash; the shore</p>
+          <h2>born in <span>malibu</span></h2>
+          <p>salt air, long light, slow afternoons. earlspade started twenty steps from the water, and every piece still carries that walk down to the sand. this is not a factory brand &mdash; it&rsquo;s a beach one.</p>
+          <div class="fun">
+            <img class="patch" src="hero-shark.webp" alt="embroidered whale shark patch"/>
+            <img class="patch" src="hero-fish.webp" alt="embroidered reef fish patch" style="animation-delay:.12s"/>
+          </div>
+        </div>
+      </article>
+
+      <article class="box" style="--bar:var(--c1);--kick:var(--d1)">
+        <div class="card">
+          <p class="card-kicker">chapter two &mdash; the series</p>
+          <h2>small, <span>numbered</span> runs</h2>
+          <p>we don&rsquo;t do endless collections. each series is one small numbered run &mdash; a season&rsquo;s worth, counted piece by piece. when the run sells through, the series closes and moves to the archive.</p>
+          <div class="fun">
+            <span class="chip">No. 001</span>
+            <span class="chip">No. 014</span>
+            <span class="chip"><s>No. 048</s>&nbsp;gone</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="box" style="--bar:var(--c2);--kick:var(--d2)">
+        <div class="card">
+          <p class="card-kicker">chapter three &mdash; the hands</p>
+          <h2>made <span>slow</span>, made small</h2>
+          <p>small batches only. every piece gets picked up, turned over, and checked before it leaves. if we wouldn&rsquo;t wear it into the water, it doesn&rsquo;t ship.</p>
+          <div class="fun">
+            <div class="stitch" aria-hidden="true"></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="box" style="--bar:var(--c3);--kick:var(--d3)">
+        <div class="card">
+          <p class="card-kicker">chapter four &mdash; the muse</p>
+          <h2>the <span>sea</span> series</h2>
+          <p>series one belongs to the ocean &mdash; the green sea turtle that swims home to the beach where it hatched, the manta, the moorish idol. the muse lives right outside the door.</p>
+          <div class="fun">
+            <img class="patch" src="hero-turtle.webp" alt="embroidered sea turtle patch"/>
+            <img class="patch" src="hero-manta.webp" alt="embroidered manta ray patch" style="animation-delay:.12s"/>
+          </div>
+        </div>
+      </article>
+
+      <article class="box" style="--bar:var(--c4);--kick:var(--d4)">
+        <div class="card">
+          <p class="card-kicker">chapter five &mdash; the break</p>
+          <h2>we built a <span>game</span></h2>
+          <p>because brands don&rsquo;t have to be boring. drop cute creatures into a beach bucket, merge your way to the flower, and take your place in the deep ten.</p>
+          <div class="fun">
+            <a class="px-btn" href="game.html">PLAY THE SEA GAME</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="box" style="--bar:var(--c5);--kick:var(--d5)">
+        <div class="card">
+          <p class="card-kicker">chapter six &mdash; the promise</p>
+          <h2>sold, <span>then gone</span></h2>
+          <p>never mass-made. never re-run. when a series closes it stays closed &mdash; the archive is a museum, not a warehouse. owning one means owning one of a counted few.</p>
+          <div class="fun">
+            <span class="stamp">one run &middot; one season</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ OUTRO ============ -->
+<section class="outro">
+  <div class="outro-band" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <h2>that&rsquo;s the whole story.</h2>
+  <div class="row">
+    <a class="px-btn" href="/#series">SHOP THE SERIES</a>
+    <a class="px-btn ghost" href="game.html">PLAY THE GAME</a>
+  </div>
+  <p class="outro-foot">earlspade &mdash; malibu, california</p>
+</section>
+
+<script>
+/* The wheel: pinned while .journey scrolls by. Scroll progress turns
+   the rotor so the active petal points at the boxes (3 o'clock), the
+   petal lights up, its box opens, and the page takes on its tint. */
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var journey = document.getElementById('journey');
+  var rot = document.getElementById('wheelRot');
+  var petals = Array.prototype.slice.call(document.querySelectorAll('.petal'));
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.box'));
+  var count = document.getElementById('wheelCount');
+  var tint = document.getElementById('tint');
+  var COLORS = ['#F0A48C','#F0CB8E','#ACC79E','#8FC1B5','#97B8D6','#BBA9CF'];
+  var N = boxes.length;
+  if(reduce){ tint.style.display = 'none'; return; }
+
+  var target = 0, shown = -1, angle = 0, angleT = 0, raf = null;
+
+  function progress(){
+    var r = journey.getBoundingClientRect();
+    var vh = innerHeight;
+    var total = r.height - vh;
+    var p = Math.min(1, Math.max(0, -r.top / total));
+    return p;
+  }
+  function setActive(i){
+    if(i === shown) return;
+    shown = i;
+    boxes.forEach(function(b, k){ b.classList.toggle('on', k === i); });
+    petals.forEach(function(pt, k){
+      pt.classList.toggle('on', k === i);
+      pt.classList.toggle('dim', k !== i);
+    });
+    count.textContent = '0' + (i + 1) + ' / 0' + N;
+    tint.style.background = COLORS[i];
+  }
+  function frame(){
+    raf = null;
+    /* ease the rotor toward its target angle — butter */
+    angle += (angleT - angle) * 0.14;
+    if(Math.abs(angleT - angle) > 0.05) schedule();
+    rot.style.transform = 'rotate(' + angle + 'deg)';
+    /* keep the numbers upright */
+    petals.forEach(function(pt){
+      pt.querySelector('text').setAttribute('transform',
+        'rotate(' + (-angle) + ' ' + pt.querySelector('circle').getAttribute('cx') + ' ' + pt.querySelector('circle').getAttribute('cy') + ')');
+    });
+  }
+  function schedule(){ if(!raf) raf = requestAnimationFrame(frame); }
+  function onScroll(){
+    var p = progress();
+    var f = p * (N - 1);
+    var i = Math.round(f);
+    angleT = -i * 60;
+    setActive(i);
+    schedule();
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll, { passive: true });
+
+  /* click a petal: sail to its chapter */
+  petals.forEach(function(pt){
+    pt.addEventListener('click', function(){
+      var i = +pt.getAttribute('data-i');
+      var vh = innerHeight;
+      var top = journey.offsetTop + (journey.offsetHeight - vh) * (i / (N - 1));
+      scrollTo({ top: top + 2, behavior: 'smooth' });
+    });
+  });
+
+  setActive(0);
+  onScroll();
+})();
+</script>
+</body>
+</html>
