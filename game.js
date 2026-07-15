@@ -1033,6 +1033,7 @@ function drawBeach(now){
 /* localStorage keys */
 const KEY_BEST  = 'earlspade_game_best_v1';
 const KEY_NAME  = 'earlspade_player_v1';
+const KEY_EMAIL = 'earlspade_email_v1';
 const KEY_SOUND = 'earlspade_game_sound_v1';
 const KEY_SEEN  = 'earlspade_game_seen_v1';
 
@@ -1734,7 +1735,9 @@ const lbStatus = document.getElementById('lbStatus');
 const lbList = document.getElementById('lbList');
 const nameRow = document.getElementById('nameRow');
 const nameInput = document.getElementById('nameInput');
+const emailInput = document.getElementById('emailInput');
 const submitBtn = document.getElementById('submitBtn');
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const againBtn = document.getElementById('againBtn');
 
 function endGame(){
@@ -1821,24 +1824,30 @@ async function loadBoard(){
     if(qualifies){
       nameRow.style.display = 'flex';
       nameInput.value = (localStorage.getItem(KEY_NAME) || '');
+      emailInput.value = (localStorage.getItem(KEY_EMAIL) || '');
       submitBtn.disabled = false;
-      submitBtn.textContent = 'SAVE';
+      submitBtn.textContent = 'SAVE MY SCORE';
     }
   }catch(e){
     lbStatus.textContent = 'leaderboard offline';
   }
 }
 async function submitScore(){
+  /* both fields required — the name goes on the board, the email stays
+     private server-side (the gift list). */
   const name = nameInput.value.trim().slice(0, 16);
-  if(!name){ nameInput.focus(); return; }
+  if(!name){ nameInput.classList.add('bad'); nameInput.focus(); return; }
+  const email = emailInput.value.trim().slice(0, 254);
+  if(!EMAIL_RE.test(email)){ emailInput.classList.add('bad'); emailInput.focus(); return; }
   submitBtn.disabled = true;
   submitBtn.textContent = '…';
   localStorage.setItem(KEY_NAME, name);
+  localStorage.setItem(KEY_EMAIL, email);
   try{
     const res = await fetch('/api/score', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, score })
+      body: JSON.stringify({ name, score, email })
     });
     if(!res.ok) throw new Error('bad');
     const rows = await fetchBoard(true);
@@ -1853,9 +1862,13 @@ async function submitScore(){
   }
 }
 submitBtn.addEventListener('click', submitScore);
-nameInput.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); submitScore(); } });
-nameInput.addEventListener('focus', () => {
-  setTimeout(() => { try{ nameInput.scrollIntoView({ block: 'center', behavior: 'smooth' }); }catch(e){} }, 250);
+nameInput.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); emailInput.focus(); } });
+emailInput.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); submitScore(); } });
+[nameInput, emailInput].forEach(el => {
+  el.addEventListener('input', () => el.classList.remove('bad'));
+  el.addEventListener('focus', () => {
+    setTimeout(() => { try{ el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }catch(e){} }, 250);
+  });
 });
 
 /* ================= THE BOARD (mid-game leaderboard) ================= */
@@ -1938,18 +1951,34 @@ if(location.search.includes('debug=1')){
 }
 
 /* ================= BOOT =================
-   Curtain up only when everything is actually ready: fonts, the flower
-   image, the world built, and a couple of frames rendered behind the
-   loader. First impressions don't get to stutter. */
+   Curtain up only when EVERYTHING is actually ready: the full window
+   load (every script and image on the page), both font families pulled
+   all the way in, the flower decoded, the world built, and a couple of
+   frames rendered behind the loader. No time-capped races — the only
+   escape hatch is a long safety net so a dead font CDN can't hold the
+   curtain hostage forever. First impressions don't get to stutter. */
 (async function boot(){
   const loader = document.getElementById('loader');
   const t0 = performance.now();
   resize();
   reset();
-  try{ await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1800))]); }catch(e){}
-  if(!FLOWER_IMG.complete){
-    await new Promise(r => { FLOWER_IMG.addEventListener('load', r, { once: true }); FLOWER_IMG.addEventListener('error', r, { once: true }); setTimeout(r, 1500); });
-  }
+  const whenLoaded = document.readyState === 'complete'
+    ? Promise.resolve()
+    : new Promise(r => window.addEventListener('load', r, { once: true }));
+  const whenFonts = Promise.all([
+    document.fonts.load('10px "Press Start 2P"'),
+    document.fonts.load('10px "Space Mono"'),
+    document.fonts.ready
+  ]);
+  const whenFlower = (FLOWER_IMG.complete && FLOWER_IMG.naturalWidth)
+    ? Promise.resolve()
+    : new Promise(r => { FLOWER_IMG.addEventListener('load', r, { once: true }); FLOWER_IMG.addEventListener('error', r, { once: true }); });
+  try{
+    await Promise.race([
+      Promise.all([whenLoaded, whenFonts, whenFlower]),
+      new Promise(r => setTimeout(r, 10000)) /* safety net, not a target */
+    ]);
+  }catch(e){}
   /* two clean frames behind the curtain, then reveal */
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   const wait = Math.max(0, 650 - (performance.now() - t0));
