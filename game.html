@@ -33,6 +33,7 @@
 <link rel="icon" href="logo.png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
 <link rel="preload" as="image" href="logo.png"/>
+<link rel="prefetch" href="/" as="document"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -117,8 +118,9 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 .howto.off{opacity:0}
 
 /* ===== PIXEL DIALOG (same look as the site's fauna cards) ===== */
-.dialog{position:absolute;left:50%;top:12%;transform:translateX(-50%);z-index:10;
+.dialog{position:absolute;left:50%;top:8%;transform:translateX(-50%);z-index:10;
   width:min(320px,88vw);background:var(--paper);color:var(--ink);
+  max-height:86%;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
   padding:1.1rem 1rem 1.15rem;border:2px solid var(--ink);box-shadow:5px 5px 0 0 rgba(22,20,18,.28);
   font-family:var(--px);text-align:center;
   opacity:0;visibility:hidden;transition:opacity .16s steps(3,end),visibility 0s linear .16s}
@@ -133,10 +135,12 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 .lb-row .sc{font-variant-numeric:tabular-nums}
 .lb-row.me{color:var(--red)}
 .lb-note{font-size:.38rem;color:var(--ink-soft);line-height:2;margin-bottom:.8rem}
-.name-row{display:flex;gap:.5rem;margin-bottom:.85rem}
-#nameInput{flex:1;min-width:0;border:2px solid var(--ink);background:#fff;color:var(--ink);
+.name-row{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.85rem}
+#nameInput,#emailInput{width:100%;min-width:0;box-sizing:border-box;border:2px solid var(--ink);background:#fff;color:var(--ink);
   font-family:var(--px);font-size:.5rem;padding:.55rem .5rem;letter-spacing:.04em;border-radius:0;-webkit-appearance:none}
-#nameInput:focus{outline:2px solid var(--red);outline-offset:1px}
+#nameInput:focus,#emailInput:focus{outline:2px solid var(--red);outline-offset:1px}
+#nameInput.bad,#emailInput.bad{border-color:var(--red);background:#FBEDEA}
+.gift-note{font-size:.34rem;color:var(--ink-soft);line-height:2;text-align:left;margin:0}
 .px-btn{border:2px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;
   font-family:var(--px);font-size:.5rem;padding:.65rem .9rem;letter-spacing:.04em;
   box-shadow:3px 3px 0 0 rgba(22,20,18,.28)}
@@ -144,8 +148,12 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 .px-btn:disabled{opacity:.55;cursor:default}
 .px-btn.ghost{background:var(--paper);color:var(--ink)}
 .px-btn.wide{width:100%;padding:.8rem .9rem;font-size:.56rem}
+.px-btn.red{background:var(--red);border-color:var(--red)}
 .dialog .row2{display:flex;gap:.6rem}
 .dialog .row2 .px-btn{flex:1}
+/* the way home — an <a> dressed as a px-btn, so the shop is one tap away */
+.shop-link{display:block;box-sizing:border-box;text-decoration:none;text-align:center;
+  margin-top:.6rem;line-height:1}
 
 /* ===== LOADER — the curtain. Six paper slats lift away in chunky
    pixel steps (no soft fade — pixels don't dissolve, they leave). ===== */
@@ -251,7 +259,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 <header class="hud">
  <div class="hud-in">
   <div class="hud-left">
-    <a class="back" href="/"><img class="back-logo" src="logo.png" alt="" width="20" height="22"/>&larr; earlspade</a>
+    <a class="back" href="/#series"><img class="back-logo" src="logo.png" alt="" width="20" height="22"/>&larr; earlspade</a>
     <div class="hud-stats">
       <div class="hud-stat"><span class="hud-label">SCORE</span><span class="hud-value" id="score">0</span></div>
       <div class="hud-stat"><span class="hud-label">BEST</span><span class="hud-value" id="best">0</span></div>
@@ -285,13 +293,16 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
       <div class="lb-note" id="lbStatus">loading the board&hellip;</div>
       <div class="lb" id="lbList" style="display:none"></div>
       <div class="name-row" id="nameRow" style="display:none">
-        <input id="nameInput" maxlength="16" placeholder="YOUR NAME" autocomplete="off" enterkeyhint="send"/>
-        <button class="px-btn" id="submitBtn">SAVE</button>
+        <input id="nameInput" maxlength="16" placeholder="YOUR NAME" autocomplete="nickname" enterkeyhint="next"/>
+        <input id="emailInput" type="email" maxlength="254" placeholder="YOUR EMAIL" autocomplete="email" inputmode="email" enterkeyhint="send"/>
+        <p class="gift-note">name + email put you on the board &mdash; you may receive a little gift from earlspade</p>
+        <button class="px-btn" id="submitBtn">SAVE MY SCORE</button>
       </div>
       <div class="row2">
         <button class="px-btn ghost" id="shareBtn">SHARE</button>
         <button class="px-btn" id="againBtn">PLAY AGAIN</button>
       </div>
+      <a class="px-btn wide red shop-link" id="shopBtn" href="/#series">SHOP THE SEA SERIES &rarr;</a>
     </div>
 
     <!-- THE BOARD — mid-game leaderboard -->

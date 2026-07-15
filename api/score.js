@@ -19,7 +19,10 @@
 // "leaderboard offline" — everything else keeps working.
 // ---------------------------------------------------------------------------
 
-const LB_KEY   = 'lb:v1';   // the sorted set holding "name -> best score"
+const LB_KEY      = 'lb:v1';         // the sorted set holding "name -> best score"
+const CONTACT_KEY = 'lb:contact:v1'; // hash "name -> email" — the gift list.
+                                     // PRIVATE: /api/leaderboard never reads this
+                                     // key, so emails can never reach the client.
 const MAX_SCORE = 20000;    // light anti-cheat: reject absurd scores
 const MAX_KEEP  = 100;      // keep the set small (top 100 is plenty)
 
@@ -52,6 +55,13 @@ function cleanName(raw){
   return name.length >= 1 ? name : null;
 }
 
+// email rules: trimmed, lowercased, sane shape, sane length.
+function cleanEmail(raw){
+  if(typeof raw !== 'string') return null;
+  const email = raw.trim().toLowerCase().slice(0, 254);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ? email : null;
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if(req.method !== 'POST'){
@@ -67,8 +77,9 @@ module.exports = async (req, res) => {
   let body = req.body;
   if(typeof body === 'string'){ try{ body = JSON.parse(body); }catch(e){ body = null; } }
   const name  = cleanName(body && body.name);
+  const email = cleanEmail(body && body.email);
   const score = body && body.score;
-  if(!name || !Number.isInteger(score) || score < 1 || score > MAX_SCORE){
+  if(!name || !email || !Number.isInteger(score) || score < 1 || score > MAX_SCORE){
     res.status(400).json({ ok: false, error: 'invalid' });
     return;
   }
@@ -76,6 +87,8 @@ module.exports = async (req, res) => {
   try{
     // GT = only update if the new score is GREATER: each name keeps its best.
     await redis(['ZADD', LB_KEY, 'GT', String(score), name]);
+    // remember how to reach this player (kept server-side only; latest wins)
+    await redis(['HSET', CONTACT_KEY, name, email]);
     // trim everything below the top MAX_KEEP
     await redis(['ZREMRANGEBYRANK', LB_KEY, '0', String(-(MAX_KEEP + 1))]);
     res.status(200).json({ ok: true });

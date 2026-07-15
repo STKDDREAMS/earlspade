@@ -2216,6 +2216,22 @@ document.addEventListener('touchcancel', tapFeedbackOff, {passive:true});
 
 renderDrops();
 
+/* ===== /#series DEEP LINK — the game's way home. Landing here with
+   the series hash means "take me straight to the shop": the live drop
+   unfolds on its own, no second tap. The browser's native hash-jump
+   puts us near the section instantly; toggleDrop's glide then settles
+   on the products. */
+(function(){
+  if(location.hash !== '#series') return;
+  const di = DROPS.findIndex(d => d.live);
+  if(di < 0) return;
+  /* after first paint, so the unfold transition + glide measure right */
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const section = document.querySelectorAll('.drop')[di];
+    if(section && !section.classList.contains('open')) toggleDrop(di);
+  }));
+})();
+
 /* ===== FAUNA FACTS — tap a creature, a pixel dialog surfaces beside
    it with its name and a line about where it lives. One at a time;
    tap elsewhere (or Escape) closes. */
