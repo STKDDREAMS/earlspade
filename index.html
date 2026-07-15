@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <meta name="color-scheme" content="light"/>
 <meta name="theme-color" content="#E9E6DF"/>
-<meta name="description" content="earlspade — small, numbered jewelry series from Malibu, California. One run, one season."/>
+<meta name="description" content="earlspade — small, numbered jewelry series made in Malibu, California. Sea Series rings and bracelets in silver and gold. One run, one season — sold, then gone."/>
+<meta name="keywords" content="earlspade, earl spade, earlspade jewelry, earl spade jewelry, earlspade malibu, earlspade rings, earlspade sea series, malibu jewelry, numbered jewelry series"/>
+<link rel="canonical" href="https://earlspade.com/"/>
 <!-- Social link previews (Instagram DMs/stories, iMessage, X). NOTE:
      og:url / og:image must be ABSOLUTE — if the production domain is not
      earlspade.com, update these two URLs. -->
@@ -14,14 +16,51 @@
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://earlspade.com/"/>
 <meta property="og:image" content="https://earlspade.com/sea-series.jpg"/>
+<meta property="og:image:alt" content="earlspade Sea Series jewelry"/>
+<meta property="og:site_name" content="earlspade"/>
+<meta property="og:locale" content="en_US"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="earlspade — Sea Series"/>
 <meta name="twitter:description" content="Small, numbered jewelry series from Malibu. One run, one season."/>
 <meta name="twitter:image" content="https://earlspade.com/sea-series.jpg"/>
 <link rel="apple-touch-icon" href="logo.png"/>
 <meta name="robots" content="noimageindex"/>
-<title>earlspade</title>
+<title>earlspade — jewelry from Malibu, California</title>
 <link rel="icon" href="logo.png"/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://earlspade.com/#org",
+      "name": "earlspade",
+      "alternateName": ["earl spade", "Earlspade", "earlspade jewelry", "earl spade jewelry", "earlspade malibu"],
+      "url": "https://earlspade.com/",
+      "logo": "https://earlspade.com/logo.png",
+      "image": "https://earlspade.com/sea-series.jpg",
+      "email": "hello@earlspade.com",
+      "sameAs": ["https://instagram.com/earlspade"],
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Malibu",
+        "addressRegion": "CA",
+        "addressCountry": "US"
+      },
+      "description": "A small jewelry label from Malibu, California. Small, numbered series — one run, one season."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://earlspade.com/#site",
+      "name": "earlspade",
+      "alternateName": ["earl spade", "Earlspade"],
+      "url": "https://earlspade.com/",
+      "publisher": { "@id": "https://earlspade.com/#org" },
+      "inLanguage": "en-US"
+    }
+  ]
+}
+</script>
 <link rel="preload" as="image" href="hero-flower.webp" fetchpriority="high">
 <link rel="preload" as="image" href="wordmark.webp" fetchpriority="high">
 <link rel="prefetch" href="hero-shark.webp">
@@ -404,11 +443,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;
   opacity:0;transform:translateY(8px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
 .mini-board.in{opacity:1;transform:none}
+.mini-board .mbe{display:inline-flex;align-items:baseline;gap:.28rem}
 .mini-board .mbn{color:var(--ink-soft)}
-.mini-board .mbn:first-of-type{color:#D70000}
+.mini-board .mbe:first-of-type .mbn,.mini-board .mbe:first-of-type .mbs{color:#D70000}
+.mini-board .mbs{font-size:.3rem;color:var(--ink-soft);opacity:.85;font-variant-numeric:tabular-nums}
 .mini-board .mbd{color:var(--ink-soft);opacity:.45}
 .mini-board svg{flex:none}
-@media(max-width:560px){.mini-board{font-size:.3rem;gap:.38rem;margin-bottom:.7rem}}
+@media(max-width:560px){.mini-board{font-size:.3rem;gap:.34rem;margin-bottom:.7rem}.mini-board .mbs{font-size:.26rem}}
 
 /* SERIES 3 — a pixel-art treasure chest moored below the archive.
    Press it: the lid swaps open, the gold inside twinkles, and the
@@ -964,7 +1005,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
     </a>
 
     <a class="thing" href="game.html" aria-label="Play our game">
-      <span class="mini-board" id="miniBoard" hidden><svg width="13" height="13" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="8" height="1" fill="#E8B33C"/><rect x="2" y="2" width="8" height="3" fill="#E8B33C"/><rect x="0" y="2" width="2" height="1" fill="#E8B33C"/><rect x="10" y="2" width="2" height="1" fill="#E8B33C"/><rect x="0" y="3" width="1" height="2" fill="#E8B33C"/><rect x="11" y="3" width="1" height="2" fill="#E8B33C"/><rect x="1" y="5" width="1" height="1" fill="#E8B33C"/><rect x="10" y="5" width="1" height="1" fill="#E8B33C"/><rect x="3" y="5" width="6" height="2" fill="#C4922A"/><rect x="4" y="7" width="4" height="1" fill="#E8B33C"/><rect x="5" y="8" width="2" height="2" fill="#C4922A"/><rect x="3" y="10" width="6" height="1" fill="#E8B33C"/><rect x="6" y="3" width="1" height="1" fill="#F2CC70"/></svg><span class="mbn" id="mb1"></span><span class="mbd">&middot;</span><span class="mbn" id="mb2"></span><span class="mbd">&middot;</span><span class="mbn" id="mb3"></span></span>
+      <span class="mini-board" id="miniBoard" hidden><svg width="13" height="13" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="8" height="1" fill="#E8B33C"/><rect x="2" y="2" width="8" height="3" fill="#E8B33C"/><rect x="0" y="2" width="2" height="1" fill="#E8B33C"/><rect x="10" y="2" width="2" height="1" fill="#E8B33C"/><rect x="0" y="3" width="1" height="2" fill="#E8B33C"/><rect x="11" y="3" width="1" height="2" fill="#E8B33C"/><rect x="1" y="5" width="1" height="1" fill="#E8B33C"/><rect x="10" y="5" width="1" height="1" fill="#E8B33C"/><rect x="3" y="5" width="6" height="2" fill="#C4922A"/><rect x="4" y="7" width="4" height="1" fill="#E8B33C"/><rect x="5" y="8" width="2" height="2" fill="#C4922A"/><rect x="3" y="10" width="6" height="1" fill="#E8B33C"/><rect x="6" y="3" width="1" height="1" fill="#F2CC70"/></svg><span class="mbe"><span class="mbn" id="mb1"></span><span class="mbs" id="ms1"></span></span><span class="mbd">&middot;</span><span class="mbe"><span class="mbn" id="mb2"></span><span class="mbs" id="ms2"></span></span><span class="mbd">&middot;</span><span class="mbe"><span class="mbn" id="mb3"></span><span class="mbs" id="ms3"></span></span></span>
       <svg class="thing-art" viewBox="0 0 120 102" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true"><ellipse cx="60" cy="94" rx="32" ry="5.5" fill="url(#gShadow)"/><g class="pc-float" style="animation-delay:.5s"><rect x="45" y="14" width="30" height="5" fill="#2A1D10"/><rect x="35" y="19" width="10" height="5" fill="#2A1D10"/><rect x="45" y="19" width="5" height="5" fill="#D70000"/><rect x="50" y="19" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="19" width="5" height="5" fill="#5F9D96"/><rect x="75" y="19" width="10" height="5" fill="#2A1D10"/><rect x="30" y="24" width="5" height="5" fill="#2A1D10"/><rect x="35" y="24" width="15" height="5" fill="#D70000"/><rect x="50" y="24" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="24" width="15" height="5" fill="#5F9D96"/><rect x="85" y="24" width="5" height="5" fill="#2A1D10"/><rect x="25" y="29" width="5" height="5" fill="#2A1D10"/><rect x="30" y="29" width="20" height="5" fill="#D70000"/><rect x="50" y="29" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="29" width="20" height="5" fill="#5F9D96"/><rect x="90" y="29" width="5" height="5" fill="#2A1D10"/><rect x="25" y="34" width="5" height="5" fill="#2A1D10"/><rect x="30" y="34" width="15" height="5" fill="#D70000"/><rect x="45" y="34" width="5" height="5" fill="#FFFFFF"/><rect x="50" y="34" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="34" width="20" height="5" fill="#5F9D96"/><rect x="90" y="34" width="5" height="5" fill="#2A1D10"/><rect x="20" y="39" width="5" height="5" fill="#2A1D10"/><rect x="25" y="39" width="15" height="5" fill="#D70000"/><rect x="40" y="39" width="10" height="5" fill="#FFFFFF"/><rect x="50" y="39" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="39" width="25" height="5" fill="#5F9D96"/><rect x="95" y="39" width="5" height="5" fill="#2A1D10"/><rect x="20" y="44" width="5" height="5" fill="#2A1D10"/><rect x="25" y="44" width="20" height="5" fill="#D70000"/><rect x="45" y="44" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="44" width="20" height="5" fill="#5F9D96"/><rect x="95" y="44" width="5" height="5" fill="#2A1D10"/><rect x="20" y="49" width="5" height="5" fill="#2A1D10"/><rect x="25" y="49" width="20" height="5" fill="#D70000"/><rect x="45" y="49" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="49" width="20" height="5" fill="#5F9D96"/><rect x="95" y="49" width="5" height="5" fill="#2A1D10"/><rect x="20" y="54" width="5" height="5" fill="#2A1D10"/><rect x="25" y="54" width="20" height="5" fill="#D70000"/><rect x="45" y="54" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="54" width="20" height="5" fill="#5F9D96"/><rect x="95" y="54" width="5" height="5" fill="#2A1D10"/><rect x="20" y="59" width="5" height="5" fill="#2A1D10"/><rect x="25" y="59" width="5" height="5" fill="#9E0000"/><rect x="30" y="59" width="15" height="5" fill="#D70000"/><rect x="45" y="59" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="59" width="10" height="5" fill="#5F9D96"/><rect x="85" y="59" width="5" height="5" fill="#35706B"/><rect x="90" y="59" width="5" height="5" fill="#5F9D96"/><rect x="95" y="59" width="5" height="5" fill="#2A1D10"/><rect x="25" y="64" width="5" height="5" fill="#2A1D10"/><rect x="30" y="64" width="5" height="5" fill="#9E0000"/><rect x="35" y="64" width="15" height="5" fill="#D70000"/><rect x="50" y="64" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="64" width="10" height="5" fill="#5F9D96"/><rect x="80" y="64" width="10" height="5" fill="#35706B"/><rect x="90" y="64" width="5" height="5" fill="#2A1D10"/><rect x="25" y="69" width="5" height="5" fill="#2A1D10"/><rect x="30" y="69" width="10" height="5" fill="#9E0000"/><rect x="40" y="69" width="10" height="5" fill="#D70000"/><rect x="50" y="69" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="69" width="5" height="5" fill="#5F9D96"/><rect x="75" y="69" width="15" height="5" fill="#35706B"/><rect x="90" y="69" width="5" height="5" fill="#2A1D10"/><rect x="30" y="74" width="5" height="5" fill="#2A1D10"/><rect x="35" y="74" width="10" height="5" fill="#9E0000"/><rect x="45" y="74" width="5" height="5" fill="#D70000"/><rect x="50" y="74" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="74" width="5" height="5" fill="#5F9D96"/><rect x="75" y="74" width="10" height="5" fill="#35706B"/><rect x="85" y="74" width="5" height="5" fill="#2A1D10"/><rect x="35" y="79" width="10" height="5" fill="#2A1D10"/><rect x="45" y="79" width="5" height="5" fill="#9E0000"/><rect x="50" y="79" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="79" width="5" height="5" fill="#35706B"/><rect x="75" y="79" width="10" height="5" fill="#2A1D10"/><rect x="45" y="84" width="30" height="5" fill="#2A1D10"/></g></svg>
       <span class="hb-caption"><span class="hb-top">take a break</span><span class="hb-series">play our game</span></span>
     </a>
@@ -2262,18 +2303,62 @@ document.addEventListener('touchstart', function(e){
    Edge/Bing never shows the Visual Search hover icon on it). */
 (function(){ var hl=document.getElementById('heroLogo'); if(hl) hl.style.backgroundImage='url("hero-flower.webp")'; })();
 
+/* SEO: emit Product structured data straight from the live DROPS data,
+   so the schema can never drift from what the shop actually shows. */
+(function(){
+  try{
+    var live = (typeof DROPS !== 'undefined') && DROPS.filter(function(d){ return d.live; })[0];
+    if(!live || !live.items || !live.items.length) return;
+    var base = 'https://earlspade.com/';
+    var products = live.items.map(function(it, i){
+      var img = (it.colors && it.colors[0] && it.colors[0].img) ? base + it.colors[0].img : base + 'sea-series.jpg';
+      return {
+        '@type': 'ListItem',
+        'position': i + 1,
+        'item': {
+          '@type': 'Product',
+          'name': it.name,
+          'description': it.desc || (it.name + ' from the earlspade ' + live.title + '.'),
+          'image': img,
+          'brand': { '@type': 'Brand', 'name': 'earlspade' },
+          'offers': {
+            '@type': 'Offer',
+            'price': String(parseFloat(String(it.price).replace(/[^0-9.]/g, '')) || 0),
+            'priceCurrency': 'USD',
+            'availability': it.soldout ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+            'url': base + '#series'
+          }
+        }
+      };
+    });
+    var s = document.createElement('script');
+    s.type = 'application/ld+json';
+    s.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      'name': 'earlspade — ' + live.title,
+      'itemListElement': products
+    });
+    document.head.appendChild(s);
+  }catch(e){}
+})();
+
 /* mini leaderboard — the top three names above the play button.
    Fetched lazily, refreshed quietly; offline it simply never appears. */
 (function(){
   var strip = document.getElementById('miniBoard');
   if(!strip || !window.fetch || !('IntersectionObserver' in window)) return;
   var slots = [document.getElementById('mb1'), document.getElementById('mb2'), document.getElementById('mb3')];
+  var sscores = [document.getElementById('ms1'), document.getElementById('ms2'), document.getElementById('ms3')];
   function load(){
     fetch('/api/leaderboard', { cache: 'no-store' })
       .then(function(res){ if(!res.ok) throw 0; return res.json(); })
       .then(function(rows){
         if(!Array.isArray(rows) || !rows.length) throw 0;
-        for(var i = 0; i < 3; i++) slots[i].textContent = rows[i] ? rows[i].name : '—';
+        for(var i = 0; i < 3; i++){
+          slots[i].textContent = rows[i] ? rows[i].name : '—';
+          sscores[i].textContent = rows[i] ? Number(rows[i].score).toLocaleString('en-US') : '';
+        }
         if(strip.hidden){
           strip.hidden = false;
           requestAnimationFrame(function(){ requestAnimationFrame(function(){ strip.classList.add('in'); }); });
