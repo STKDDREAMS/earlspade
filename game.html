@@ -111,9 +111,12 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
   touch-action:none;             /* the finger belongs to the game */
   cursor:crosshair}
 
-/* one-line how-to under the top of the play area; fades after first drop */
+/* one-line how-to under the top of the play area; fades after first drop.
+   Lives on a paper chip now — bare text would drown in the cove. */
 .howto{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:3;pointer-events:none;
   font-family:var(--px);font-size:.4rem;letter-spacing:.06em;color:var(--ink-soft);white-space:nowrap;
+  background:rgba(233,230,223,.92);border:2px solid var(--ink);padding:.35rem .55rem;
+  box-shadow:2px 2px 0 0 rgba(22,20,18,.22);
   transition:opacity .6s ease}
 .howto.off{opacity:0}
 
@@ -155,23 +158,25 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 .shop-link{display:block;box-sizing:border-box;text-decoration:none;text-align:center;
   margin-top:.6rem;line-height:1}
 
-/* ===== LOADER — the curtain. Six paper slats lift away in chunky
-   pixel steps (no soft fade — pixels don't dissolve, they leave). ===== */
+/* ===== LOADER — the tide. One paper sheet with a pixel-wave hem lifts
+   away on a soft ease: the motion is liquid, the edge stays chunky.
+   Not a fade, not slats — the tide going out, upward. ===== */
 .loader{position:fixed;inset:0;z-index:40;background:transparent;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;
-  visibility:visible;transition:visibility 0s linear 1s}
+  visibility:visible;transition:visibility 0s linear .85s}
 .loader.done{visibility:hidden;pointer-events:none}
-.loader-slat{position:absolute;top:-2%;bottom:-2%;width:calc(100%/6 + 1px);background:var(--paper);z-index:0}
-.loader-slat:nth-child(1){left:0}.loader-slat:nth-child(2){left:calc(100%/6)}
-.loader-slat:nth-child(3){left:calc(200%/6)}.loader-slat:nth-child(4){left:calc(300%/6)}
-.loader-slat:nth-child(5){left:calc(400%/6)}.loader-slat:nth-child(6){left:calc(500%/6)}
-.loader.done .loader-slat{transform:translateY(-104%);transition:transform .55s steps(7,end)}
-.loader.done .loader-slat:nth-child(2){transition-delay:.10s}
-.loader.done .loader-slat:nth-child(4){transition-delay:.05s}
-.loader.done .loader-slat:nth-child(6){transition-delay:.15s}
-.loader.done .loader-slat:nth-child(1){transition-delay:.20s}
-.loader.done .loader-slat:nth-child(3){transition-delay:.30s}
-.loader.done .loader-slat:nth-child(5){transition-delay:.25s}
+.loader-sheet{position:absolute;left:0;right:0;top:-2%;height:104%;
+  background:var(--paper);z-index:0;will-change:transform}
+/* the hem: two stepped-wave strips (deep paper "foam" behind, paper in
+   front) hanging below the sheet, riding the same transform */
+.loader-sheet::before{content:"";position:absolute;top:100%;left:0;right:0;height:32px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='32'%3E%3Cpath fill='%23DDD8CC' d='M0 0h64v12h-8v8h-8v8H32v-4H16v-8H8v-8H0z'/%3E%3C/svg%3E") repeat-x;
+  background-size:64px 32px}
+.loader-sheet::after{content:"";position:absolute;top:100%;left:0;right:0;height:24px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='24'%3E%3Cpath fill='%23E9E6DF' d='M0 0h64v8h-8v8h-16v4H24v-8h-8v-4H8v-4H0z'/%3E%3C/svg%3E") repeat-x;
+  background-size:64px 24px}
+.loader.done .loader-sheet{transform:translateY(calc(-104% - 36px));
+  transition:transform .72s cubic-bezier(.66,0,.34,1)}
 .loader-flower{position:relative;z-index:1;width:56px;height:61px;image-rendering:pixelated;animation:loaderBob 1.15s ease-in-out infinite}
 @keyframes loaderBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-9px) rotate(4deg)}}
 .loader-text{position:relative;z-index:1;font-family:var(--px);font-size:.5rem;letter-spacing:.14em;color:var(--ink)}
@@ -288,7 +293,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
       <div class="big-score" id="finalScore">0</div>
       <div class="over-reach">
         <canvas id="overFruit" width="88" height="88"></canvas>
-        <span id="reachTxt">you reached the axolotl</span>
+        <span id="reachTxt">you reached the baby chick</span>
       </div>
       <div class="lb-note" id="lbStatus">loading the board&hellip;</div>
       <div class="lb" id="lbList" style="display:none"></div>
@@ -317,7 +322,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 
 <!-- the curtain: covers the first janky frames while fonts/physics warm up -->
 <div class="loader" id="loader" aria-hidden="true">
-  <span class="loader-slat"></span><span class="loader-slat"></span><span class="loader-slat"></span><span class="loader-slat"></span><span class="loader-slat"></span><span class="loader-slat"></span>
+  <span class="loader-sheet"></span>
   <img class="loader-flower" src="logo.png" alt="" width="56" height="61"/>
   <div class="loader-text">LOADING<span class="ld">.</span><span class="ld">.</span><span class="ld">.</span></div>
 </div>

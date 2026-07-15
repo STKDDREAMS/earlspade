@@ -73,7 +73,7 @@ const PAL = {
   Z:'#B34A22', z:'#8E3616',
   J:'#8D8A84', j:'#6E6B66',
   D:'#D9B98C', d:'#B8905F', F:'#C8863C', Q:'#EFE0C2',
-  Y:'#D9C9A6', y:'#C9B68C',
+  Y:'#D9C9A6', y:'#C9B68C', V:'#E4BC4E',
 };
 const GRID = 36, DISC_R = 13, CELL = 8;
 
@@ -83,25 +83,30 @@ const GRID = 36, DISC_R = 13, CELL = 8;
    over the face kit). Ears, horns, spouts and spikes live in the rows
    above the disc — they render but do NOT collide. */
 const TIERS = [
-  { name:'axolotl', r:14, fill:'#F2B0C0', dk:'#D98BA0', lt:'#FFD3DE',
+  { name:'baby chick', r:14, fill:'#F2CE66', dk:'#D9AC3E', lt:'#FBE698',
     feat:{ ox:0, oy:0, rows:[
       '....................................',
+      '.................VV.................',
+      '..............VV.VV.VV..............',
+      '...............VVVVVV...............',
       '....................................',
       '....................................',
       '....................................',
       '....................................',
       '....................................',
       '....................................',
-      '.......PPP................PPP.......',
-      '.....PPPPP................PPPPP.....',
       '....................................',
       '....................................',
-      '...PPPP......................PPPP...',
-      '..PPPP........................PPPP..',
       '....................................',
       '....................................',
-      '..PPP..........................PPP..',
-      '.PPPP..........................PPPP.',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '......VV....................VV......',
+      '.....VVV....................VVV.....',
+      '.....VVV....................VVV.....',
+      '......VV....................VV......',
     ] },
     feat2:{ ox:0, oy:0, rows:[
       '....................................',
@@ -120,15 +125,22 @@ const TIERS = [
       '....................................',
       '....................................',
       '....................................',
+      '.................OO.................',
+      '................OOOO................',
+      '.................oo.................',
       '....................................',
       '....................................',
       '....................................',
-      '...............K....K...............',
-      '................KKKK................',
       '....................................',
       '....................................',
-      '..........E.........................',
-      '...........EE.......................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '.............OOO....OOO.............',
+      '.............oo......oo.............',
     ] } },
 
   { name:'koala', r:19, fill:'#8D8A84', dk:'#6E6B66', lt:'#ABA8A2', eyeY:-1,
@@ -443,37 +455,36 @@ const TIERS = [
       '.................pp.................',
     ] } },
 
-  { name:'red panda', r:64, fill:'#B34A22', dk:'#8E3616', lt:'#CC6B3E', eyeY:-1,
+  { name:'polar bear cub', r:64, fill:'#EFE8D8', dk:'#CFC6B2', lt:'#FFFDF4', eyeY:-1,
     feat:{ ox:0, oy:0, rows:[
-      '........WW................WW........',
-      '.......WWWW..............WWWW.......',
-      '.......WzzW..............WzzW.......',
-      '......WzzzzW............WzzzzW......',
-      '......WzzzzzW..........WzzzzzW......',
-      '......ZZZZZZZ..........ZZZZZZZ......',
       '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '............EE........EE............',
+      '.........WWW............WWW.........',
+      '........WWWWW..........WWWWW........',
+      '........WpppW..........WpppW........',
+      '........WpppW..........WpppW........',
+      '.........WWW............WWW.........',
       '....................................',
       '....................................',
       '....................................',
       '....................................',
       '....................................',
-      '..........zz...WWWWWW...zz..........',
-      '..........zz.zWWWWWWWWz.zz..........',
-      '.........zz.zWWWWWWWWWWz.zz.........',
-      '.........zz.zWWWWWWWWWWz.zz.........',
-      '........zz..zWWWWWWWWWWz..zz........',
-      '............zWWWWWWWWWWz............',
-      '............zWWWWWWWWWWz............',
-      '.............zWWWWWWWWz.............',
-      '...............WWWWWW...............',
-      '...............zzzzzz...............',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '....................................',
+      '..............wQQQQQQw..............',
+      '.............wQQQQQQQQw.............',
+      '............wQQQQQQQQQQw............',
+      '............wQQQQQQQQQQw............',
+      '............wQQQQQQQQQQw............',
+      '............wQQQQQQQQQQw............',
+      '............wQQQQQQQQQQw............',
+      '.............wQQQQQQQQw.............',
+      '...............QQQQQQ...............',
+      '...............wwwwww...............',
     ] },
     feat2:{ ox:0, oy:0, rows:[
-      '....................................',
       '....................................',
       '....................................',
       '....................................',
@@ -638,17 +649,16 @@ const TIERS = [
       '................KKKK................',
     ] } },
 
-  { name:'sea turtle', r:102, fill:'#3E7C4F', dk:'#2E5E3F', lt:'#6FA87A', eyeY:2,
+  { name:'capybara', r:102, fill:'#A5744A', dk:'#7E5530', lt:'#C39468', eyeY:-1,
     feat:{ ox:0, oy:0, rows:[
       '....................................',
-      '.............nnnnnnnnnn.............',
-      '..........nnnnnnnnnnnnnnnn..........',
-      '.........nnGGnnnnnnnnnnGGnn.........',
-      '........nnnnnnnnnnnnnnnnnnnn........',
-      '........nnGGnnnnnGGnnnnnGGnn........',
-      '........nnnnnnnnnnnnnnnnnnnn........',
-      '........nnnnnGGnnnnnnGGnnnnn........',
-      '........mmmmmmmmmmmmmmmmmmmm........',
+      '....................................',
+      '....................................',
+      '....................................',
+      '..........ccc..........ccc..........',
+      '.........ccCcc........ccCcc.........',
+      '.........ccCcc........ccCcc.........',
+      '..........ccc..........ccc..........',
       '....................................',
       '....................................',
       '....................................',
@@ -656,17 +666,19 @@ const TIERS = [
       '....................................',
       '....................................',
       '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....mm........................mm....',
-      '...mmm........................mmm...',
-      '....mm........................mm....',
+      '.............dDDDDDDDDd.............',
+      '............dDDDDDDDDDDd............',
+      '...........dDDDDDDDDDDDDd...........',
+      '...........dDDDDDDDDDDDDd...........',
+      '...........dDDDDDDDDDDDDd...........',
+      '...........dDDDDDDDDDDDDd...........',
+      '...........dDDDDDDDDDDDDd...........',
+      '...........dDDDDDDDDDDDDd...........',
+      '...........dDDDDDDDDDDDDd...........',
+      '...........dDDDDDDDDDDDDd...........',
+      '...........dDDDDDDDDDDDDd...........',
+      '............dDDDDDDDDDDd............',
+      '.............dddddddddd.............',
     ] },
     feat2:{ ox:0, oy:0, rows:[
       '....................................',
@@ -681,17 +693,19 @@ const TIERS = [
       '....................................',
       '....................................',
       '....................................',
+      '............CCC......CCC............',
       '....................................',
       '....................................',
       '....................................',
       '....................................',
-      '....................................',
+      '...............c....c...............',
+      '...............c....c...............',
       '....................................',
       '....................................',
       '....................................',
       '....................................',
       '..............K......K..............',
-      '...............KKKKKK...............',
+      '................KKKK................',
     ] } },
 
   { name:'whale', r:114, fill:'#2E5E8C', dk:'#24496E', lt:'#4B84B4', blushC:'#A9CBE4',
@@ -919,16 +933,32 @@ function beachPeriod(){
 const BEACH_PAL = {
   day:   { skyTop:'#DFE0D4', skyMid:'#E4E3D7', skyLow:'#E8E5DB', sea:'#CBDBD3', foam:'#DAE5DF',
            waveA:'#BCD0C8', waveB:'#D8E3DD', sand:'#E4D6B9', speckle:'#D6C4A0',
-           sun:'#EBD494', ray:'rgba(235,212,148,.55)', cloud:'#F2EFE5', sunY: 98 },
+           sun:'#EBD494', ray:'rgba(235,212,148,.55)', cloud:'#F2EFE5', sunY: 98,
+           rock:'#B9AF9C', rockDk:'#9C9280', rockLt:'#CDC4B0',
+           palm:'#8FAE7E', palmDk:'#6F8F63', palmLt:'#A9C295',
+           trunk:'#A98D68', trunkDk:'#8A7052', shimmer:'rgba(246,241,230,.5)',
+           hull:'#8A867E', sail:'#F2EFE6', coral:'#D98B7E', bird:'#6B6862' },
   dawn:  { skyTop:'#E8DBD4', skyMid:'#EAE0D7', skyLow:'#EDE5DC', sea:'#CDD9D4', foam:'#DEE6E1',
            waveA:'#C2CFC9', waveB:'#DCE2DD', sand:'#E6D8BC', speckle:'#D8C6A2',
-           sun:'#F0CFA0', ray:'rgba(240,207,160,.5)', cloud:'#F5EFE8', sunY: 196 },
+           sun:'#F0CFA0', ray:'rgba(240,207,160,.5)', cloud:'#F5EFE8', sunY: 196,
+           rock:'#C2B4A4', rockDk:'#A69888', rockLt:'#D4C7B6',
+           palm:'#9CB18A', palmDk:'#7D9270', palmLt:'#B4C4A0',
+           trunk:'#B29674', trunkDk:'#93795E', shimmer:'rgba(246,241,230,.42)',
+           hull:'#94908A', sail:'#F4F0E8', coral:'#DE9584', bird:'#757068' },
   gold:  { skyTop:'#E9DCC2', skyMid:'#ECE0CA', skyLow:'#EFE4D1', sea:'#CBD5C9', foam:'#DDE2D6',
            waveA:'#BFCDBE', waveB:'#DAE0D3', sand:'#E6D5B4', speckle:'#D8C293',
-           sun:'#EDBF7C', ray:'rgba(237,191,124,.55)', cloud:'#F4ECDD', sunY: 238 },
+           sun:'#EDBF7C', ray:'rgba(237,191,124,.55)', cloud:'#F4ECDD', sunY: 238,
+           rock:'#C0AC8E', rockDk:'#A28F74', rockLt:'#D2BFA0',
+           palm:'#A3AC72', palmDk:'#86905B', palmLt:'#BCC287',
+           trunk:'#AE8C60', trunkDk:'#8F704A', shimmer:'rgba(242,220,160,.5)',
+           hull:'#7E7468', sail:'#EFE0C4', coral:'#D98460', bird:'#6E6455' },
   night: { skyTop:'#C7CBCC', skyMid:'#CDD1D1', skyLow:'#D3D6D4', sea:'#B9C9C4', foam:'#C9D6D1',
            waveA:'#ACBEB8', waveB:'#C4D2CC', sand:'#D6C9B0', speckle:'#C6B694',
-           sun:'#EFE9D8', ray:'rgba(239,233,216,.4)', cloud:'#DBDDD7', sunY: 90, moon:true },
+           sun:'#EFE9D8', ray:'rgba(239,233,216,.4)', cloud:'#DBDDD7', sunY: 90, moon:true,
+           rock:'#9AA099', rockDk:'#7F8580', rockLt:'#ACB1A8',
+           palm:'#7E9187', palmDk:'#66786F', palmLt:'#93A69B',
+           trunk:'#8F8570', trunkDk:'#746B58', shimmer:'rgba(239,233,216,.3)',
+           hull:'#6E6F6B', sail:'#D7D9D2', coral:'#B08A84', bird:null },
 };
 const STARS = (() => {
   const s = [];
@@ -956,11 +986,180 @@ const SPECKLES = (() => {
   for(let i = 0; i < 26; i++) s.push([rnd() * SCENE_W, SAND_Y + 14 + rnd() * (SCENE_H - SAND_Y - 20)]);
   return s;
 })();
+
+/* ===== THE COVE ==================================================
+   The shot is taken from inside a tropical cove: rocky headlands
+   wade into the sea at both edges, palm fronds overhang the top
+   corners and sway, sailboats cross the water, birds drift by.
+   All the heavy raster (rocks, foliage, frond clusters) is built
+   ONCE per resize/period in buildCove() — per frame the cove costs
+   a handful of drawImages and cheap rects.
+   Gameplay is sacred: fronds are height-capped so they can never
+   reach the vessel or the held creature's lane, and rocks stay
+   outside the vessel's silhouette. ================================ */
+const BIRDS = [ { y: 34, sp: 0.011, ph: 0 }, { y: 58, sp: 0.0085, ph: 2.6 } ];
+const BOATS = [
+  { dy: 12, sp: 0.0036, dir: 1,  s: 0.7  },
+  { dy: 30, sp: 0.0050, dir: -1, s: 1.0  },
+  { dy: 52, sp: 0.0027, dir: 1,  s: 1.35 },
+];
+let coveL = null, coveR = null, coveLW = 0, coveRW = 0;
+let frondL = null, frondR = null, frondK = 1, crown = null, crownAt = null;
+let lastCoveKey = '';
+let leaf = null, nextLeafAt = 14000;
+
+function makeLayer(w, h){
+  const k = Math.min(window.devicePixelRatio || 1, 2);   // same cap as resize()
+  const cv = document.createElement('canvas');
+  cv.width = Math.max(1, Math.ceil(w * k));
+  cv.height = Math.max(1, Math.ceil(h * k));
+  cv._w = w; cv._h = h;
+  const g = cv.getContext('2d');
+  g.setTransform(k, 0, 0, k, 0, 0);
+  return [cv, g];
+}
+/* one frond cluster: leaves fanning from the top-out corner (mir=1
+   mirrors it for the right side). Drawn on a chunky PX-block grid. */
+function paintFronds(g, pal, wB, hB, mir){
+  const p = PX * scale;
+  const B = (x, y, w, h, col) => {
+    const gx = mir ? wB - x - w : x;
+    g.fillStyle = col;
+    g.fillRect(Math.round(gx * p), Math.round(y * p), Math.ceil(w * p) + .5, Math.ceil(h * p) + .5);
+  };
+  /* dense canopy mass hugging the corner */
+  B(0, 0, 9, 2, pal.palm);
+  B(0, 2, 7, 2, pal.palm);
+  B(0, 4, 5, 1, pal.palmDk);
+  B(2, 1, 5, 2, pal.palmDk);
+  B(0, 0, 4, 1, pal.palmDk);
+  /* frond: steep droop hugging the screen edge, leaflets ticking off it */
+  B(0, 5, 2, 3, pal.palm); B(1, 8, 2, 2, pal.palm); B(2, 10, 2, 2, pal.palmDk);
+  B(3, 12, 1, 1, pal.palmLt);
+  B(2, 6, 1, 1, pal.palmDk); B(3, 9, 1, 1, pal.palm);
+  /* frond: the big diagonal, 2-wide with a dark spine */
+  B(4, 3, 3, 2, pal.palm); B(6, 5, 3, 2, pal.palm); B(8, 7, 2, 2, pal.palmDk);
+  B(10, 9, 2, 2, pal.palm); B(11, 11, 1, 1, pal.palmLt);
+  B(6, 4, 2, 1, pal.palmDk); B(9, 8, 1, 1, pal.palmLt);
+  /* frond: mid reach with leaflets below */
+  B(7, 2, 4, 2, pal.palm); B(10, 3, 4, 2, pal.palmDk); B(13, 5, 3, 2, pal.palm);
+  B(15, 7, 2, 1, pal.palmLt);
+  B(9, 4, 1, 2, pal.palm); B(12, 5, 1, 2, pal.palmDk); B(14, 7, 1, 1, pal.palm);
+  /* frond: long arm along the top with hanging leaflets */
+  B(9, 0, 5, 2, pal.palm); B(13, 1, 4, 1, pal.palmDk); B(16, 1, 4, 1, pal.palm);
+  B(19, 2, 3, 1, pal.palmLt);
+  B(11, 2, 1, 2, pal.palmDk); B(14, 2, 1, 2, pal.palm); B(17, 2, 1, 1, pal.palmDk);
+  B(20, 3, 1, 1, pal.palm);
+}
+/* a full palm crown for the desktop headland tree — fronds radiate
+   from a center anchor with a coconut pair beneath it */
+function paintCrown(g, pal, wB, hB){
+  const p = PX * scale, cx = wB / 2;
+  const B = (x, y, w, h, col) => {
+    g.fillStyle = col;
+    g.fillRect(Math.round(x * p), Math.round(y * p), Math.ceil(w * p) + .5, Math.ceil(h * p) + .5);
+  };
+  const arm = (dir) => {   /* dir -1 = left, 1 = right */
+    const o = (x) => cx + dir * x - (dir < 0 ? 3 : 0);
+    B(o(1), 1, 3, 2, pal.palm); B(o(4), 2, 3, 2, pal.palm);
+    B(o(6), 3, 3, 2, pal.palmDk); B(o(8), 5, 2, 2, pal.palm); B(o(9), 7, 2, 2, pal.palmLt);
+    B(o(2), 0, 4, 1, pal.palmDk); B(o(6), 1, 4, 1, pal.palm); B(o(10), 2, 3, 1, pal.palmLt);
+    B(o(1), 2, 2, 2, pal.palm); B(o(2), 4, 2, 2, pal.palmDk); B(o(3), 6, 2, 2, pal.palm);
+  };
+  arm(-1); arm(1);
+  B(cx - 1, 0, 2, 2, pal.palm);                    /* top tuft */
+  B(cx - 2, 2, 2, 2, pal.trunkDk); B(cx, 2, 2, 2, pal.trunk);  /* coconuts */
+}
+function buildCove(pal){
+  const p = PX * scale;
+  /* --- side strips: headland rocks + (wide screens) sand garnish --- */
+  const wl = Math.min(offX + 44 * scale, 320 * scale);
+  const wr = Math.min(offX + 44 * scale, 230 * scale) * 0.82;
+  coveLW = Math.max(wl, 26 * scale); coveRW = Math.max(wr, 20 * scale);
+  const seaTop = offY + HORIZON * scale;
+  let seed = 91;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const strip = (wCss, mir) => {
+    const [cv, g] = makeLayer(wCss, cssH);
+    const wB = Math.max(3, Math.floor(wCss / p));
+    const B = (x, y, w, h, col) => {   /* x in blocks from the OUTER edge, y in css */
+      const gx = mir ? wCss - (x + w) * p : x * p;
+      g.fillStyle = col;
+      g.fillRect(Math.round(gx), Math.round(y), Math.ceil(w * p) + .5, Math.ceil(h * p) + .5);
+    };
+    /* headland: stepped ridge rising above the horizon, wading into the sea */
+    const hB = Math.max(4, Math.min(9, Math.round(wB * 0.5)));
+    for(let gx = 0; gx < wB; gx++){
+      const t = gx / wB;
+      const h = Math.max(1, Math.round(hB * (1 - t * t) - (gx % 3 === 2 ? 1 : 0)));
+      B(gx, seaTop - h * p, 1, h + 3, pal.rock);
+      B(gx, seaTop - h * p, 1, 1, pal.rockLt);              /* sunlit ridge */
+      if(rnd() < .3) B(gx, seaTop - (h - 1) * p + p * Math.floor(rnd() * h), 1, 1, pal.rockDk);
+    }
+    B(0, seaTop + 3 * p, wB, 1, pal.rockDk);                 /* waterline base */
+    for(let gx = 0; gx < wB; gx += 2)
+      if(rnd() < .5) B(gx, seaTop + 3.6 * p, 1, .5, pal.foam); /* lapping foam */
+    /* wide screens: greenery sprig + shells resting on the sand */
+    if(wCss > 120 * scale){
+      const sandTop = offY + (SAND_Y + 26) * scale;
+      const sh = (x, y) => {   /* a tiny coral starfish */
+        B(x, y, 1, 1, pal.coral); B(x - 1, y + p, 3, 1, pal.coral); B(x, y + 2 * p, 1, 1, pal.coral);
+      };
+      sh(Math.floor(wB * .28), sandTop + 30 * scale);
+      B(Math.floor(wB * .55), sandTop + 90 * scale, 2, 1, pal.rockDk);       /* pebble */
+      B(Math.floor(wB * .18), sandTop + 120 * scale, 2, 2, pal.trunk);       /* driftwood chip */
+      B(Math.floor(wB * .19), sandTop + 120 * scale, 1, 1, pal.trunkDk);
+      /* sprig at the bottom corner */
+      const by = cssH - 8 * p;
+      B(0, by, 2, 8, pal.palmDk); B(1, by - 2 * p, 2, 4, pal.palm);
+      B(2, by - 3 * p, 2, 3, pal.palmLt); B(3, by + p, 2, 3, pal.palm);
+    }
+    return cv;
+  };
+  coveL = strip(coveLW, false);
+  coveR = strip(coveRW, true);
+  /* --- overhanging frond clusters at the top corners --- */
+  const natW = 22 * PX * scale, natH = 13 * PX * scale;
+  const topSafe = offY + 60 * scale;                 /* held creature's lane starts below this */
+  const deepOK = offX > 110 * scale;                 /* corners fully clear of the scene */
+  const maxH = deepOK ? 300 * scale : Math.max(40 * scale, topSafe - 4);
+  frondK = Math.min(1, maxH / natH);
+  { const [cv, g] = makeLayer(natW, natH); paintFronds(g, pal, 22, 13, false); frondL = cv; }
+  { const [cv, g] = makeLayer(natW, natH); paintFronds(g, pal, 22, 13, true);  frondR = cv; }
+  /* --- desktop headland palm: trunk painted into the left strip, its
+         crown rendered separately so it can sway --- */
+  crown = null; crownAt = null;
+  if(coveLW > 150 * scale){
+    const g = coveL.getContext('2d');
+    const baseX = 13, tipX = 20;                     /* blocks from the left edge */
+    const tipY = seaTop - (9 + 14) * p;
+    for(let i = 0; i < 14; i++){
+      const t = i / 14;
+      const x = baseX + (tipX - baseX) * t * t;
+      const y = seaTop - 9 * p - i * p;
+      g.fillStyle = pal.trunk;
+      g.fillRect(Math.round(x * p), Math.round(y), Math.ceil(2 * p) + .5, Math.ceil(p) + .5);
+      g.fillStyle = pal.trunkDk;
+      g.fillRect(Math.round((x + 1.4) * p), Math.round(y), Math.ceil(.6 * p) + .5, Math.ceil(p) + .5);
+      if(i % 3 === 1){ g.fillStyle = pal.trunkDk;
+        g.fillRect(Math.round(x * p), Math.round(y + p * .4), Math.ceil(2.3 * p) + .5, Math.ceil(p * .25) + .5); }
+    }
+    const cw = 26 * PX * scale, ch = 10 * PX * scale;
+    const [cv, g2] = makeLayer(cw, ch);
+    paintCrown(g2, pal, 26, 10);
+    crown = cv;
+    crownAt = [ (tipX + 1) * p, tipY + p ];          /* anchor css coords in strip space */
+  }
+}
 function drawBeach(now){
-  const pal = BEACH_PAL[beachPeriod()];
+  const period = beachPeriod();
+  const pal = BEACH_PAL[period];
   const sy = v => offY + v * scale;                 // scene y -> css y
   const p = PX * scale;                              // one beach pixel, css
   const snapC = v => Math.floor(v / p) * p;          // css-space pixel hop
+  /* rebuild the cove layers when the viewport or the light changes */
+  const coveKey = period + '|' + cssW + '|' + cssH + '|' + scale;
+  if(coveKey !== lastCoveKey){ lastCoveKey = coveKey; buildCove(pal); }
   /* sky bands */
   ctx.fillStyle = pal.skyTop; ctx.fillRect(0, 0, cssW, sy(150));
   ctx.fillStyle = pal.skyMid; ctx.fillRect(0, sy(150), cssW, sy(244) - sy(150));
@@ -987,6 +1186,20 @@ function drawBeach(now){
     ctx.fillStyle = pal.ray;
     for(const [bx, by] of SUN_RAYS) ctx.fillRect(sunX + bx*p, sy(sunY + by*PX), p + .5, p + .5);
   }
+  /* far birds drifting across the cove mouth (they sleep at night) */
+  if(pal.bird && !reduceMotion){
+    ctx.fillStyle = pal.bird;
+    for(const b of BIRDS){
+      const span = cssW + 90 * scale;
+      const bx2 = span - (((now * b.sp + b.ph * 4000) * scale) % span) - 45 * scale;
+      const flap = Math.floor(now / 460 + b.ph) % 2;
+      const by2 = sy(b.y);
+      ctx.fillRect(bx2 - 2*p, by2 + (flap ? 0 : -p*.6), p, p*.7);
+      ctx.fillRect(bx2 - p, by2 - (flap ? p*.6 : 0), p, p*.7);
+      ctx.fillRect(bx2 + p*.4, by2 - (flap ? p*.6 : 0), p, p*.7);
+      ctx.fillRect(bx2 + p*1.4, by2 + (flap ? 0 : -p*.6), p, p*.7);
+    }
+  }
   /* clouds: chunky, hopping the FULL viewport width 8px at a time */
   const wrapW = cssW + 260 * scale;
   for(const cl of CLOUDS){
@@ -1000,6 +1213,13 @@ function drawBeach(now){
   ctx.fillRect(0, sy(HORIZON), cssW, Math.max(0, sy(SAND_Y) - sy(HORIZON)));
   ctx.fillStyle = pal.foam;
   ctx.fillRect(0, sy(HORIZON), cssW, Math.max(1.5, 3 * scale));
+  /* sun glitter on the water just past the horizon */
+  ctx.fillStyle = pal.shimmer;
+  for(let i = 0; i < 12; i++){
+    if((Math.floor(now / 430) + i) % 3 === 0) continue;
+    const gx = snapC(((i * 131 + (i % 3) * 47) * scale) % cssW);
+    ctx.fillRect(gx, sy(HORIZON + 7 + (i % 3) * 5), 6 * scale, 1.8 * scale);
+  }
   for(let row = 0; row < 9; row++){
     const wy = HORIZON + 22 + row * 26;
     if(wy > SAND_Y - 10) break;
@@ -1010,24 +1230,65 @@ function drawBeach(now){
     for(let wx = -step + off; wx < cssW + step; wx += step)
       ctx.fillRect(wx, sy(wy), 20 * scale, 3.2 * scale);
   }
-  /* a tiny sailboat crossing the whole ocean, bobbing in whole pixels */
-  {
-    const span = cssW + 140 * scale;
-    const bx = snapC(((now * 0.0045 * scale) % span + span) % span) - 70 * scale;
-    const bob = Math.floor(now / 800) % 2 ? 2 : 0;
-    const by = HORIZON + 10 + bob;
-    ctx.fillStyle = '#8A867E';
-    ctx.fillRect(bx - 10 * scale, sy(by), 22 * scale, 5 * scale);   // hull
-    ctx.fillRect(bx, sy(by - 17), 2.5 * scale, 17 * scale);         // mast
-    ctx.fillStyle = '#F2EFE6';
-    ctx.fillRect(bx + 3 * scale, sy(by - 16), 9 * scale, 5 * scale);  // sail
-    ctx.fillRect(bx + 3 * scale, sy(by - 11), 6 * scale, 5 * scale);
+  /* a little fleet crossing the cove — nearer boats sit lower, sail
+     larger, and one runs the other way. Whole-pixel bob, as ever. */
+  for(let i = 0; i < BOATS.length; i++){
+    const bt = BOATS[i];
+    const span = cssW + 180 * scale * bt.s;
+    let bx = snapC((((now * bt.sp + i * 7000) * scale) % span + span) % span) - 90 * scale * bt.s;
+    if(bt.dir < 0) bx = cssW - bx;
+    const bob = Math.floor(now / (700 + i * 160)) % 2 ? 2 : 0;
+    const by = HORIZON + bt.dy + bob;
+    const s2 = scale * bt.s, d = bt.dir;
+    ctx.fillStyle = pal.hull;
+    ctx.fillRect(bx - 10 * s2, sy(by), 22 * s2, 5 * s2);              // hull
+    ctx.fillRect(bx, sy(by - 17), 2.5 * s2, 17 * s2);                 // mast
+    ctx.fillStyle = pal.sail;
+    ctx.fillRect(bx + (d > 0 ? 3 : -12) * s2, sy(by - 16), 9 * s2, 5 * s2);   // main sail
+    ctx.fillRect(bx + (d > 0 ? 3 : -9)  * s2, sy(by - 11), 6 * s2, 5 * s2);
   }
   /* sand with speckles across the full width */
   ctx.fillStyle = pal.sand;
   ctx.fillRect(0, sy(SAND_Y), cssW, Math.max(0, cssH - sy(SAND_Y)));
   ctx.fillStyle = pal.speckle;
   for(const [px2, py2] of SPECKLES) ctx.fillRect(snapC(px2 / SCENE_W * cssW), sy(py2), 3.5 * scale, 3.5 * scale);
+
+  /* ---- the cove itself: headlands, then the swaying canopy ---- */
+  if(coveL) ctx.drawImage(coveL, 0, 0, coveL._w, coveL._h);
+  if(coveR) ctx.drawImage(coveR, cssW - coveR._w, 0, coveR._w, coveR._h);
+  const sway = reduceMotion ? 0 : Math.round(Math.sin(now / 1400) * 2) * 0.022;
+  const sway2 = reduceMotion ? 0 : Math.round(Math.sin(now / 1400 + 2.1) * 2) * 0.022;
+  if(frondL){
+    ctx.save(); ctx.translate(0, 0); ctx.rotate(sway);
+    ctx.drawImage(frondL, 0, 0, frondL._w * frondK, frondL._h * frondK);
+    ctx.restore();
+  }
+  if(frondR){
+    ctx.save(); ctx.translate(cssW, 0); ctx.rotate(-sway2);
+    ctx.drawImage(frondR, -frondR._w * frondK, 0, frondR._w * frondK, frondR._h * frondK);
+    ctx.restore();
+  }
+  if(crown && crownAt){
+    ctx.save(); ctx.translate(crownAt[0], crownAt[1]); ctx.rotate(sway2 * .8);
+    ctx.drawImage(crown, -crown._w / 2, -4, crown._w, crown._h);
+    ctx.restore();
+  }
+  /* every so often a palm leaf lets go and see-saws down to the sand */
+  if(!reduceMotion){
+    if(!leaf && now > nextLeafAt){
+      leaf = { x0: (Math.random() < .5 ? 30 : cssW - 30), y: 40 * scale, ph: Math.random() * 6 };
+    }
+    if(leaf){
+      leaf.y += 0.55 * scale;
+      const lx = snapC(leaf.x0 + Math.sin(now / 620 + leaf.ph) * 26 * scale);
+      const tilt = Math.floor(now / 620 + leaf.ph) % 2;
+      ctx.fillStyle = pal.palm;
+      ctx.fillRect(lx, leaf.y, p * (tilt ? 1.6 : 1), p * (tilt ? .7 : 1.1));
+      ctx.fillStyle = pal.palmDk;
+      ctx.fillRect(lx + (tilt ? p * .8 : 0), leaf.y + p * .4, p * .6, p * .5);
+      if(leaf.y > sy(SAND_Y) + 20 * scale){ leaf = null; nextLeafAt = now + 20000 + Math.random() * 20000; }
+    }
+  }
 }
 
 /* localStorage keys */
@@ -1433,16 +1694,28 @@ function drawFruitAt(c, x, y, r, tier, angle, sqx, sqy){
 }
 
 /* the vessel: pixel-shadowed rounded box in the site's dialog style */
-function vesselPath(inset){
+/* built once (scene coords never change): extra light where the
+   over-line and aim guide need to stay readable */
+let INTERIOR_FADE = null;
+function interiorFade(){
+  if(!INTERIOR_FADE){
+    INTERIOR_FADE = ctx.createLinearGradient(0, BOX_TOP, 0, BOX_TOP + 160);
+    INTERIOR_FADE.addColorStop(0, 'rgba(233,230,223,.30)');
+    INTERIOR_FADE.addColorStop(1, 'rgba(233,230,223,0)');
+  }
+  return INTERIOR_FADE;
+}
+function vesselPath(inset, append){
   const l = BOX_L + inset, r = BOX_R - inset, b = BOX_BOTTOM + WALL_T - inset, t = BOX_TOP;
   const cr = Math.max(6, CORNER_R - inset);
-  ctx.beginPath();
+  if(!append) ctx.beginPath();
   ctx.moveTo(l, t);
   ctx.lineTo(l, b - cr);
   ctx.quadraticCurveTo(l, b, l + cr, b);
   ctx.lineTo(r - cr, b);
   ctx.quadraticCurveTo(r, b, r, b - cr);
   ctx.lineTo(r, t);
+  if(append) ctx.closePath();
 }
 function render(now){
   ctx.fillStyle = '#E9E6DF';
@@ -1457,18 +1730,32 @@ function render(now){
   ctx.translate(offX, offY);
   ctx.scale(scale, scale);
 
-  /* hard offset shadow (same language as the site's pixel dialogs) */
+  /* hard offset shadow (same language as the site's pixel dialogs) —
+     clipped to the vessel's EXTERIOR so it can't gray the see-through
+     interior */
   ctx.save();
+  ctx.beginPath();
+  ctx.rect(-offX / scale, -offY / scale, cssW / scale, cssH / scale);
+  vesselPath(WALL_T / 2, true);
+  ctx.clip('evenodd');
   ctx.translate(6, 6);
   vesselPath(0);
   ctx.fillStyle = 'rgba(22,20,18,.16)';
   ctx.fill();
   ctx.restore();
 
-  /* interior: slightly deeper paper */
+  /* interior: sea glass. The cove stays visible through the bucket —
+     softly lightened so the creatures own the foreground — with an
+     extra readability fade up top where the over-line lives. */
   vesselPath(WALL_T/2);
-  ctx.fillStyle = '#E2DDD2';
+  ctx.fillStyle = 'rgba(233,230,223,.62)';
   ctx.fill();
+  ctx.save();
+  vesselPath(WALL_T/2);
+  ctx.clip();
+  ctx.fillStyle = interiorFade();
+  ctx.fillRect(BOX_L, BOX_TOP, BOX_W, 160);
+  ctx.restore();
 
   /* ambient bubbles + danger glow live INSIDE the vessel */
   ctx.save();
@@ -1479,7 +1766,7 @@ function render(now){
     if(a.y < BOX_TOP + 14){ a.y = BOX_BOTTOM - 8; a.x = IN_L + 18 + Math.random() * (IN_R - IN_L - 36); }
     const ax = a.x + Math.sin(now / 900 + a.ph) * 4;
     ctx.beginPath(); ctx.arc(ax, a.y, a.r, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(107,104,98,.18)';
+    ctx.strokeStyle = 'rgba(107,104,98,.22)';
     ctx.lineWidth = 1.2;
     ctx.stroke();
   }
@@ -1500,7 +1787,7 @@ function render(now){
   ctx.lineWidth = 2;
   ctx.strokeStyle = anyOverLine
     ? (Math.floor(now / 180) % 2 ? 'rgba(215,0,0,.85)' : 'rgba(215,0,0,.25)')
-    : 'rgba(22,20,18,.18)';
+    : 'rgba(22,20,18,.34)';
   ctx.beginPath(); ctx.moveTo(IN_L, lineY); ctx.lineTo(IN_R, lineY); ctx.stroke();
   ctx.restore();
 
@@ -1509,10 +1796,14 @@ function render(now){
     const hx = clampAim(aimX), hr = TIERS[heldTier].r;
     const hy = heldY() + (reduceMotion ? 0 : Math.sin(now / 480) * 3);
     ctx.save();
-    ctx.globalAlpha = 0.28;
+    /* solid paper under-stroke so the guide never drowns in the cove */
+    ctx.strokeStyle = 'rgba(233,230,223,.55)';
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(hx, hy + hr + 4); ctx.lineTo(hx, BOX_BOTTOM - 2); ctx.stroke();
+    ctx.globalAlpha = 0.5;
     ctx.setLineDash([4, 8]);
     if(!reduceMotion) ctx.lineDashOffset = -(now / 34) % 12;   // dashes flow downward
-    ctx.strokeStyle = INK; ctx.lineWidth = 1.5;
+    ctx.strokeStyle = INK; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(hx, hy + hr + 4); ctx.lineTo(hx, BOX_BOTTOM - 2); ctx.stroke();
     ctx.restore();
     ctx.globalAlpha = canDrop ? 1 : 0.45;
@@ -1565,12 +1856,16 @@ function render(now){
   ctx.lineWidth = 2.5;
   vesselPath(0); ctx.stroke();
   vesselPath(WALL_T); ctx.stroke();
-  /* wave dashes on each wall near the rim */
-  ctx.fillStyle = '#F2EFE6';
-  ctx.fillRect(BOX_L + 2.5, BOX_TOP + 30, WALL_T - 5, 3);
-  ctx.fillRect(BOX_L + 2.5, BOX_TOP + 38, WALL_T - 5, 3);
-  ctx.fillRect(BOX_R - WALL_T + 2.5, BOX_TOP + 30, WALL_T - 5, 3);
-  ctx.fillRect(BOX_R - WALL_T + 2.5, BOX_TOP + 38, WALL_T - 5, 3);
+  /* rope wrap near the rim: alternating angled strands in sun-bleached
+     hemp, laid across each wall like a lashed beach pail */
+  for(const wx of [BOX_L, BOX_R - WALL_T]){
+    for(let i = 0; i < 6; i++){
+      ctx.fillStyle = i % 2 ? '#D9C9A6' : '#C9B68C';
+      ctx.fillRect(wx + 1.5, BOX_TOP + 26 + i * 3, WALL_T - 3, 2.2);
+    }
+    ctx.fillStyle = 'rgba(22,20,18,.25)';
+    ctx.fillRect(wx + 1.5, BOX_TOP + 26 + 18, WALL_T - 3, 1.2);   /* rope shadow */
+  }
   /* chunky rim caps with a glint */
   for(const rx of [BOX_L - 5, BOX_R - WALL_T - 5]){
     ctx.fillStyle = '#C9463B';
