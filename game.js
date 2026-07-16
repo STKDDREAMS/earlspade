@@ -908,6 +908,39 @@ const SECRET_GOLD_SPRITE = buildSprite({
     ] }
 });
 
+/* ===== THE LEGENDARY AXOLOTL =====================================
+   The game's first legendary: a pearl axolotl with rainbow gill
+   frills, once in a great while offered as the next drop. It is a
+   WILD — merge it into any creature and that creature ascends a
+   tier, with a jackpot to match. (This block lives OUTSIDE the
+   genart splice region and owns its own pixel map.) */
+const LGD_R = 30;
+const LGD_MAPS = (() => {
+  const W = 36;
+  const grid = (h) => Array.from({ length: h }, () => Array(W).fill('.'));
+  const g1 = grid(17);
+  const mput = (g, r, c, s) => { for(let i = 0; i < s.length; i++){ g[r][c + i] = s[i]; g[r][W - 1 - c - i] = s[i]; } };
+  /* three rainbow gill frills a side, reaching well past the disc:
+     gold, white, sky */
+  mput(g1, 5, 5, 'GG');  mput(g1, 6, 3, 'GGG');
+  mput(g1, 9, 2, 'EEE'); mput(g1, 10, 1, 'EEE');
+  mput(g1, 13, 2, 'LLL'); mput(g1, 14, 1, 'LLL');
+  const g2 = grid(26);
+  /* the famous axolotl smile + a pearl shine on the cheek */
+  mput(g2, 19, 15, 'K');
+  const put = (g, r, c, s) => { for(let i = 0; i < s.length; i++) g[r][c + i] = s[i]; };
+  put(g2, 20, 16, 'KKKK');
+  put(g2, 23, 10, 'E'); put(g2, 24, 11, 'EE');
+  return {
+    feat:  { ox: 0, oy: 0, rows: g1.map(r => r.join('')) },
+    feat2: { ox: 0, oy: 0, rows: g2.map(r => r.join('')) }
+  };
+})();
+const LGD_SPRITE = buildSprite({
+  fill: '#F6C6D4', dk: '#DE9DB4', lt: '#FFEFF4',
+  feat: LGD_MAPS.feat, feat2: LGD_MAPS.feat2
+});
+
 /* effects budgets (kept cheap for phones) */
 const MAX_PARTICLES = 80;
 const SHAKE_TIER    = 8;
@@ -1493,9 +1526,9 @@ const KEY_NAME  = 'earlspade_player_v1';
 const KEY_EMAIL = 'earlspade_email_v1';
 const KEY_SOUND = 'earlspade_game_sound_v1';
 const KEY_SEEN  = 'earlspade_game_seen_v1';
-const KEY_STREAK  = 'earlspade_streak_v1';
 const KEY_COLLECT = 'earlspade_collect_v1';
-const KEY_QUESTS  = 'earlspade_quests_v1';
+/* retired retention features (streak / quests / ranks) — leave no data behind */
+try{ localStorage.removeItem('earlspade_streak_v1'); localStorage.removeItem('earlspade_quests_v1'); }catch(e){}
 
 /* safe storage: Safari private mode throws on setItem — fall back to a
    session-only Map so the game never dies over a preference. */
@@ -1520,7 +1553,7 @@ const store = (() => {
 })();
 
 /* the mechanics gate: retention mechanics (fever, golden, splash, clutch,
-   quests, ranks, streak, rival) are OFF under ?debug=1 so every automated
+   rival) are OFF under ?debug=1 so every automated
    test sees today's exact scoring. Tests opt in via __suika.mech(true). */
 let mechOn = !location.search.includes('debug=1');
 
@@ -1559,29 +1592,28 @@ let rafId = null, lastT = 0, acc = 0;
 const STEP = 1000 / 60;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ===== v13 THE HOOK — retention mechanics state =====
+/* ===== play mechanics state =====
    Everything here is gated by mechOn where it touches scoring, so
    ?debug=1 test runs see the exact classic economy. */
-const RANKS = [
-  ['TIDEPOOLER', 0], ['BEACHCOMBER', 300], ['WAVE RIDER', 800], ['REEF KEEPER', 1600],
-  ['DEEP DIVER', 3000], ['SEA LEGEND', 5000], ['CAPTAIN EARLSPADE', 8000]
-];
-function rankIdx(v){ let i = 0; for(let k = 0; k < RANKS.length; k++) if(v >= RANKS[k][1]) i = k; return i; }
-let shownRankIdx = 0;
 /* fever: merges charge the meter, a full meter ignites 12s of double points */
 const FEVER_NEED = 8, FEVER_MS = 12000;
 const fev = { charge: 0, on: false, until: 0, lastMergeAt: 0, decayAt: 0, remaining: 0 };
 let feverRain = [];                       // gold pixels raining inside the bucket
-/* golden creature: a rare gilded drop whose merges pay triple */
+/* golden creature: a rare gilded drop whose merges pay double */
 let nextGold = false, heldGold = false;
-let splashes = 0, goldenMerges = 0;       // run counters (tests + quests)
+/* the legendary axolotl: rarer still, a wild that ascends whatever it touches */
+let nextLegend = false, heldLegend = false, legendSeen = false;
+let flashAt = 0;                          // full-screen jackpot flash
+let splashes = 0, goldenMerges = 0;       // run counters (for tests)
 /* clutch save */
 let dangerPeak = false, lastClutchAt = -1e9;
-/* the aquarium: lifetime counts of every creature made */
+/* the aquarium: lifetime counts of every creature made
+   (slot 12 = the legendary axolotl) */
+const COLLECT_N = 13;
 let collect = (() => {
   const c = store.getJSON(KEY_COLLECT, null);
-  const arr = Array.isArray(c) ? c.slice(0, 12) : [];
-  while(arr.length < 12) arr.push(0);
+  const arr = Array.isArray(c) ? c.slice(0, COLLECT_N) : [];
+  while(arr.length < COLLECT_N) arr.push(0);
   return arr.map(v => (Number.isFinite(+v) && +v >= 0) ? +v : 0);
 })();
 let collectDirty = 0;
@@ -1592,83 +1624,12 @@ function bumpCollect(i){
 function flushCollect(){ if(collectDirty){ collectDirty = 0; store.setJSON(KEY_COLLECT, collect); } }
 document.addEventListener('visibilitychange', () => { if(document.hidden) flushCollect(); });
 
-/* ===== daily quests: three tide tasks, seeded by the date ===== */
-function dayStr(d){
-  const x = d || new Date();
-  return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
-}
-function mulberry32(a){
-  return function(){
-    a |= 0; a = a + 0x6D2B79F5 | 0;
-    let t = Math.imul(a ^ a >>> 15, 1 | a);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-const QUEST_POOL = [
-  { id: 'make6',    txt: 'MAKE A POLAR BEAR',   kind: 'tier',   goal: 6 },
-  { id: 'make7',    txt: 'MAKE A PANDA',        kind: 'tier',   goal: 7 },
-  { id: 'combo4',   txt: 'HIT COMBO x4',        kind: 'combo',  goal: 4 },
-  { id: 'score500', txt: 'SCORE 500 IN A RUN',  kind: 'score',  goal: 500 },
-  { id: 'score900', txt: 'SCORE 900 IN A RUN',  kind: 'score',  goal: 900 },
-  { id: 'splash2',  txt: 'LAND 2 SPLASHES',     kind: 'splash', goal: 2 },
-  { id: 'clutch1',  txt: 'SURVIVE A CLUTCH',    kind: 'clutch', goal: 1 },
-  { id: 'fever1',   txt: 'REACH FEVER',         kind: 'fever',  goal: 1 },
-  { id: 'gold1',    txt: 'MERGE A GOLDEN',      kind: 'golden', goal: 1 },
-  { id: 'merge25',  txt: '25 MERGES TODAY',     kind: 'merge',  goal: 25 },
-];
-let quests = null;
-function loadQuests(){
-  const today = dayStr();
-  const saved = store.getJSON(KEY_QUESTS, null);
-  if(saved && saved.date === today && Array.isArray(saved.ids) && saved.ids.length === 3){
-    quests = saved;
-    if(!Array.isArray(quests.done)) quests.done = [false, false, false];
-    if(!Array.isArray(quests.prog)) quests.prog = [0, 0, 0];
-    return;
-  }
-  const rnd = mulberry32(+today.replace(/-/g, ''));
-  const ids = [];
-  while(ids.length < 3){
-    const pick = QUEST_POOL[Math.floor(rnd() * QUEST_POOL.length)].id;
-    if(!ids.includes(pick)) ids.push(pick);
-  }
-  quests = { date: today, ids, done: [false, false, false], prog: [0, 0, 0] };
-  store.setJSON(KEY_QUESTS, quests);
-}
-function questBy(i){ return QUEST_POOL.find(q => q.id === quests.ids[i]); }
-function questEvent(kind, val){
-  if(!mechOn || !quests) return;
-  if(quests.date !== dayStr()) loadQuests();
-  let changed = false, completedNow = false;
-  for(let i = 0; i < 3; i++){
-    if(quests.done[i]) continue;
-    const q = questBy(i);
-    if(!q || q.kind !== kind) continue;
-    if(kind === 'splash' || kind === 'merge') quests.prog[i] = (quests.prog[i] || 0) + 1;
-    else quests.prog[i] = Math.max(quests.prog[i] || 0, val || 1);
-    changed = true;
-    if(quests.prog[i] >= q.goal){
-      quests.done[i] = true;
-      completedNow = true;
-      addScore(150, SCENE_W / 2, BOX_TOP + 60);
-      showToast('TIDE TASK — ' + q.txt, true);
-    }
-  }
-  if(completedNow && quests.done.every(Boolean)){
-    addScore(500, SCENE_W / 2, BOX_TOP + 60);
-    showToast('PERFECT TIDE! +500', true);
-    celebrate(SCENE_W / 2, BOX_TOP + 90);
-  }
-  if(changed) store.setJSON(KEY_QUESTS, quests);
-}
 function startFever(t){
   fev.on = true;
   fev.until = t + FEVER_MS;
   fev.charge = FEVER_NEED;
   showToast('FEVER!! x2 POINTS', true);
   sndBig();
-  questEvent('fever', 1);
 }
 
 /* ================= AUDIO (synth, no files) ================= */
@@ -1770,8 +1731,37 @@ function fruitBody(tier, x, y){
   b.bornAt = performance.now();
   return b;
 }
+/* the legendary's body: a plain circle, tier -1 so it never twins */
+function legendBody(x, y){
+  const b = Bodies.circle(x, y, LGD_R, {
+    restitution: RESTITUTION, friction: FRICTION,
+    frictionStatic: FRICTION_STATIC, frictionAir: AIR_FRICTION,
+    density: 0.0012,
+  });
+  b.tier = -1;
+  b.legendary = true;
+  b.merging = false;
+  b.bornAt = performance.now();
+  return b;
+}
+/* radius that survives the legendary's fake tier */
+function bodyR(b){ return b.legendary ? LGD_R : TIERS[b.tier].r; }
 
 /* ================= MERGING ================= */
+/* THE JACKPOT — the legendary's moment. Screen flash, double burst,
+   twin rings, shake, and a rising three-note fanfare. */
+function jackpotFX(x, y){
+  flashAt = performance.now();
+  if(!reduceMotion) shake = 16;
+  celebrate(x, y);
+  celebrate(SCENE_W / 2, BOX_TOP + 60);
+  rings.push({ x, y, r: 20, t: 0, color: '#E8B33C' });
+  rings.push({ x, y, r: 34, t: -0.25, color: '#F6C6D4' });
+  goldFlashAt = performance.now();
+  blip(392, 784, 0.12, 0.1);
+  setTimeout(() => blip(523, 1046, 0.12, 0.1), 90);
+  setTimeout(() => blip(659, 1318, 0.22, 0.12), 180);
+}
 function onCollisions(ev){
   if(over) return;
   for(const pair of ev.pairs){
@@ -1780,6 +1770,41 @@ function onCollisions(ev){
     const b = pair.bodyB.parent || pair.bodyB;
     if(a.tier === undefined || b.tier === undefined) continue;
     if(a === b) continue;
+    /* THE LEGENDARY WILD: it merges with whatever it touches and
+       ascends that creature one tier */
+    if(a.legendary || b.legendary){
+      if(a.merging || b.merging) continue;
+      const leg = a.legendary ? a : b;
+      const other = a.legendary ? b : a;
+      const mx2 = (a.position.x + b.position.x) / 2;
+      const my2 = (a.position.y + b.position.y) / 2;
+      a.merging = b.merging = true;
+      if(other.legendary || TIERS[other.tier].flower){
+        /* legendary + legendary (miracle) or + flower: pure jackpot */
+        removeFruit(a); removeFruit(b);
+        addScore(FLOWER_BONUS, mx2, my2);
+        jackpotFX(mx2, my2);
+        showToast('✦ LEGENDARY BLOOM +' + FLOWER_BONUS + ' ✦', true);
+        bumpCollect(TIERS.length);
+        continue;
+      }
+      const up = other.tier + 1;
+      removeFruit(leg); removeFruit(other);
+      const nb2 = fruitBody(up, mx2, my2);
+      Body.setVelocity(nb2, { x: 0, y: 0 });
+      Composite.add(world, nb2);
+      bodies.push(nb2);
+      popTweens.set(nb2.id, performance.now());
+      if(up > runBestTier) runBestTier = up;
+      if(up > maxMade){ maxMade = up; store.set(KEY_SEEN, maxMade); }
+      bumpCollect(up);
+      bumpCollect(TIERS.length);   /* the aquarium's legendary slot */
+      addScore(MERGE_POINTS[up] * 2 + 250, mx2, my2 - TIERS[up].r);
+      popups.push({ x: mx2, y: my2 - TIERS[up].r - 30, n: 0, t: 0, txt: 'LEGENDARY!!', big: true, gold: true });
+      jackpotFX(mx2, my2);
+      showToast('✦ THE LEGENDARY AXOLOTL ✦', true);
+      continue;
+    }
     if(a.tier !== b.tier) continue;
     if(a.merging || b.merging) continue;
     a.merging = b.merging = true;
@@ -1790,13 +1815,14 @@ function onCollisions(ev){
     const vy = (a.velocity.y + b.velocity.y) / 2;
     removeFruit(a); removeFruit(b);
 
-    /* v13 multipliers: fever doubles, a golden creature triples */
+    /* multipliers, rebalanced: fever x2, golden x2, and the whole
+       stack (combo x fever x golden) caps at x8 so no jackpot ever
+       trivializes a well-built run. Flower bonus stays flat. */
     const feverMult = (mechOn && fev.on) ? 2 : 1;
-    const goldMult = (mechOn && (a.golden || b.golden)) ? 3 : 1;
+    const goldMult = (mechOn && (a.golden || b.golden)) ? 2 : 1;
     if(goldMult > 1){
       goldenMerges++;
       burst(mx, my, '#E8B33C', 14);
-      questEvent('golden', 1);
     }
     if(mechOn){
       const tNow = performance.now();
@@ -1808,7 +1834,7 @@ function onCollisions(ev){
     }
 
     if(tier === TIERS.length - 1){
-      addScore(FLOWER_BONUS * feverMult * goldMult, mx, my);
+      addScore(FLOWER_BONUS, mx, my);   /* the jackpot is the jackpot — flat */
       celebrate(mx, my);
       sndBig();
       shake = reduceMotion ? 0 : 14;
@@ -1832,7 +1858,8 @@ function onCollisions(ev){
     combo = (nowMs - comboAt < COMBO_WINDOW_MS) ? Math.min(COMBO_CAP, combo + 1) : 1;
     comboAt = nowMs;
     if(nt > runBestTier) runBestTier = nt;
-    addScore(MERGE_POINTS[nt] * combo * feverMult * goldMult, mx, my - TIERS[nt].r);
+    const mult = Math.min(8, combo * feverMult * goldMult);
+    addScore(MERGE_POINTS[nt] * mult, mx, my - TIERS[nt].r);
     /* SPLASH: the drop merged the instant it landed — pure skill, paid
        as a clean double of the merge. An undefined touchedAt means this
        merge IS the body's first contact (the merge listener can run
@@ -1847,7 +1874,6 @@ function onCollisions(ev){
         const an = Math.random() * Math.PI * 2, sp = 1 + Math.random() * 2;
         particles.push({ x: mx, y: my, vx: Math.cos(an) * sp, vy: Math.sin(an) * sp - 1, r: 2, color: '#F6FBF6', life: .6 });
       }
-      questEvent('splash', 1);
     }
     if(combo >= 2){
       popups.push({ x: mx, y: my - TIERS[nt].r - 26, n: 0, t: 0,
@@ -1857,9 +1883,6 @@ function onCollisions(ev){
       goldFlashAt = nowMs;
       showToast('COMBO x' + combo + '!!', true);
     }
-    questEvent('merge', 1);
-    questEvent('tier', nt);
-    questEvent('combo', combo);
     if(unlock){
       const unm = TIERS[nt].flower ? 'THE FLOWER BLOOMS' : 'THE ' + TIERS[nt].name.toUpperCase() + ' JOINS THE SEA';
       showToast(unm, false);
@@ -1888,7 +1911,7 @@ function onFirstTouch(ev){
       if(b.speed < 3.2) continue;
       b.squashAt = performance.now();
       const s = pair.collision && pair.collision.supports && pair.collision.supports[0];
-      const px = s ? s.x : b.position.x, py = s ? s.y : b.position.y + TIERS[b.tier].r;
+      const px = s ? s.x : b.position.x, py = s ? s.y : b.position.y + bodyR(b);
       for(let i = 0; i < 4 && particles.length < MAX_PARTICLES; i++){
         const a = -Math.PI/2 + (Math.random() - .5) * 2.2, sp = .6 + Math.random() * 1.4;
         particles.push({ x: px, y: py, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp * .5, r: 1.5 + Math.random()*2, color: 'rgba(107,104,98,.55)', life: .5 });
@@ -1914,17 +1937,7 @@ function addScore(n, x, y){
   scoreEl.classList.remove('bump');
   void scoreEl.offsetWidth;              // restart the pop animation
   scoreEl.classList.add('bump');
-  if(mechOn){
-    /* rank up mid-run: the ladder announces itself */
-    const ri = rankIdx(best);
-    if(ri > shownRankIdx){
-      shownRankIdx = ri;
-      showToast('RANK UP — ' + RANKS[ri][0], true);
-      celebrate(SCENE_W / 2, BOX_TOP + 90);
-    }
-    questEvent('score', score);
-    rivalTick();
-  }
+  if(mechOn) rivalTick();
 }
 function tickScore(){
   if(shownScore === score) return;
@@ -1944,6 +1957,18 @@ function rollSpawnTier(){
 function paintNext(){
   const s = nextCv.width;
   nextCtx.clearRect(0,0,s,s);
+  if(nextLegend){  /* the legendary announces itself in the window */
+    const d = s * 0.36 * 2 * SPRITE_OVER;
+    nextCtx.drawImage(LGD_SPRITE, s/2 - d/2, s/2 - d/2, d, d);
+    nextCtx.save();
+    for(const [col, rr] of [['#F6C6D4', .46], ['#E8B33C', .42]]){
+      nextCtx.strokeStyle = col; nextCtx.lineWidth = 2.5;
+      nextCtx.beginPath(); nextCtx.arc(s/2, s/2, s * rr, 0, Math.PI*2); nextCtx.stroke();
+    }
+    nextCtx.restore();
+    nextCv.classList.remove('pop'); void nextCv.offsetWidth; nextCv.classList.add('pop');
+    return;
+  }
   drawFruitAt(nextCtx, s/2, s/2, s*0.36, nextTier, 0);
   if(nextGold){   /* a golden is coming — let them see it and want it */
     nextCtx.save();
@@ -1959,31 +1984,36 @@ function paintNext(){
   nextCv.classList.add('pop');
 }
 function rollGold(){ return mechOn && Math.random() < 1/35; }
+function rollLegend(){ return mechOn && Math.random() < 1/90; }
 function promoteNext(){
   heldTier = nextTier;
   heldGold = nextGold;
+  heldLegend = nextLegend;
   nextTier = rollSpawnTier();
-  nextGold = rollGold();
+  nextLegend = rollLegend();
+  nextGold = !nextLegend && rollGold();
+  if(nextLegend) showToast('✦ A LEGEND STIRS ✦', true);
   paintNext();
 }
+function heldR(){ return heldLegend ? LGD_R : TIERS[heldTier].r; }
 function clampAim(x){
-  const r = TIERS[heldTier].r;
+  const r = heldR();
   return Math.max(IN_L + r, Math.min(IN_R - r, x));
 }
-function heldY(){ return Math.min(BOX_TOP - TIERS[heldTier].r - 14, 150); }
+function heldY(){ return Math.min(BOX_TOP - heldR() - 14, 150); }
 function drop(){
   if(!canDrop || over || uiModal) return;
   const now = performance.now();
   if(now - lastDrop < DROP_COOLDOWN_MS) return;
   lastDrop = now; canDrop = false;
   const x = clampAim(aimX);
-  const b = fruitBody(heldTier, x, heldY());
+  const b = heldLegend ? legendBody(x, heldY()) : fruitBody(heldTier, x, heldY());
   b.byPlayer = true;                       // splash-bonus eligibility
-  if(heldGold){ b.golden = true; heldGold = false; }
+  if(heldGold && !heldLegend){ b.golden = true; heldGold = false; }
+  if(heldLegend) heldLegend = false;
   Composite.add(world, b);
   bodies.push(b);
-  bumpCollect(heldTier);
-  questEvent('drop', 1);
+  if(!b.legendary) bumpCollect(heldTier);
   sndDrop();
   if(!dropped){ dropped = true; document.getElementById('howto').classList.add('off'); }
   setTimeout(() => { promoteNext(); canDrop = true; }, DROP_COOLDOWN_MS);
@@ -2095,13 +2125,31 @@ function checkOverLine(dt){
       popups.push({ x: SCENE_W / 2, y: BOX_TOP + 18, n: 0, t: 0, txt: 'CLUTCH!', big: true, gold: true });
       showToast('CLUTCH SAVE +120', true);
       blip(220, 660, 0.3, 0.1);   // the relief sweep
-      questEvent('clutch', 1);
     }
     dangerPeak = false;
   }
 }
 
 /* ================= RENDER ================= */
+/* the legendary's aura: pink + gold twin rings breathing out of phase,
+   three orbiting sparks — unmistakably above golden */
+function drawLegendAura(x, y, r, now){
+  ctx.save();
+  const pulse = reduceMotion ? 0 : Math.sin(now / 300) * 2;
+  for(const [col, off] of [['#F6C6D4', 4 + pulse], ['#E8B33C', 8 - pulse]]){
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(x, y, r + off, 0, Math.PI * 2); ctx.stroke();
+  }
+  if(!reduceMotion){
+    for(let k = 0; k < 3; k++){
+      const a = now / 380 + k * (Math.PI * 2 / 3);
+      ctx.fillStyle = k % 2 ? '#F2CC70' : '#FFD3DE';
+      ctx.fillRect(x + Math.cos(a) * (r + 13) - 2.5, y + Math.sin(a) * (r + 13) - 2.5, 5, 5);
+    }
+  }
+  ctx.restore();
+}
 /* the golden halo: ring + two orbiting sparks (the legend's recipe) */
 function drawGoldRing(x, y, r, now){
   ctx.save();
@@ -2254,7 +2302,7 @@ function render(now){
 
   /* aim guide + held creature */
   if(!over){
-    const hx = clampAim(aimX), hr = TIERS[heldTier].r;
+    const hx = clampAim(aimX), hr = heldR();
     const hy = heldY() + (reduceMotion ? 0 : Math.sin(now / 480) * 3);
     ctx.save();
     /* solid paper under-stroke so the guide never drowns in the cove */
@@ -2268,14 +2316,20 @@ function render(now){
     ctx.beginPath(); ctx.moveTo(hx, hy + hr + 4); ctx.lineTo(hx, BOX_BOTTOM - 2); ctx.stroke();
     ctx.restore();
     ctx.globalAlpha = canDrop ? 1 : 0.45;
-    drawFruitAt(ctx, hx, hy, hr, heldTier, 0);
-    if(heldGold) drawGoldRing(hx, hy, hr, now);
+    if(heldLegend){
+      const d = hr * 2 * SPRITE_OVER;
+      ctx.drawImage(LGD_SPRITE, hx - d/2, hy - d/2, d, d);
+      drawLegendAura(hx, hy, hr, now);
+    }else{
+      drawFruitAt(ctx, hx, hy, hr, heldTier, 0);
+      if(heldGold) drawGoldRing(hx, hy, hr, now);
+    }
     ctx.globalAlpha = 1;
   }
 
   /* creatures (with scale-pop on fresh merges) */
   for(const b of bodies){
-    let r = TIERS[b.tier].r;
+    let r = bodyR(b);
     const born = popTweens.get(b.id);
     if(born !== undefined){
       const p = (now - born) / 220;
@@ -2291,6 +2345,20 @@ function render(now){
       /* stretch along the fall — classic drop juice */
       const st = Math.min(0.10, (b.velocity.y - 6) * 0.008);
       sqy = 1 + st; sqx = 1 - st * 0.7;
+    }
+    if(b.legendary){
+      const d = r * 2 * SPRITE_OVER;
+      ctx.save();
+      ctx.translate(b.position.x, b.position.y);
+      if(b.angle) ctx.rotate(b.angle);
+      ctx.drawImage(LGD_SPRITE, -d/2, -d/2, d, d);
+      ctx.restore();
+      drawLegendAura(b.position.x, b.position.y, r, now);
+      if(!reduceMotion && Math.floor(now / 40) % 2 === 0 && particles.length < MAX_PARTICLES){
+        particles.push({ x: b.position.x + (Math.random() - .5) * r * 1.6, y: b.position.y - r * .4,
+          vx: 0, vy: -.5, r: 2, color: Math.random() < .5 ? '#F2CC70' : '#FFD3DE', life: .5 });
+      }
+      continue;
     }
     drawFruitAt(ctx, b.position.x, b.position.y, r, b.tier, b.angle, sqx, sqy);
     if(b.golden){
@@ -2481,6 +2549,17 @@ function render(now){
   ctx.globalAlpha = 1;
   ctx.restore();
   ctx.restore();
+  /* the jackpot flash: one bright breath across the whole screen */
+  if(flashAt && now - flashAt < 450){
+    if(reduceMotion){ flashAt = 0; }
+    else{
+      const ft = (now - flashAt) / 450;
+      ctx.globalAlpha = 0.55 * (1 - ft) * (1 - ft);
+      ctx.fillStyle = '#FFFDF4';
+      ctx.fillRect(0, 0, cssW, cssH);
+      ctx.globalAlpha = 1;
+    }
+  }
 }
 
 /* ================= MAIN LOOP ================= */
@@ -2510,7 +2589,7 @@ function loop(now){
   /* belt-and-braces: if anything ever escapes the vessel (a pathological
      frame spike), lift it gently back in rather than losing it */
   for(const b of bodies){
-    const r = TIERS[b.tier].r;
+    const r = bodyR(b);
     if(b.position.y - r > BOX_BOTTOM + 4 || b.position.x < IN_L - r - 40 || b.position.x > IN_R + r + 40){
       Body.setPosition(b, { x: Math.max(IN_L + r, Math.min(IN_R - r, b.position.x)), y: BOX_TOP + r + 10 });
       Body.setVelocity(b, { x: 0, y: 0 });
@@ -2544,21 +2623,6 @@ const submitBtn = document.getElementById('submitBtn');
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const againBtn = document.getElementById('againBtn');
 
-/* daily streak: compare local dates, bump or reset */
-function checkStreak(announce){
-  const today = dayStr();
-  const s = store.getJSON(KEY_STREAK, null) || { last: '', n: 0 };
-  if(s.last === today) return s;
-  const y = new Date(); y.setDate(y.getDate() - 1);
-  const wasYesterday = s.last === dayStr(y);
-  const next = { last: today, n: wasYesterday ? (s.n || 0) + 1 : 1 };
-  store.setJSON(KEY_STREAK, next);
-  if(announce && mechOn){
-    if(wasYesterday) showToast('DAY ' + next.n + ' AT THE COVE', next.n >= 3);
-    else if(s.n > 1) showToast('THE TIDE RESET — DAY 1', false);
-  }
-  return next;
-}
 /* a pixel segment bar: N cells, first `lit` filled */
 function paintBar(el, cells, lit, gold){
   if(!el) return;
@@ -2594,11 +2658,9 @@ function endGame(){
     nb.style.display = isBest ? 'block' : 'none';
     if(isBest && !reduceMotion) celebrate(SCENE_W/2, BOX_TOP + 90);
   }
-  /* v13: near-miss framing + the rank ladder + streak + quest checklist */
+  /* near-miss framing: the honest "you almost had it" read */
   const scEl2 = document.getElementById('soClose');
   const gapEl = document.getElementById('bestGap');
-  const rr = document.getElementById('rankRow');
-  const qr = document.getElementById('questRow');
   if(mechOn){
     const nearMiss = !isBest && bestAtStart >= 50 && score < bestAtStart;
     if(scEl2) scEl2.style.display = (nearMiss && score >= bestAtStart * .85) ? 'block' : 'none';
@@ -2609,34 +2671,9 @@ function endGame(){
         paintBar(document.getElementById('bestGapBar'), 10, Math.max(0, Math.round(10 * score / bestAtStart)), false);
       }
     }
-    if(rr){
-      rr.style.display = 'flex';
-      const ri = rankIdx(best);
-      document.getElementById('rankName').textContent = RANKS[ri][0];
-      const nextT = RANKS[ri + 1] ? RANKS[ri + 1][1] : null;
-      const prevT = RANKS[ri][1];
-      paintBar(document.getElementById('rankBar'), 8,
-        nextT ? Math.min(8, Math.floor(8 * (best - prevT) / (nextT - prevT))) : 8, true);
-      const stk = checkStreak(false);
-      const sChip = document.getElementById('streakChip');
-      if(sChip){ sChip.style.display = stk.n > 1 ? 'inline-block' : 'none'; sChip.textContent = 'DAY ' + stk.n; }
-    }
-    if(qr && quests){
-      qr.style.display = 'flex';
-      qr.innerHTML = '';
-      for(let i = 0; i < 3; i++){
-        const q = questBy(i);
-        const chip = document.createElement('span');
-        chip.className = 'q-chip' + (quests.done[i] ? ' done' : '');
-        chip.textContent = (quests.done[i] ? '✓ ' : '') + (q ? q.txt : '');
-        qr.appendChild(chip);
-      }
-    }
   }else{
     if(scEl2) scEl2.style.display = 'none';
     if(gapEl) gapEl.style.display = 'none';
-    if(rr) rr.style.display = 'none';
-    if(qr) qr.style.display = 'none';
   }
   overDialog.classList.add('show');
   loadBoard();
@@ -2762,11 +2799,38 @@ async function loadBoard(){
     lbStatus.textContent = 'leaderboard offline';
   }
 }
+/* ===== NAME FILTER — the board is a public wall, keep it clean.
+   Normalizes leetspeak / spacing / symbol evasions, then substring-
+   matches a blocklist of slurs and hate references. Mirrored
+   server-side in api/score.js — this copy just gives instant,
+   friendly feedback. */
+const NAME_BLOCK = ['nigger','nigga','niger','faggot','fagot','kike','chink','gook',
+  'wetback','beaner','tranny','dyke','coon','retard','rape','hitler','nazi','natzi',
+  'kkk','swastika','fuhrer','fhrer','heil','goebbels','himmler','klux'];
+function nameAllowed(raw){
+  const low = String(raw).toLowerCase();
+  if(low.includes('1488') || low.includes('卐') || low.includes('卍')) return false;
+  const subs = { '0':'o','1':'i','2':'z','3':'e','4':'a','5':'s','6':'g','7':'t','8':'b','9':'g','@':'a','$':'s','!':'i','|':'i','+':'t' };
+  let s = low.replace(/[0-9@$!|+]/g, c => subs[c] || c);
+  s = s.replace(/[^a-z]/g, '');                     // spacing/symbol evasion
+  const squeezed = s.replace(/(.)\1+/g, '$1');      // repeated-letter evasion
+  return !NAME_BLOCK.some(w => s.includes(w) || squeezed.includes(w));
+}
+function nameRejected(){
+  nameInput.classList.add('bad');
+  nameInput.focus();
+  try{ nameInput.select(); }catch(e){}
+  lbStatus.textContent = 'that name can’t go on the board — try another';
+  lbStatus.style.display = 'block';
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'SAVE MY SCORE';
+}
 async function submitScore(){
   /* both fields required — the name goes on the board, the email stays
      private server-side (the gift list). */
   const name = nameInput.value.trim().slice(0, 16);
   if(!name){ nameInput.classList.add('bad'); nameInput.focus(); return; }
+  if(!nameAllowed(name)){ nameRejected(); return; }
   const email = emailInput.value.trim().slice(0, 254);
   if(!EMAIL_RE.test(email)){ emailInput.classList.add('bad'); emailInput.focus(); return; }
   submitBtn.disabled = true;
@@ -2779,6 +2843,11 @@ async function submitScore(){
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, score, email })
     });
+    if(res.status === 400){
+      let data = null;
+      try{ data = await res.json(); }catch(e){}
+      if(data && data.error === 'name'){ nameRejected(); return; }
+    }
     if(!res.ok) throw new Error('bad');
     const rows = await fetchBoard(true);
     renderBoard(rows, name);
@@ -2826,25 +2895,6 @@ if(boardBtn){
     }catch(e){
       bdStatus.textContent = 'leaderboard offline';
     }
-    /* TODAY'S TIDE — the three daily tasks under the board */
-    const th = document.getElementById('tideHead'), tl = document.getElementById('tideList');
-    if(th && tl && mechOn && quests){
-      if(quests.date !== dayStr()) loadQuests();
-      th.style.display = 'block';
-      tl.style.display = 'block';
-      tl.innerHTML = '';
-      for(let i = 0; i < 3; i++){
-        const q = questBy(i);
-        if(!q) continue;
-        const row = document.createElement('div');
-        row.className = 'tide-row' + (quests.done[i] ? ' done' : '');
-        const box = document.createElement('span'); box.className = 'tq-box'; box.textContent = quests.done[i] ? '✓' : '';
-        const lbl = document.createElement('span'); lbl.textContent = q.txt;
-        const pts = document.createElement('span'); pts.className = 'tq-pts'; pts.textContent = '+150';
-        row.append(box, lbl, pts);
-        tl.appendChild(row);
-      }
-    }
   });
   bdClose.addEventListener('click', () => {
     boardDialog.classList.remove('show');
@@ -2865,30 +2915,35 @@ if(aquaBtn && aquaDialog){
     const grid = document.getElementById('aquaGrid');
     grid.innerHTML = '';
     let made = 0;
-    for(let i = 0; i < TIERS.length; i++){
-      const known = (collect[i] || 0) > 0 || i <= maxMade;
+    for(let i = 0; i < COLLECT_N; i++){
+      const isLgd = i === TIERS.length;    /* the 13th slot: the legendary */
+      const known = (collect[i] || 0) > 0 || (!isLgd && i <= maxMade);
       if((collect[i] || 0) > 0) made++;
       const cell = document.createElement('div');
       cell.className = 'aqua-cell';
       const cv = document.createElement('canvas');
       cv.width = cv.height = 96;
       const g = cv.getContext('2d');
-      if(known){
+      if(known && isLgd){
+        g.drawImage(LGD_SPRITE, 48 - 30 * SPRITE_OVER, 48 - 30 * SPRITE_OVER, 60 * SPRITE_OVER, 60 * SPRITE_OVER);
+        g.strokeStyle = '#E8B33C'; g.lineWidth = 3;
+        g.beginPath(); g.arc(48, 48, 40, 0, Math.PI * 2); g.stroke();
+      }else if(known){
         drawFruitAt(g, 48, 48, 30, i, 0);
       }else{
         /* keep the legend's secrecy: unmade mysteries stay hidden,
-           the final two behind the gold twin */
-        const spr = i >= TIERS.length - 2 ? SECRET_GOLD_SPRITE : SECRET_SPRITE;
+           the final two + the legendary behind the gold twin */
+        const spr = (isLgd || i >= TIERS.length - 2) ? SECRET_GOLD_SPRITE : SECRET_SPRITE;
         g.drawImage(spr, 48 - 30 * SPRITE_OVER, 48 - 30 * SPRITE_OVER, 60 * SPRITE_OVER, 60 * SPRITE_OVER);
       }
       const n = document.createElement('span');
       n.className = 'ac-n';
-      n.textContent = known ? ('×' + (collect[i] || 0)) : '?';
+      n.textContent = known ? (isLgd ? 'LEGEND ×' + (collect[i] || 0) : '×' + (collect[i] || 0)) : '?';
       cell.append(cv, n);
       grid.appendChild(cell);
     }
     document.getElementById('aquaCount').textContent =
-      made + ' / ' + TIERS.length + ' · ' + Math.round(made / TIERS.length * 100) + '% OF THE SEA';
+      made + ' / ' + COLLECT_N + ' · ' + Math.round(made / COLLECT_N * 100) + '% OF THE SEA';
     aquaDialog.classList.add('show');
   });
   aquaClose.addEventListener('click', () => {
@@ -2914,8 +2969,10 @@ function reset(){
   splashes = 0; goldenMerges = 0;
   dangerPeak = false; lastClutchAt = -1e9;
   passedNames.clear();
-  shownRankIdx = rankIdx(best);
-  heldGold = false; nextGold = rollGold();
+  heldGold = false; heldLegend = false;
+  nextLegend = rollLegend();
+  nextGold = !nextLegend && rollGold();
+  flashAt = 0;
   if(rivalEl) rivalEl.style.display = 'none';
   overDialog.classList.remove('show');
   buildWorld();
@@ -2954,17 +3011,13 @@ if(location.search.includes('debug=1')){
     fever(){ return { charge: fev.charge, on: fev.on, remaining: fev.on ? Math.max(0, fev.until - performance.now()) : 0 }; },
     charge(n){ fev.charge = Math.min(FEVER_NEED, n); fev.lastMergeAt = performance.now(); if(fev.charge >= FEVER_NEED) startFever(performance.now()); },
     forceFever(){ startFever(performance.now()); },
-    gild(){ nextGold = true; paintNext(); },
+    gild(){ nextGold = true; nextLegend = false; paintNext(); },
+    legend(){ nextLegend = true; nextGold = false; paintNext(); },
+    heldLegend(){ return heldLegend; },
     heldGold(){ return heldGold; },
     setBestAtStart(n){ bestAtStart = n; },
-    rank(){ const i = rankIdx(best); return { idx: i, name: RANKS[i][0], next: RANKS[i + 1] ? RANKS[i + 1][1] : null }; },
-    streak(dateStr){ if(dateStr !== undefined){ store.setJSON(KEY_STREAK, { last: dateStr, n: (store.getJSON(KEY_STREAK, {}) || {}).n || 1 }); } return checkStreak(true); },
-    streakInfo(){ return store.getJSON(KEY_STREAK, null); },
     collect(){ return collect.slice(); },
-    clearCollect(){ collect = new Array(12).fill(0); store.setJSON(KEY_COLLECT, collect); },
-    quests(){ return quests ? JSON.parse(JSON.stringify(quests)) : null; },
-    questDate(){ loadQuests(); return quests.ids.slice(); },
-    fireQuest(kind, val){ questEvent(kind, val); },
+    clearCollect(){ collect = new Array(collect.length).fill(0); store.setJSON(KEY_COLLECT, collect); },
     clutch(){ return { dangerPeak, lastClutchAt }; },
     rival(rows){ boardCache = rows; boardCacheAt = Date.now(); rivalAt = 0; rivalTick(); },
     beat(sc2, nm){
@@ -3022,9 +3075,6 @@ function perfStats(){
     if(loader) loader.classList.add('done');
     /* warm the leaderboard cache while the player aims their first drop */
     setTimeout(() => { fetchBoard().catch(() => {}); }, 1200);
-    /* the daily rituals: quests roll, the streak says hello */
-    loadQuests();
-    setTimeout(() => { checkStreak(true); }, 900);
   }, wait);
 })();
 })();

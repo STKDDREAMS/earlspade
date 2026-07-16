@@ -51,7 +51,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--paper);scroll-behavior:smooth}
 body{background:var(--paper);color:var(--ink);font-family:var(--mono);
-  -webkit-font-smoothing:antialiased;overflow-x:clip}
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
 body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
@@ -67,7 +67,7 @@ body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opa
 .top-tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
 
 /* ===== intro ===== */
-.intro{min-height:52svh;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+.intro{min-height:52vh;min-height:52svh;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
   gap:1.1rem;text-align:center;padding:7rem 1.4rem 3.5rem}
 .intro-eyebrow{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-soft)}
 .intro h1{font-family:var(--display);font-weight:900;letter-spacing:-.04em;line-height:.92;
@@ -103,10 +103,13 @@ body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opa
 .tape::before,.tape::after{content:"";position:absolute;top:0;bottom:0;width:5px;
   background-image:linear-gradient(rgba(22,20,18,.05) 50%,transparent 50%);background-size:100% 4px}
 .tape::before{left:0}.tape::after{right:0}
+/* window heights via the padding-top trick, NOT aspect-ratio — older
+   iOS / in-app browsers don't support aspect-ratio and collapse every
+   print to zero height (the "gallery is blank on my phone" bug). */
 .win{position:relative;width:100%;overflow:hidden;background:#E4E0D5}
-.wide  .win{aspect-ratio:16/9}
-.half-l .win,.half-r .win{aspect-ratio:4/3}
-.tall-l .win,.tall-r .win{aspect-ratio:3/4}
+.win::before{content:"";display:block;padding-top:75%}
+.wide .win::before{padding-top:56.25%}
+.tall-l .win::before,.tall-r .win::before{padding-top:133.33%}
 .win img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 
 /* pending print: a slot waiting for its photo */
@@ -139,7 +142,7 @@ body::after{content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opa
 @media(max-width:700px){
   .roll{gap:2.6rem 0}
   .shot.wide,.shot.half-l,.shot.half-r,.shot.tall-l,.shot.tall-r{grid-column:1 / -1;margin-top:0}
-  .tall-l .win,.tall-r .win{aspect-ratio:4/5}
+  .tall-l .win::before,.tall-r .win::before{padding-top:125%}
 }
 
 a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
@@ -241,6 +244,12 @@ const PHOTOS = [
       });
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
     document.querySelectorAll('.shot').forEach(function(s){ io.observe(s); });
+    /* belt & braces: if the observer never fires (odd in-app browsers),
+       reveal everything rather than leave a blank wall */
+    setTimeout(function(){
+      if(!document.querySelector('.shot.in'))
+        document.querySelectorAll('.shot').forEach(function(s){ s.classList.add('in'); });
+    }, 1600);
   }else{
     document.querySelectorAll('.shot').forEach(function(s){ s.classList.add('in'); });
   }
