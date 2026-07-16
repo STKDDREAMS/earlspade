@@ -224,6 +224,46 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 #overFruit{width:44px;height:44px;flex:none}
 .over-reach span{font-size:.4rem;color:var(--ink-soft);letter-spacing:.04em;line-height:1.8;text-align:left}
 
+/* ===== v13: the hook UI ===== */
+/* SO CLOSE — the near-miss banner (red twin of NEW BEST) */
+.over-best.so-close{background:var(--red);color:var(--paper)}
+/* pixel segment bars (near-miss progress + rank progress) */
+.px-bar{display:inline-flex;gap:2px;vertical-align:middle}
+.px-bar i{width:9px;height:9px;border:2px solid var(--ink);background:var(--paper);flex:none}
+.px-bar i.on{background:var(--red)}
+.px-bar i.gold{background:var(--gold)}
+.best-gap{display:flex;flex-direction:column;align-items:center;gap:.4rem;margin:-.3rem 0 .7rem}
+.best-gap .bg-txt{font-size:.36rem;color:var(--ink-soft);letter-spacing:.06em}
+/* rank row: name + progress + streak chip */
+.rank-row{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.7rem}
+.rank-row .rk-name{font-size:.4rem;letter-spacing:.06em;color:var(--ink)}
+.streak-chip{font-size:.34rem;padding:.28rem .4rem;border:2px solid var(--ink);background:var(--gold);color:var(--ink)}
+/* quest chips on the over screen */
+.quest-row{display:flex;justify-content:center;gap:.4rem;margin-bottom:.75rem}
+.quest-row .q-chip{font-size:.3rem;letter-spacing:.02em;padding:.3rem .35rem;border:2px solid var(--ink);
+  background:var(--paper);color:var(--ink-soft);max-width:32%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.quest-row .q-chip.done{background:var(--gold);color:var(--ink)}
+/* today's tide list in the board dialog */
+.tide-head{margin-top:.9rem}
+.tide-list{text-align:left;margin:0 0 .85rem}
+.tide-row{display:flex;align-items:center;gap:.5rem;font-size:.38rem;line-height:2.4;color:var(--ink)}
+.tide-row .tq-box{width:12px;height:12px;border:2px solid var(--ink);background:var(--paper);flex:none;display:inline-flex;align-items:center;justify-content:center;font-size:.34rem}
+.tide-row.done .tq-box{background:var(--gold)}
+.tide-row.done{color:var(--ink-soft)}
+.tide-row .tq-pts{margin-left:auto;color:var(--ink-soft);font-size:.34rem}
+/* the aquarium grid */
+.aqua-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin:0 0 .9rem}
+.aqua-cell{display:flex;flex-direction:column;align-items:center;gap:.25rem}
+.aqua-cell canvas{width:48px;height:48px}
+.aqua-cell .ac-n{font-size:.3rem;color:var(--ink-soft)}
+/* rival / beat chips floating over the play area */
+.play-chip{position:absolute;top:8px;right:8px;z-index:4;pointer-events:none;
+  font-family:var(--px);font-size:.34rem;letter-spacing:.04em;color:var(--ink);
+  background:rgba(233,230,223,.92);border:2px solid var(--ink);padding:.3rem .45rem;
+  box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
+#beatChip{top:38px}
+#beatChip.won{background:var(--gold)}
+
 /* keyboard users get the brand outline */
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 
@@ -272,6 +312,9 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
   </div>
   <div class="hud-right">
     <div class="next-wrap"><span class="next-label">NEXT</span><canvas id="nextPrev" width="60" height="60"></canvas></div>
+    <button class="mute-btn" id="aquaBtn" aria-haspopup="dialog" aria-controls="aquaDialog" aria-label="The aquarium">
+      <svg width="18" height="18" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="3" y="4" width="6" height="4" fill="#161412"/><rect x="4" y="3" width="4" height="1" fill="#161412"/><rect x="4" y="8" width="4" height="1" fill="#161412"/><rect x="1" y="4" width="2" height="1" fill="#D70000"/><rect x="0" y="5" width="2" height="2" fill="#D70000"/><rect x="1" y="7" width="2" height="1" fill="#D70000"/><rect x="9" y="5" width="1" height="1" fill="#161412"/><rect x="7" y="5" width="1" height="1" fill="#FFFFFF"/><rect x="10" y="2" width="1" height="1" fill="#7FB2D9"/><rect x="11" y="4" width="1" height="1" fill="#7FB2D9"/><rect x="10" y="9" width="1" height="1" fill="#7FB2D9"/></svg>
+    </button>
     <button class="mute-btn" id="boardBtn" aria-haspopup="dialog" aria-controls="boardDialog" aria-label="Leaderboard">
       <svg width="18" height="18" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="8" height="1" fill="#E8B33C"/><rect x="2" y="2" width="8" height="3" fill="#E8B33C"/><rect x="0" y="2" width="2" height="1" fill="#E8B33C"/><rect x="10" y="2" width="2" height="1" fill="#E8B33C"/><rect x="0" y="3" width="1" height="2" fill="#E8B33C"/><rect x="11" y="3" width="1" height="2" fill="#E8B33C"/><rect x="1" y="5" width="1" height="1" fill="#E8B33C"/><rect x="10" y="5" width="1" height="1" fill="#E8B33C"/><rect x="3" y="5" width="6" height="2" fill="#C4922A"/><rect x="4" y="7" width="4" height="1" fill="#E8B33C"/><rect x="5" y="8" width="2" height="2" fill="#C4922A"/><rect x="3" y="10" width="6" height="1" fill="#E8B33C"/><rect x="6" y="3" width="1" height="1" fill="#F2CC70"/></svg>
     </button>
@@ -290,11 +333,22 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
     <div class="dialog" id="overDialog" role="dialog" aria-modal="true" aria-label="Game over">
       <h2>GAME OVER</h2>
       <div class="over-best" id="newBest" style="display:none">&#9733; NEW BEST &#9733;</div>
+      <div class="over-best so-close" id="soClose" style="display:none">SO CLOSE!</div>
       <div class="big-score" id="finalScore">0</div>
+      <div class="best-gap" id="bestGap" style="display:none">
+        <span class="bg-txt" id="bestGapTxt"></span>
+        <span class="px-bar" id="bestGapBar" aria-hidden="true"></span>
+      </div>
       <div class="over-reach">
         <canvas id="overFruit" width="88" height="88"></canvas>
         <span id="reachTxt">you reached the baby chick</span>
       </div>
+      <div class="rank-row" id="rankRow" style="display:none">
+        <span class="rk-name" id="rankName"></span>
+        <span class="px-bar" id="rankBar" aria-hidden="true"></span>
+        <span class="streak-chip" id="streakChip" style="display:none"></span>
+      </div>
+      <div class="quest-row" id="questRow" style="display:none"></div>
       <div class="lb-note" id="lbStatus">loading the board&hellip;</div>
       <div class="lb" id="lbList" style="display:none"></div>
       <div class="name-row" id="nameRow" style="display:none">
@@ -310,13 +364,27 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
       <a class="px-btn wide red shop-link" id="shopBtn" href="/#series">SHOP THE SEA SERIES &rarr;</a>
     </div>
 
-    <!-- THE BOARD — mid-game leaderboard -->
+    <!-- THE BOARD — mid-game leaderboard + today's quests -->
     <div class="dialog" id="boardDialog" role="dialog" aria-modal="true" aria-label="Leaderboard">
       <h2>THE DEEP TEN</h2>
       <div class="lb-note" id="bdStatus">loading the board&hellip;</div>
       <div class="lb" id="bdList" style="display:none"></div>
+      <h2 class="tide-head" id="tideHead" style="display:none">TODAY'S TIDE</h2>
+      <div class="tide-list" id="tideList" style="display:none"></div>
       <button class="px-btn wide" id="bdClose">BACK TO THE GAME</button>
     </div>
+
+    <!-- THE AQUARIUM — every creature you've ever made -->
+    <div class="dialog" id="aquaDialog" role="dialog" aria-modal="true" aria-label="The aquarium">
+      <h2>THE AQUARIUM</h2>
+      <div class="lb-note" id="aquaCount"></div>
+      <div class="aqua-grid" id="aquaGrid"></div>
+      <button class="px-btn wide" id="aquaClose">BACK TO THE GAME</button>
+    </div>
+
+    <!-- live rival / beat-a-friend chips -->
+    <div class="play-chip" id="rival" style="display:none"></div>
+    <div class="play-chip" id="beatChip" style="display:none"></div>
   </div>
 </main>
 
