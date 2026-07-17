@@ -994,6 +994,14 @@ const BOATS = [
 let coveL = null, coveR = null, coveLW = 0, coveRW = 0;
 let frondL = null, frondR = null, frondK = 1, crown = null, crownAt = null;
 let lastCoveKey = '';
+let backCv = null;              // the whole static scene, baked to ONE blit
+let legendCv = null, legendKey = '', legendOver = 0;   // baked legend strip
+/* ---- adaptive quality: the game must stay smooth no matter the phone.
+   Weak devices start conservative; anyone whose frames sag gets the
+   same treatment automatically (one-way per session, no flicker). */
+let lowFx = (navigator.deviceMemory && navigator.deviceMemory <= 2) ||
+            (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 3);
+let dprCap = lowFx ? 1.5 : 2;
 let leaf = null, nextLeafAt = 14000;
 /* v13 scenery layers + actors */
 let isleCv = null, tideA = null, tideB = null, dolUp = null, dolDn = null;
@@ -1009,7 +1017,7 @@ const FIREFLIES = (() => {                        // night sparks: fixed seeds
 })();
 
 function makeLayer(w, h){
-  const k = Math.min(window.devicePixelRatio || 1, 2);   // same cap as resize()
+  const k = Math.min(window.devicePixelRatio || 1, dprCap);   // same cap as resize()
   const cv = document.createElement('canvas');
   cv.width = Math.max(1, Math.ceil(w * k));
   cv.height = Math.max(1, Math.ceil(h * k));
@@ -1230,6 +1238,45 @@ function buildCove(pal){
     crown = cv;
     crownAt = [ (tipX + 1) * p, tipY + p ];          /* anchor css coords in strip space */
   }
+  bakeBackdrop(pal);
+}
+/* EVERYTHING that never moves — sky bands, the sun/moon body, the far
+   island, the sea, the sand and its speckles — baked into one canvas.
+   Per frame the whole lot costs a single drawImage instead of dozens
+   of full-width fills. Rebuilt only when the light or viewport changes. */
+function bakeBackdrop(pal){
+  const [cv, g] = makeLayer(cssW, cssH);
+  const syb = v => offY + v * scale;
+  const p = PX * scale;
+  const snapB = v => Math.floor(v / p) * p;
+  /* sky bands */
+  g.fillStyle = pal.skyTop; g.fillRect(0, 0, cssW, syb(150));
+  g.fillStyle = pal.skyMid; g.fillRect(0, syb(150), cssW, syb(244) - syb(150));
+  g.fillStyle = pal.skyLow; g.fillRect(0, syb(244), cssW, syb(HORIZON) - syb(244));
+  /* the sun / moon body (rays and star twinkle stay per-frame) */
+  const sunX = cssW - (SCENE_W - SUN_X) * scale;
+  g.fillStyle = pal.sun;
+  for(const [bx, by] of SUN_BLOCKS) g.fillRect(sunX + bx*p, syb(pal.sunY + by*PX), p + .5, p + .5);
+  if(pal.moon){
+    g.fillStyle = '#DDD5C0';   // craters
+    g.fillRect(sunX - p, syb(pal.sunY - PX), p + .5, p + .5);
+    g.fillRect(sunX + p, syb(pal.sunY + PX), p + .5, p + .5);
+    g.fillRect(sunX, syb(pal.sunY + 2*PX), p + .5, p + .5);
+  }
+  /* the sea: deep band, shallows, foam hairline, the far island */
+  g.fillStyle = pal.seaDeep;
+  g.fillRect(0, syb(HORIZON), cssW, Math.max(0, syb(HORIZON + 30) - syb(HORIZON)));
+  g.fillStyle = pal.sea;
+  g.fillRect(0, syb(HORIZON + 30), cssW, Math.max(0, syb(SAND_Y) - syb(HORIZON + 30)));
+  g.fillStyle = pal.foam;
+  g.fillRect(0, syb(HORIZON), cssW, Math.max(1.5, 3 * scale));
+  if(isleCv) g.drawImage(isleCv, snapB(cssW * .3), syb(HORIZON) - isleCv._h + 10 * scale, isleCv._w, isleCv._h);
+  /* sand with speckles */
+  g.fillStyle = pal.sand;
+  g.fillRect(0, syb(SAND_Y), cssW, Math.max(0, cssH - syb(SAND_Y)));
+  g.fillStyle = pal.speckle;
+  for(const [px2, py2] of SPECKLES) g.fillRect(snapB(px2 / SCENE_W * cssW), syb(py2), 3.5 * scale, 3.5 * scale);
+  backCv = cv;
 }
 function drawBeach(now){
   const period = beachPeriod();
@@ -1253,10 +1300,9 @@ function drawBeach(now){
         ' 45%,' + pal.sand + ' 70%,' + pal.sand + ' 100%)';
     }catch(e){}
   }
-  /* sky bands */
-  ctx.fillStyle = pal.skyTop; ctx.fillRect(0, 0, cssW, sy(150));
-  ctx.fillStyle = pal.skyMid; ctx.fillRect(0, sy(150), cssW, sy(244) - sy(150));
-  ctx.fillStyle = pal.skyLow; ctx.fillRect(0, sy(244), cssW, sy(HORIZON) - sy(244));
+  /* the entire static scene — sky, sun/moon, island, sea, sand — is one
+     pre-baked blit; only the living things below cost anything per frame */
+  if(backCv) ctx.drawImage(backCv, 0, 0, backCv._w, backCv._h);
   /* night: stars scattered across the FULL width, twinkling */
   if(pal.moon){
     ctx.fillStyle = '#F6F1E6';
@@ -1265,17 +1311,10 @@ function drawBeach(now){
       ctx.fillRect(snapC(STARS[i][0] / SCENE_W * cssW), sy(STARS[i][1]), 3 * scale, 3 * scale);
     }
   }
-  /* sun by day, moon by night — pinned near the right VIEWPORT edge */
+  /* pulsing sun rays (the sun itself is baked) */
   const sunY = pal.sunY;
   const sunX = cssW - (SCENE_W - SUN_X) * scale;
-  ctx.fillStyle = pal.sun;
-  for(const [bx, by] of SUN_BLOCKS) ctx.fillRect(sunX + bx*p, sy(sunY + by*PX), p + .5, p + .5);
-  if(pal.moon){
-    ctx.fillStyle = '#DDD5C0';   // craters
-    ctx.fillRect(sunX - p, sy(sunY - PX), p + .5, p + .5);
-    ctx.fillRect(sunX + p, sy(sunY + PX), p + .5, p + .5);
-    ctx.fillRect(sunX, sy(sunY + 2*PX), p + .5, p + .5);
-  }else if(Math.floor(now / 700) % 2){
+  if(!pal.moon && Math.floor(now / 700) % 2){
     ctx.fillStyle = pal.ray;
     for(const [bx, by] of SUN_RAYS) ctx.fillRect(sunX + bx*p, sy(sunY + by*PX), p + .5, p + .5);
   }
@@ -1304,21 +1343,14 @@ function drawBeach(now){
       ctx.fillRect(cxs + (dx + .4)*p, sy(cl.y + row*PX) + p*.75, (w - .8)*p + .5, p*.35 + .5);
     }
   }
-  /* the sea: deep band under the horizon, then the shallows */
-  ctx.fillStyle = pal.seaDeep;
-  ctx.fillRect(0, sy(HORIZON), cssW, Math.max(0, sy(HORIZON + 30) - sy(HORIZON)));
-  ctx.fillStyle = pal.sea;
-  ctx.fillRect(0, sy(HORIZON + 30), cssW, Math.max(0, sy(SAND_Y) - sy(HORIZON + 30)));
-  ctx.fillStyle = pal.foam;
-  ctx.fillRect(0, sy(HORIZON), cssW, Math.max(1.5, 3 * scale));
-  /* the far island, sitting right on the line */
-  if(isleCv) ctx.drawImage(isleCv, snapC(cssW * .3), sy(HORIZON) - isleCv._h + 10 * scale, isleCv._w, isleCv._h);
   /* sun glitter on the water just past the horizon */
+  if(!lowFx){
   ctx.fillStyle = pal.shimmer;
   for(let i = 0; i < 12; i++){
     if((Math.floor(now / 430) + i) % 3 === 0) continue;
     const gx = snapC(((i * 131 + (i % 3) * 47) * scale) % cssW);
     ctx.fillRect(gx, sy(HORIZON + 7 + (i % 3) * 5), 6 * scale, 1.8 * scale);
+  }
   }
   for(let row = 0; row < 9; row++){
     const wy = HORIZON + 22 + row * 26;
@@ -1362,7 +1394,7 @@ function drawBeach(now){
       if(!alive){ pod = null; nextPodAt = now + 18000 + Math.random() * 7000; }
     }
     /* a fish flips somewhere out there — an expanding splash ring */
-    if(!fish && now > nextFishAt){
+    if(!fish && now > nextFishAt && !lowFx){
       fish = { x: cssW * (.15 + Math.random() * .7), y: HORIZON + 60 + Math.random() * 120, t0: now };
     }
     if(fish){
@@ -1403,12 +1435,8 @@ function drawBeach(now){
       ctx.fillRect(d > 0 ? bx - 1 * s2 - w : bx + 1.6 * s2, sy(by - 12 + row * 3.4), w, 3.6 * s2);
     }
   }
-  /* sand with speckles across the full width */
-  ctx.fillStyle = pal.sand;
-  ctx.fillRect(0, sy(SAND_Y), cssW, Math.max(0, cssH - sy(SAND_Y)));
-  ctx.fillStyle = pal.speckle;
-  for(const [px2, py2] of SPECKLES) ctx.fillRect(snapC(px2 / SCENE_W * cssW), sy(py2), 3.5 * scale, 3.5 * scale);
-  /* the tide lapping at the sand — two foam frames trading places */
+  /* the tide lapping at the sand — two foam frames trading places
+     (the sand itself lives in the baked backdrop) */
   {
     const tf = (!reduceMotion && Math.floor(now / 900) % 2) ? tideB : tideA;
     if(tf) ctx.drawImage(tf, 0, sy(SAND_Y) - 2 * scale, tf._w, tf._h);
@@ -1453,7 +1481,7 @@ function drawBeach(now){
   }
   /* night: fireflies in the canopy + bioluminescent sparks riding the
      waves (the birds are asleep) */
-  if(pal.glow){
+  if(pal.glow && !lowFx){
     for(const f of FIREFLIES){
       const a = reduceMotion ? .45 : .25 + .5 * (0.5 + 0.5 * Math.sin(now / 1600 * Math.PI + f.ph));
       ctx.globalAlpha = a;
@@ -1464,7 +1492,7 @@ function drawBeach(now){
     ctx.globalAlpha = 1;
   }
   /* every so often a palm leaf lets go and see-saws down to the sand */
-  if(!reduceMotion){
+  if(!reduceMotion && !lowFx){
     if(!leaf && now > nextLeafAt){
       leaf = { x0: (Math.random() < .5 ? 30 : cssW - 30), y: 40 * scale, ph: Math.random() * 6 };
     }
@@ -1610,7 +1638,7 @@ paintMute();
 function resize(){
   const r = playEl.getBoundingClientRect();
   cssW = r.width; cssH = r.height;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);   // 3x buys nothing here and triples fill cost
+  const dpr = Math.min(window.devicePixelRatio || 1, dprCap);   // 3x buys nothing here and triples fill cost
   canvas.width  = Math.round(cssW * dpr);
   canvas.height = Math.round(cssH * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -2010,11 +2038,31 @@ function vesselPath(inset, append){
   ctx.lineTo(r, t);
   if(append) ctx.closePath();
 }
+/* the vessel outline never changes (scene-space constants), so every
+   fixed inset gets ONE cached Path2D instead of a fresh path per frame */
+const VPATHS = new Map();
+function vpath(inset){
+  let p2 = VPATHS.get(inset);
+  if(!p2){
+    p2 = new Path2D();
+    const l = BOX_L + inset, r = BOX_R - inset, b = BOX_BOTTOM + WALL_T - inset, t = BOX_TOP;
+    const cr = Math.max(6, CORNER_R - inset);
+    p2.moveTo(l, t);
+    p2.lineTo(l, b - cr);
+    p2.quadraticCurveTo(l, b, l + cr, b);
+    p2.lineTo(r - cr, b);
+    p2.quadraticCurveTo(r, b, r, b - cr);
+    p2.lineTo(r, t);
+    VPATHS.set(inset, p2);
+  }
+  return p2;
+}
 function render(now){
-  ctx.fillStyle = '#E9E6DF';
-  ctx.fillRect(0, 0, cssW, cssH);
   ctx.save();
   if(shake > 0){
+    /* only a shaken frame can expose the canvas edge — clear just then */
+    ctx.fillStyle = '#E9E6DF';
+    ctx.fillRect(0, 0, cssW, cssH);
     ctx.translate((Math.random()-.5) * shake, (Math.random()-.5) * shake);
     shake *= 0.85; if(shake < .4) shake = 0;
   }
@@ -2044,27 +2092,26 @@ function render(now){
   /* interior: sea glass. The cove stays visible through the bucket —
      softly lightened so the creatures own the foreground — with an
      extra readability fade up top where the over-line lives. */
-  vesselPath(WALL_T/2);
   ctx.fillStyle = 'rgba(233,230,223,.8)';
-  ctx.fill();
+  ctx.fill(vpath(WALL_T/2));
   ctx.save();
-  vesselPath(WALL_T/2);
-  ctx.clip();
+  ctx.clip(vpath(WALL_T/2));
   ctx.fillStyle = interiorFade();
   ctx.fillRect(BOX_L, BOX_TOP, BOX_W, 160);
   ctx.restore();
 
   /* ambient bubbles + danger glow live INSIDE the vessel */
   ctx.save();
-  vesselPath(WALL_T/2);
-  ctx.clip();
-  for(const a of ambient){
+  ctx.clip(vpath(WALL_T/2));
+  ctx.strokeStyle = 'rgba(107,104,98,.22)';
+  ctx.lineWidth = 1.2;
+  for(let ai = 0; ai < ambient.length; ai++){
+    const a = ambient[ai];
     a.y -= a.sp;
     if(a.y < BOX_TOP + 14){ a.y = BOX_BOTTOM - 8; a.x = IN_L + 18 + Math.random() * (IN_R - IN_L - 36); }
+    if(lowFx && (ai & 1)) continue;              /* draw half the bubbles on weak devices */
     const ax = a.x + Math.sin(now / 900 + a.ph) * 4;
     ctx.beginPath(); ctx.arc(ax, a.y, a.r, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(107,104,98,.22)';
-    ctx.lineWidth = 1.2;
     ctx.stroke();
   }
   if(anyOverLine && !over){
@@ -2133,10 +2180,9 @@ function render(now){
      Red band walls with crisp ink edges, a highlight stripe, chunky
      rim caps with a glint, little wave dashes, and the flower charm
      hanging off the right rim. Physics untouched. */
-  vesselPath(WALL_T/2);
   ctx.lineWidth = WALL_T;
   ctx.strokeStyle = '#B03A30';
-  ctx.stroke();
+  ctx.stroke(vpath(WALL_T/2));
   /* highlight stripe up the left wall */
   ctx.save();
   ctx.globalAlpha = 0.75;
@@ -2150,8 +2196,8 @@ function render(now){
   /* crisp ink edges on both faces of the wall */
   ctx.strokeStyle = INK;
   ctx.lineWidth = 2.5;
-  vesselPath(0); ctx.stroke();
-  vesselPath(WALL_T); ctx.stroke();
+  ctx.stroke(vpath(0));
+  ctx.stroke(vpath(WALL_T));
   /* rope wrap near the rim: alternating angled strands in sun-bleached
      hemp, laid across each wall like a lashed beach pail */
   for(const wx of [BOX_L, BOX_R - WALL_T]){
@@ -2185,20 +2231,34 @@ function render(now){
   }
 
   /* THE LEGEND — the chain under the box; everything from the penguin
-     onward hides behind a plain ink "?" until first created. */
+     onward hides behind a plain ink "?" until first created. The strip
+     only changes when a new creature is made, so it's baked to one
+     layer and blitted — not 12 sprite draws a frame. */
   {
-    const startX = SCENE_W/2 - LEGEND_GAP * (TIERS.length - 1) / 2;
-    ctx.imageSmoothingEnabled = true;
-    for(let i = 0; i < TIERS.length; i++){
-      const lx = startX + i * LEGEND_GAP;
-      const secret = i >= SECRET_FROM && i > maxMade;
-      if(secret){
-        const d = LEGEND_R * 2 * SPRITE_OVER;
-        ctx.drawImage(SECRET_SPRITE, lx - d/2, LEGEND_Y - d/2, d, d);
-      }else{
-        drawFruitAt(ctx, lx, LEGEND_Y, LEGEND_R, i, 0);
+    const lk = maxMade + '|' + scale;
+    if(lk !== legendKey){
+      legendKey = lk;
+      const over = LEGEND_R * SPRITE_OVER + 4;
+      const spanW = LEGEND_GAP * (TIERS.length - 1) + over * 2;
+      const [cv, g] = makeLayer(spanW * scale, over * 2 * scale);
+      g.scale(scale, scale);
+      g.imageSmoothingEnabled = true;
+      for(let i = 0; i < TIERS.length; i++){
+        const lx = over + i * LEGEND_GAP;
+        const secret = i >= SECRET_FROM && i > maxMade;
+        if(secret){
+          const d = LEGEND_R * 2 * SPRITE_OVER;
+          g.drawImage(SECRET_SPRITE, lx - d/2, over - d/2, d, d);
+        }else{
+          drawFruitAt(g, lx, over, LEGEND_R, i, 0);
+        }
       }
+      legendCv = cv; legendOver = over;
     }
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(legendCv,
+      SCENE_W/2 - LEGEND_GAP * (TIERS.length - 1) / 2 - legendOver,
+      LEGEND_Y - legendOver, legendCv._w / scale, legendCv._h / scale);
   }
 
   /* expanding merge rings */
@@ -2273,10 +2333,23 @@ function loop(now){
   }
   tickScore();
   render(now);
-  if(perfLast){ perfT.push(now - perfLast); if(perfT.length > 120) perfT.shift(); }
+  if(perfLast){
+    const d = now - perfLast;
+    perfT.push(d); perfSum += d;
+    if(perfT.length > 120) perfSum -= perfT.shift();
+    /* the smoothness guarantee: if a device can't hold ~40fps for a
+       full window, drop to the light path once and stay there —
+       lower DPR, fewer garnish effects, same game */
+    if(!lowFx && perfT.length === 120 && perfSum > 25 * 120){
+      lowFx = true; dprCap = 1.5;
+      perfT = []; perfSum = 0; perfLast = 0;
+      legendKey = ''; lastCoveKey = '';
+      resize();
+    }
+  }
   perfLast = now;
 }
-function pause(){ if(rafId){ cancelAnimationFrame(rafId); rafId = null; lastT = 0; acc = 0; } }
+function pause(){ if(rafId){ cancelAnimationFrame(rafId); rafId = null; lastT = 0; acc = 0; perfLast = 0; } }
 function resume(){ if(!rafId && running) rafId = requestAnimationFrame(loop); }
 document.addEventListener('visibilitychange', () => { document.hidden ? pause() : resume(); });
 
@@ -2674,11 +2747,18 @@ if(location.search.includes('debug=1')){
     },
     held(){ return heldTier; },
     counters(){ return { splashes }; },
-    perf(){ return perfStats(); }
+    perf(){ return perfStats(); },
+    lowfx(on){
+      lowFx = !!on; dprCap = on ? 1.5 : 2;
+      perfT = []; perfSum = 0; perfLast = 0;
+      legendKey = ''; lastCoveKey = '';
+      resize();
+      return { lowFx, dprCap };
+    }
   };
 }
 /* rolling frame-time probe for the perf budget test */
-let perfT = [], perfLast = 0;
+let perfT = [], perfLast = 0, perfSum = 0;
 function perfStats(){
   const s = [...perfT].sort((a, b) => a - b);
   return perfT.length ? {
