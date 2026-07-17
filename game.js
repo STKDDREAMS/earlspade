@@ -1239,7 +1239,20 @@ function drawBeach(now){
   const snapC = v => Math.floor(v / p) * p;          // css-space pixel hop
   /* rebuild the cove layers when the viewport or the light changes */
   const coveKey = period + '|' + cssW + '|' + cssH + '|' + scale;
-  if(coveKey !== lastCoveKey){ lastCoveKey = coveKey; buildCove(pal); }
+  if(coveKey !== lastCoveKey){
+    lastCoveKey = coveKey;
+    buildCove(pal);
+    /* tint the page shell to the scene so iOS paints sky/sand under the
+       status bar, the glass search bar, and overscroll — never cream */
+    try{
+      const tm = document.getElementById('themeColor');
+      if(tm) tm.content = pal.skyTop;
+      document.documentElement.style.background = pal.skyTop;
+      document.body.style.background =
+        'linear-gradient(to bottom,' + pal.skyTop + ' 0%,' + pal.skyLow +
+        ' 45%,' + pal.sand + ' 70%,' + pal.sand + ' 100%)';
+    }catch(e){}
+  }
   /* sky bands */
   ctx.fillStyle = pal.skyTop; ctx.fillRect(0, 0, cssW, sy(150));
   ctx.fillStyle = pal.skyMid; ctx.fillRect(0, sy(150), cssW, sy(244) - sy(150));
@@ -2122,12 +2135,12 @@ function render(now){
      hanging off the right rim. Physics untouched. */
   vesselPath(WALL_T/2);
   ctx.lineWidth = WALL_T;
-  ctx.strokeStyle = '#C9463B';
+  ctx.strokeStyle = '#B03A30';
   ctx.stroke();
   /* highlight stripe up the left wall */
   ctx.save();
   ctx.globalAlpha = 0.75;
-  ctx.strokeStyle = '#E07A6C';
+  ctx.strokeStyle = '#D96A5C';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(BOX_L + WALL_T * 0.32, BOX_TOP + 20);
@@ -2149,14 +2162,14 @@ function render(now){
     ctx.fillStyle = 'rgba(22,20,18,.25)';
     ctx.fillRect(wx + 1.5, BOX_TOP + 26 + 18, WALL_T - 3, 1.2);   /* rope shadow */
   }
-  /* chunky rim caps with a glint */
+  /* chunky rim caps with a gold stud — the lacquered-pail finish */
   for(const rx of [BOX_L - 5, BOX_R - WALL_T - 5]){
-    ctx.fillStyle = '#C9463B';
+    ctx.fillStyle = '#B03A30';
     ctx.fillRect(rx, BOX_TOP - 6, WALL_T + 10, 13);
     ctx.strokeStyle = INK;
     ctx.lineWidth = 2.5;
     ctx.strokeRect(rx, BOX_TOP - 6, WALL_T + 10, 13);
-    ctx.fillStyle = '#F2EFE6';
+    ctx.fillStyle = '#F2CC70';
     ctx.fillRect(rx + 3, BOX_TOP - 3, 4, 3);
   }
   /* gold flash around the bucket on big combos */
