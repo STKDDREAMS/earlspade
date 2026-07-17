@@ -880,67 +880,6 @@ const SECRET_SPRITE = buildSprite({
     ] }
 });
 
-/* the gold twin: what the final two mysteries hide behind */
-const SECRET_GOLD_SPRITE = buildSprite({
-  fill:'#E8B33C', dk:'#C4922A', lt:'#F2CC70', face:false,
-  feat:{ ox:0, oy:0, rows:[
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '....................................',
-      '.............KKKKKKKK...............',
-      '............KKK....KKK..............',
-      '............KK......KK..............',
-      '....................KK..............',
-      '...................KKK..............',
-      '.................KKK................',
-      '................KKK.................',
-      '................KK..................',
-      '................KK..................',
-      '....................................',
-      '....................................',
-      '................KK..................',
-      '................KK..................',
-    ] }
-});
-
-/* ===== THE LEGENDARY AXOLOTL =====================================
-   The game's first legendary: a pearl axolotl with rainbow gill
-   frills, once in a great while offered as the next drop. It is a
-   WILD — merge it into any creature and that creature ascends a
-   tier, with a jackpot to match. (This block lives OUTSIDE the
-   genart splice region and owns its own pixel map.) */
-const LGD_R = 30;
-const LGD_MAPS = (() => {
-  const W = 36;
-  const grid = (h) => Array.from({ length: h }, () => Array(W).fill('.'));
-  const g1 = grid(17);
-  const mput = (g, r, c, s) => { for(let i = 0; i < s.length; i++){ g[r][c + i] = s[i]; g[r][W - 1 - c - i] = s[i]; } };
-  /* three rainbow gill frills a side, reaching well past the disc:
-     gold, white, sky */
-  mput(g1, 5, 5, 'GG');  mput(g1, 6, 3, 'GGG');
-  mput(g1, 9, 2, 'EEE'); mput(g1, 10, 1, 'EEE');
-  mput(g1, 13, 2, 'LLL'); mput(g1, 14, 1, 'LLL');
-  const g2 = grid(26);
-  /* the famous axolotl smile + a pearl shine on the cheek */
-  mput(g2, 19, 15, 'K');
-  const put = (g, r, c, s) => { for(let i = 0; i < s.length; i++) g[r][c + i] = s[i]; };
-  put(g2, 20, 16, 'KKKK');
-  put(g2, 23, 10, 'E'); put(g2, 24, 11, 'EE');
-  return {
-    feat:  { ox: 0, oy: 0, rows: g1.map(r => r.join('')) },
-    feat2: { ox: 0, oy: 0, rows: g2.map(r => r.join('')) }
-  };
-})();
-const LGD_SPRITE = buildSprite({
-  fill: '#F6C6D4', dk: '#DE9DB4', lt: '#FFEFF4',
-  feat: LGD_MAPS.feat, feat2: LGD_MAPS.feat2
-});
-
 /* effects budgets (kept cheap for phones) */
 const MAX_PARTICLES = 80;
 const SHAKE_TIER    = 8;
@@ -1435,12 +1374,21 @@ function drawBeach(now){
     const bob = Math.floor(now / (700 + i * 160)) % 2 ? 2 : 0;
     const by = HORIZON + bt.dy + bob;
     const s2 = scale * bt.s, d = bt.dir;
+    /* a real SAILBOAT: stepped-triangle mainsail + little jib, thin
+       hull with a raised bow — reads as sail from any distance */
     ctx.fillStyle = pal.hull;
-    ctx.fillRect(bx - 10 * s2, sy(by), 22 * s2, 5 * s2);              // hull
-    ctx.fillRect(bx, sy(by - 17), 2.5 * s2, 17 * s2);                 // mast
+    ctx.fillRect(bx - 11 * s2, sy(by), 22 * s2, 4 * s2);                       // hull
+    ctx.fillRect(bx + (d > 0 ? 10 : -13) * s2, sy(by - 2), 3 * s2, 2 * s2);    // bow lift
+    ctx.fillRect(bx - 0.8 * s2, sy(by - 20), 1.8 * s2, 20 * s2);               // mast
     ctx.fillStyle = pal.sail;
-    ctx.fillRect(bx + (d > 0 ? 3 : -12) * s2, sy(by - 16), 9 * s2, 5 * s2);   // main sail
-    ctx.fillRect(bx + (d > 0 ? 3 : -9)  * s2, sy(by - 11), 6 * s2, 5 * s2);
+    for(let row = 0; row < 5; row++){                                          // mainsail triangle
+      const w = (2.5 + row * 2.2) * s2;
+      ctx.fillRect(d > 0 ? bx + 1.4 * s2 : bx - 0.6 * s2 - w, sy(by - 19 + row * 3.4), w, 3.6 * s2);
+    }
+    for(let row = 0; row < 3; row++){                                          // jib, other side
+      const w = (1.6 + row * 1.5) * s2;
+      ctx.fillRect(d > 0 ? bx - 1 * s2 - w : bx + 1.6 * s2, sy(by - 12 + row * 3.4), w, 3.6 * s2);
+    }
   }
   /* sand with speckles across the full width */
   ctx.fillStyle = pal.sand;
@@ -1552,8 +1500,8 @@ const store = (() => {
   };
 })();
 
-/* the mechanics gate: bonus mechanics (legendary, splash, clutch, rival)
-   are OFF under ?debug=1 so every automated test sees the exact classic
+/* the mechanics gate: bonus mechanics (splash, clutch, rival) are OFF
+   under ?debug=1 so every automated test sees the exact classic
    scoring. Tests opt in via __suika.mech(true). */
 let mechOn = !location.search.includes('debug=1');
 
@@ -1595,15 +1543,11 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 /* ===== play mechanics state =====
    Everything here is gated by mechOn where it touches scoring, so
    ?debug=1 test runs see the exact classic economy. */
-/* the legendary axolotl: a once-in-a-tide wild that ascends whatever it touches */
-let nextLegend = false, heldLegend = false;
-let flashAt = 0;                          // full-screen jackpot flash
 let splashes = 0;                         // run counter (for tests)
 /* clutch save */
 let dangerPeak = false, lastClutchAt = -1e9;
-/* the aquarium: lifetime counts of every creature made
-   (slot 12 = the legendary axolotl) */
-const COLLECT_N = 13;
+/* the aquarium: lifetime counts of every creature made */
+const COLLECT_N = 12;
 let collect = (() => {
   const c = store.getJSON(KEY_COLLECT, null);
   const arr = Array.isArray(c) ? c.slice(0, COLLECT_N) : [];
@@ -1718,37 +1662,8 @@ function fruitBody(tier, x, y){
   b.bornAt = performance.now();
   return b;
 }
-/* the legendary's body: a plain circle, tier -1 so it never twins */
-function legendBody(x, y){
-  const b = Bodies.circle(x, y, LGD_R, {
-    restitution: RESTITUTION, friction: FRICTION,
-    frictionStatic: FRICTION_STATIC, frictionAir: AIR_FRICTION,
-    density: 0.0012,
-  });
-  b.tier = -1;
-  b.legendary = true;
-  b.merging = false;
-  b.bornAt = performance.now();
-  return b;
-}
-/* radius that survives the legendary's fake tier */
-function bodyR(b){ return b.legendary ? LGD_R : TIERS[b.tier].r; }
 
 /* ================= MERGING ================= */
-/* THE JACKPOT — the legendary's moment. Screen flash, double burst,
-   twin rings, shake, and a rising three-note fanfare. */
-function jackpotFX(x, y){
-  flashAt = performance.now();
-  if(!reduceMotion) shake = 16;
-  celebrate(x, y);
-  celebrate(SCENE_W / 2, BOX_TOP + 60);
-  rings.push({ x, y, r: 20, t: 0, color: '#E8B33C' });
-  rings.push({ x, y, r: 34, t: -0.25, color: '#F6C6D4' });
-  goldFlashAt = performance.now();
-  blip(392, 784, 0.12, 0.1);
-  setTimeout(() => blip(523, 1046, 0.12, 0.1), 90);
-  setTimeout(() => blip(659, 1318, 0.22, 0.12), 180);
-}
 function onCollisions(ev){
   if(over) return;
   for(const pair of ev.pairs){
@@ -1757,41 +1672,6 @@ function onCollisions(ev){
     const b = pair.bodyB.parent || pair.bodyB;
     if(a.tier === undefined || b.tier === undefined) continue;
     if(a === b) continue;
-    /* THE LEGENDARY WILD: it merges with whatever it touches and
-       ascends that creature one tier */
-    if(a.legendary || b.legendary){
-      if(a.merging || b.merging) continue;
-      const leg = a.legendary ? a : b;
-      const other = a.legendary ? b : a;
-      const mx2 = (a.position.x + b.position.x) / 2;
-      const my2 = (a.position.y + b.position.y) / 2;
-      a.merging = b.merging = true;
-      if(other.legendary || TIERS[other.tier].flower){
-        /* legendary + legendary (miracle) or + flower: pure jackpot */
-        removeFruit(a); removeFruit(b);
-        addScore(FLOWER_BONUS, mx2, my2);
-        jackpotFX(mx2, my2);
-        showToast('✦ LEGENDARY BLOOM +' + FLOWER_BONUS + ' ✦', true);
-        bumpCollect(TIERS.length);
-        continue;
-      }
-      const up = other.tier + 1;
-      removeFruit(leg); removeFruit(other);
-      const nb2 = fruitBody(up, mx2, my2);
-      Body.setVelocity(nb2, { x: 0, y: 0 });
-      Composite.add(world, nb2);
-      bodies.push(nb2);
-      popTweens.set(nb2.id, performance.now());
-      if(up > runBestTier) runBestTier = up;
-      if(up > maxMade){ maxMade = up; store.set(KEY_SEEN, maxMade); }
-      bumpCollect(up);
-      bumpCollect(TIERS.length);   /* the aquarium's legendary slot */
-      addScore(MERGE_POINTS[up] * 2 + 250, mx2, my2 - TIERS[up].r);
-      popups.push({ x: mx2, y: my2 - TIERS[up].r - 30, n: 0, t: 0, txt: 'LEGENDARY!!', big: true, gold: true });
-      jackpotFX(mx2, my2);
-      showToast('✦ THE LEGENDARY AXOLOTL ✦', true);
-      continue;
-    }
     if(a.tier !== b.tier) continue;
     if(a.merging || b.merging) continue;
     a.merging = b.merging = true;
@@ -1879,7 +1759,7 @@ function onFirstTouch(ev){
       if(b.speed < 3.2) continue;
       b.squashAt = performance.now();
       const s = pair.collision && pair.collision.supports && pair.collision.supports[0];
-      const px = s ? s.x : b.position.x, py = s ? s.y : b.position.y + bodyR(b);
+      const px = s ? s.x : b.position.x, py = s ? s.y : b.position.y + TIERS[b.tier].r;
       for(let i = 0; i < 4 && particles.length < MAX_PARTICLES; i++){
         const a = -Math.PI/2 + (Math.random() - .5) * 2.2, sp = .6 + Math.random() * 1.4;
         particles.push({ x: px, y: py, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp * .5, r: 1.5 + Math.random()*2, color: 'rgba(107,104,98,.55)', life: .5 });
@@ -1925,50 +1805,32 @@ function rollSpawnTier(){
 function paintNext(){
   const s = nextCv.width;
   nextCtx.clearRect(0,0,s,s);
-  if(nextLegend){  /* the legendary announces itself in the window */
-    const d = s * 0.36 * 2 * SPRITE_OVER;
-    nextCtx.drawImage(LGD_SPRITE, s/2 - d/2, s/2 - d/2, d, d);
-    nextCtx.save();
-    for(const [col, rr] of [['#F6C6D4', .46], ['#E8B33C', .42]]){
-      nextCtx.strokeStyle = col; nextCtx.lineWidth = 2.5;
-      nextCtx.beginPath(); nextCtx.arc(s/2, s/2, s * rr, 0, Math.PI*2); nextCtx.stroke();
-    }
-    nextCtx.restore();
-    nextCv.classList.remove('pop'); void nextCv.offsetWidth; nextCv.classList.add('pop');
-    return;
-  }
   drawFruitAt(nextCtx, s/2, s/2, s*0.36, nextTier, 0);
   nextCv.classList.remove('pop');
   void nextCv.offsetWidth;
   nextCv.classList.add('pop');
 }
-function rollLegend(){ return mechOn && Math.random() < 1/90; }
 function promoteNext(){
   heldTier = nextTier;
-  heldLegend = nextLegend;
   nextTier = rollSpawnTier();
-  nextLegend = rollLegend();
-  if(nextLegend) showToast('✦ A LEGEND STIRS ✦', true);
   paintNext();
 }
-function heldR(){ return heldLegend ? LGD_R : TIERS[heldTier].r; }
 function clampAim(x){
-  const r = heldR();
+  const r = TIERS[heldTier].r;
   return Math.max(IN_L + r, Math.min(IN_R - r, x));
 }
-function heldY(){ return Math.min(BOX_TOP - heldR() - 14, 150); }
+function heldY(){ return Math.min(BOX_TOP - TIERS[heldTier].r - 14, 150); }
 function drop(){
   if(!canDrop || over || uiModal) return;
   const now = performance.now();
   if(now - lastDrop < DROP_COOLDOWN_MS) return;
   lastDrop = now; canDrop = false;
   const x = clampAim(aimX);
-  const b = heldLegend ? legendBody(x, heldY()) : fruitBody(heldTier, x, heldY());
+  const b = fruitBody(heldTier, x, heldY());
   b.byPlayer = true;                       // splash-bonus eligibility
-  if(heldLegend) heldLegend = false;
   Composite.add(world, b);
   bodies.push(b);
-  if(!b.legendary) bumpCollect(heldTier);
+  bumpCollect(heldTier);
   sndDrop();
   if(!dropped){ dropped = true; document.getElementById('howto').classList.add('off'); }
   setTimeout(() => { promoteNext(); canDrop = true; }, DROP_COOLDOWN_MS);
@@ -2086,25 +1948,6 @@ function checkOverLine(dt){
 }
 
 /* ================= RENDER ================= */
-/* the legendary's aura: pink + gold twin rings breathing out of phase,
-   three orbiting sparks — unmistakably above golden */
-function drawLegendAura(x, y, r, now){
-  ctx.save();
-  const pulse = reduceMotion ? 0 : Math.sin(now / 300) * 2;
-  for(const [col, off] of [['#F6C6D4', 4 + pulse], ['#E8B33C', 8 - pulse]]){
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.arc(x, y, r + off, 0, Math.PI * 2); ctx.stroke();
-  }
-  if(!reduceMotion){
-    for(let k = 0; k < 3; k++){
-      const a = now / 380 + k * (Math.PI * 2 / 3);
-      ctx.fillStyle = k % 2 ? '#F2CC70' : '#FFD3DE';
-      ctx.fillRect(x + Math.cos(a) * (r + 13) - 2.5, y + Math.sin(a) * (r + 13) - 2.5, 5, 5);
-    }
-  }
-  ctx.restore();
-}
 function drawFruitAt(c, x, y, r, tier, angle, sqx, sqy){
   const t = TIERS[tier];
   c.save();
@@ -2234,33 +2077,26 @@ function render(now){
 
   /* aim guide + held creature */
   if(!over){
-    const hx = clampAim(aimX), hr = heldR();
+    const hx = clampAim(aimX), hr = TIERS[heldTier].r;
     const hy = heldY() + (reduceMotion ? 0 : Math.sin(now / 480) * 3);
     ctx.save();
-    /* solid paper under-stroke so the guide never drowns in the cove */
-    ctx.strokeStyle = 'rgba(233,230,223,.55)';
-    ctx.lineWidth = 4;
-    ctx.beginPath(); ctx.moveTo(hx, hy + hr + 4); ctx.lineTo(hx, BOX_BOTTOM - 2); ctx.stroke();
-    ctx.globalAlpha = 0.5;
-    ctx.setLineDash([4, 8]);
-    if(!reduceMotion) ctx.lineDashOffset = -(now / 34) % 12;   // dashes flow downward
-    ctx.strokeStyle = INK; ctx.lineWidth = 2;
+    /* the guide is JUST the marching dots — crisp ink squares flowing
+       down to the landing spot, no ghost line underneath */
+    ctx.globalAlpha = 0.7;
+    ctx.setLineDash([5, 9]);
+    if(!reduceMotion) ctx.lineDashOffset = -(now / 30) % 14;   // dashes flow downward
+    ctx.strokeStyle = INK; ctx.lineWidth = 3;
+    ctx.lineCap = 'butt';
     ctx.beginPath(); ctx.moveTo(hx, hy + hr + 4); ctx.lineTo(hx, BOX_BOTTOM - 2); ctx.stroke();
     ctx.restore();
     ctx.globalAlpha = canDrop ? 1 : 0.45;
-    if(heldLegend){
-      const d = hr * 2 * SPRITE_OVER;
-      ctx.drawImage(LGD_SPRITE, hx - d/2, hy - d/2, d, d);
-      drawLegendAura(hx, hy, hr, now);
-    }else{
-      drawFruitAt(ctx, hx, hy, hr, heldTier, 0);
-    }
+    drawFruitAt(ctx, hx, hy, hr, heldTier, 0);
     ctx.globalAlpha = 1;
   }
 
   /* creatures (with scale-pop on fresh merges) */
   for(const b of bodies){
-    let r = bodyR(b);
+    let r = TIERS[b.tier].r;
     const born = popTweens.get(b.id);
     if(born !== undefined){
       const p = (now - born) / 220;
@@ -2276,20 +2112,6 @@ function render(now){
       /* stretch along the fall — classic drop juice */
       const st = Math.min(0.10, (b.velocity.y - 6) * 0.008);
       sqy = 1 + st; sqx = 1 - st * 0.7;
-    }
-    if(b.legendary){
-      const d = r * 2 * SPRITE_OVER;
-      ctx.save();
-      ctx.translate(b.position.x, b.position.y);
-      if(b.angle) ctx.rotate(b.angle);
-      ctx.drawImage(LGD_SPRITE, -d/2, -d/2, d, d);
-      ctx.restore();
-      drawLegendAura(b.position.x, b.position.y, r, now);
-      if(!reduceMotion && Math.floor(now / 40) % 2 === 0 && particles.length < MAX_PARTICLES){
-        particles.push({ x: b.position.x + (Math.random() - .5) * r * 1.6, y: b.position.y - r * .4,
-          vx: 0, vy: -.5, r: 2, color: Math.random() < .5 ? '#F2CC70' : '#FFD3DE', life: .5 });
-      }
-      continue;
     }
     drawFruitAt(ctx, b.position.x, b.position.y, r, b.tier, b.angle, sqx, sqy);
   }
@@ -2350,8 +2172,7 @@ function render(now){
   }
 
   /* THE LEGEND — the chain under the box; everything from the penguin
-     onward hides behind a "?" until first created (the final two in
-     gold — those are the ones worth dreaming about). */
+     onward hides behind a plain ink "?" until first created. */
   {
     const startX = SCENE_W/2 - LEGEND_GAP * (TIERS.length - 1) / 2;
     ctx.imageSmoothingEnabled = true;
@@ -2359,32 +2180,8 @@ function render(now){
       const lx = startX + i * LEGEND_GAP;
       const secret = i >= SECRET_FROM && i > maxMade;
       if(secret){
-        const special = i >= TIERS.length - 2;   // the final two mysteries
         const d = LEGEND_R * 2 * SPRITE_OVER;
-        if(special){
-          /* gold box, breathing glow, two orbiting sparks — clearly
-             something worth chasing (without saying a word) */
-          const pulse = reduceMotion ? 1 : 1 + 0.09 * Math.sin(now / 260 + i * 2);
-          ctx.save();
-          ctx.globalAlpha = 0.28 + (reduceMotion ? 0 : 0.16 * Math.sin(now / 260 + i * 2));
-          ctx.strokeStyle = '#E8B33C';
-          ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.arc(lx, LEGEND_Y, LEGEND_R * 1.55 + (reduceMotion ? 0 : Math.sin(now / 260 + i * 2) * 1.6), 0, Math.PI * 2); ctx.stroke();
-          ctx.restore();
-          const dd = d * pulse;
-          ctx.drawImage(SECRET_GOLD_SPRITE, lx - dd/2, LEGEND_Y - dd/2, dd, dd);
-          if(!reduceMotion){
-            ctx.fillStyle = '#E8B33C';
-            for(const k of [0, 1]){
-              const ang = now / 650 + i + k * Math.PI;
-              const sx = lx + Math.cos(ang) * LEGEND_R * 1.8;
-              const sy = LEGEND_Y + Math.sin(ang) * LEGEND_R * 1.8;
-              ctx.fillRect(sx - 1.5, sy - 1.5, 3, 3);
-            }
-          }
-        }else{
-          ctx.drawImage(SECRET_SPRITE, lx - d/2, LEGEND_Y - d/2, d, d);
-        }
+        ctx.drawImage(SECRET_SPRITE, lx - d/2, LEGEND_Y - d/2, d, d);
       }else{
         drawFruitAt(ctx, lx, LEGEND_Y, LEGEND_R, i, 0);
       }
@@ -2434,17 +2231,6 @@ function render(now){
   ctx.globalAlpha = 1;
   ctx.restore();
   ctx.restore();
-  /* the jackpot flash: one bright breath across the whole screen */
-  if(flashAt && now - flashAt < 450){
-    if(reduceMotion){ flashAt = 0; }
-    else{
-      const ft = (now - flashAt) / 450;
-      ctx.globalAlpha = 0.55 * (1 - ft) * (1 - ft);
-      ctx.fillStyle = '#FFFDF4';
-      ctx.fillRect(0, 0, cssW, cssH);
-      ctx.globalAlpha = 1;
-    }
-  }
 }
 
 /* ================= MAIN LOOP ================= */
@@ -2465,7 +2251,7 @@ function loop(now){
   /* belt-and-braces: if anything ever escapes the vessel (a pathological
      frame spike), lift it gently back in rather than losing it */
   for(const b of bodies){
-    const r = bodyR(b);
+    const r = TIERS[b.tier].r;
     if(b.position.y - r > BOX_BOTTOM + 4 || b.position.x < IN_L - r - 40 || b.position.x > IN_R + r + 40){
       Body.setPosition(b, { x: Math.max(IN_L + r, Math.min(IN_R - r, b.position.x)), y: BOX_TOP + r + 10 });
       Body.setVelocity(b, { x: 0, y: 0 });
@@ -2697,7 +2483,7 @@ function nameRejected(){
 async function submitScore(){
   /* both fields required — the name goes on the board, the email stays
      private server-side (the gift list). */
-  const name = nameInput.value.trim().slice(0, 16);
+  const name = nameInput.value.trim().slice(0, 16).toUpperCase();
   if(!name){ nameInput.classList.add('bad'); nameInput.focus(); return; }
   if(!nameAllowed(name)){ nameRejected(); return; }
   const email = emailInput.value.trim().slice(0, 254);
@@ -2785,29 +2571,22 @@ if(aquaBtn && aquaDialog){
     grid.innerHTML = '';
     let made = 0;
     for(let i = 0; i < COLLECT_N; i++){
-      const isLgd = i === TIERS.length;    /* the 13th slot: the legendary */
-      const known = (collect[i] || 0) > 0 || (!isLgd && i <= maxMade);
+      const known = (collect[i] || 0) > 0 || i <= maxMade;
       if((collect[i] || 0) > 0) made++;
       const cell = document.createElement('div');
       cell.className = 'aqua-cell';
       const cv = document.createElement('canvas');
       cv.width = cv.height = 96;
       const g = cv.getContext('2d');
-      if(known && isLgd){
-        g.drawImage(LGD_SPRITE, 48 - 30 * SPRITE_OVER, 48 - 30 * SPRITE_OVER, 60 * SPRITE_OVER, 60 * SPRITE_OVER);
-        g.strokeStyle = '#E8B33C'; g.lineWidth = 3;
-        g.beginPath(); g.arc(48, 48, 40, 0, Math.PI * 2); g.stroke();
-      }else if(known){
+      if(known){
         drawFruitAt(g, 48, 48, 30, i, 0);
       }else{
-        /* keep the legend's secrecy: unmade mysteries stay hidden,
-           the final two + the legendary behind the gold twin */
-        const spr = (isLgd || i >= TIERS.length - 2) ? SECRET_GOLD_SPRITE : SECRET_SPRITE;
-        g.drawImage(spr, 48 - 30 * SPRITE_OVER, 48 - 30 * SPRITE_OVER, 60 * SPRITE_OVER, 60 * SPRITE_OVER);
+        /* keep the legend's secrecy: unmade mysteries stay hidden */
+        g.drawImage(SECRET_SPRITE, 48 - 30 * SPRITE_OVER, 48 - 30 * SPRITE_OVER, 60 * SPRITE_OVER, 60 * SPRITE_OVER);
       }
       const n = document.createElement('span');
       n.className = 'ac-n';
-      n.textContent = known ? (isLgd ? 'LEGEND ×' + (collect[i] || 0) : '×' + (collect[i] || 0)) : '?';
+      n.textContent = known ? ('×' + (collect[i] || 0)) : '?';
       cell.append(cv, n);
       grid.appendChild(cell);
     }
@@ -2836,9 +2615,6 @@ function reset(){
   splashes = 0;
   dangerPeak = false; lastClutchAt = -1e9;
   passedNames.clear();
-  heldLegend = false;
-  nextLegend = rollLegend();
-  flashAt = 0;
   if(rivalEl) rivalEl.style.display = 'none';
   overDialog.classList.remove('show');
   buildWorld();
@@ -2874,8 +2650,6 @@ if(location.search.includes('debug=1')){
     tiers(){ return TIERS.length; },
     /* ===== v13 hooks ===== */
     mech(v){ mechOn = !!v; return mechOn; },
-    legend(){ nextLegend = true; paintNext(); },
-    heldLegend(){ return heldLegend; },
     setBestAtStart(n){ bestAtStart = n; },
     collect(){ return collect.slice(); },
     clearCollect(){ collect = new Array(collect.length).fill(0); store.setJSON(KEY_COLLECT, collect); },
