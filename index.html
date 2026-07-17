@@ -73,7 +73,7 @@
 <link rel="dns-prefetch" href="https://checkout.stripe.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 :root{
   --paper:#E9E6DF;
@@ -88,7 +88,6 @@
   --pink-2:#E6B7C4;
   --pink-deep:#BF7689;
   --pink-glow:rgba(211,138,160,.26);
-  --display:'Archivo',sans-serif;
   --mono:'Space Mono',monospace;
   --px:'Press Start 2P',var(--mono);
   --gold:#E8B33C;
@@ -102,9 +101,9 @@
   touch-action:manipulation}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:var(--paper);color-scheme:light;overflow-x:clip;width:100%;touch-action:manipulation}
 html{background:var(--paper)}
-body{background:var(--paper);color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased;overflow-x:clip;min-height:100svh;width:100%;max-width:100%;position:relative}
-/* The wordmark keeps the display face; the series now speaks pixel */
-.wordmark{font-family:var(--display)}
+/* the whole page speaks pixel now; the embroidered wordmark image is the
+   one non-pixel voice left, on purpose */
+body{background:var(--paper);color:var(--ink);font-family:var(--px);-webkit-font-smoothing:antialiased;overflow-x:clip;min-height:100svh;width:100%;max-width:100%;position:relative}
 body.noscroll{overflow:hidden}
 /* a whisper of paper grain over everything (photos included) so the whole
    page shares one physical surface; sits under the fixed chrome/modals */
@@ -122,20 +121,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
 /* fly-down flower */
 
-/* corner mark */
-.mark{position:fixed;top:calc(.85rem + env(safe-area-inset-top));left:calc(var(--pad) + env(safe-area-inset-left));z-index:90;display:flex;align-items:center;gap:.45rem;
-  font-weight:900;font-size:1rem;letter-spacing:-.02em;opacity:0;transform:translateY(-8px);
-  transition:opacity .45s ease,transform .45s ease;pointer-events:none;
-  padding:.3rem .55rem .3rem .35rem;background:rgba(233,230,223,.88);border-radius:40px}
-.mark.show{opacity:1;transform:translateY(0);pointer-events:auto}
-.mark img{height:20px;width:auto}
-/* Frosted blur only where it's cheap (desktop pointers); phones get a solid
-   translucent pill instead, since a fixed backdrop-filter re-blurs every
-   scroll frame and is a major cause of mobile scroll jank. */
-@media (hover:hover) and (pointer:fine){
-  .mark{background:rgba(233,230,223,.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-}
-
 /* ===== CART ICON (top right) ===== */
 .cart-btn{position:fixed;top:calc(.85rem + env(safe-area-inset-top));right:calc(var(--pad) + env(safe-area-inset-right));z-index:90;display:flex;align-items:center;justify-content:center;
   width:44px;height:44px;border:none;background:transparent;cursor:pointer;color:var(--ink);
@@ -143,7 +128,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .cart-btn.show{opacity:1;transform:translateY(0);pointer-events:auto}
 .cart-btn svg{width:21px;height:21px;display:block}
 .cart-btn .badge{position:absolute;top:1px;right:0px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;
-  background:var(--pop);color:var(--paper);font-family:var(--mono);font-size:.62rem;font-weight:700;
+  background:var(--pop);color:var(--paper);font-family:var(--px);font-size:.5rem;font-weight:400;
   display:flex;align-items:center;justify-content:center;line-height:1;transform:scale(1);transition:transform .25s var(--ease)}
 .cart-btn .badge.bump{transform:scale(1.35)}
 /* ocean-sound toggle: same visual language as the cart button, pinned
@@ -185,8 +170,8 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .cart-drawer.open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto}
 }
 .cart-head{display:flex;align-items:center;justify-content:space-between;padding:calc(1.3rem + env(safe-area-inset-top)) calc(var(--pad) + env(safe-area-inset-right)) 1rem var(--pad);border-bottom:1.5px solid var(--ink)}
-.cart-head h2{font-size:1.15rem;font-weight:900;letter-spacing:-.02em}
-.cart-head .count{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);margin-left:.5rem;letter-spacing:.04em}
+.cart-head h2{font-size:.72rem;font-weight:400;letter-spacing:.03em}
+.cart-head .count{font-family:var(--px);font-size:.5rem;color:var(--ink-soft);margin-left:.5rem;letter-spacing:.04em}
 .cart-close{background:none;border:none;cursor:pointer;font-size:1.4rem;line-height:1;color:var(--ink);min-width:44px;min-height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .2s ease,transform .2s ease}
 .cart-close:active{background:var(--paper-2);transform:rotate(90deg)}
 @media(hover:hover){.cart-close:hover{background:var(--paper-2);transform:rotate(90deg)}}
@@ -200,13 +185,13 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .mote.m1{left:150px;top:60px;width:5px;height:5px;animation:moteDrift 5.5s ease-in-out infinite}
 .mote.m2{left:168px;top:96px;width:4px;height:4px;animation:moteDrift 6.5s ease-in-out infinite 1.4s}
 .mote.m3{left:40px;top:120px;width:3px;height:3px;animation:moteDrift 7s ease-in-out infinite 2.6s}
-.empty-title{font-weight:900;font-size:1.3rem;letter-spacing:-.02em}
-.empty-sub{font-family:var(--mono);font-size:.66rem;line-height:1.65;letter-spacing:.03em;color:var(--ink-soft);max-width:236px}
-.empty-cta{margin-top:1rem;background:linear-gradient(135deg,var(--pink-2),var(--pink));color:#fff;border:none;border-radius:999px;
-  font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;padding:.95rem 2.1rem;cursor:pointer;
-  box-shadow:0 12px 26px -8px var(--pink-glow);transition:transform .2s ease,box-shadow .2s ease}
-.empty-cta:active{transform:scale(.96)}
-@media(hover:hover){.empty-cta:hover{transform:translateY(-2px);box-shadow:0 16px 32px -8px var(--pink-glow)}}
+.empty-title{font-family:var(--px);font-weight:400;font-size:.8rem;letter-spacing:.02em}
+.empty-sub{font-family:var(--px);font-size:.48rem;line-height:2;letter-spacing:.03em;color:var(--ink-soft);max-width:250px}
+.empty-cta{margin-top:1rem;background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:0;
+  font-family:var(--px);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;padding:.95rem 2.1rem;cursor:pointer;
+  box-shadow:3px 3px 0 0 var(--sh);transition:transform .12s steps(2,end),box-shadow .12s steps(2,end)}
+.empty-cta:active{transform:translate(2px,2px);box-shadow:1px 1px 0 0 var(--sh)}
+@media(hover:hover){.empty-cta:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 0 var(--sh)}}
 @keyframes moteDrift{0%{opacity:0;transform:translate(0,0) scale(.6)}25%{opacity:.85}100%{opacity:0;transform:translate(10px,-30px) scale(1)}}
 
 .cart-line{display:flex;gap:.9rem;padding:1.1rem 0;border-bottom:2px dotted var(--line)}
@@ -217,32 +202,33 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .cart-line .thumb img.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .cart-line .thumb img.ph{width:42%;height:42%;object-fit:contain;opacity:.22}
 .cart-line .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:.3rem}
-.cart-line .name{font-family:var(--mono);font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;line-height:1.35}
-.cart-line .price{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);letter-spacing:.02em}
+.cart-line .name{font-family:var(--px);font-size:.48rem;font-weight:400;letter-spacing:.05em;text-transform:uppercase;line-height:1.7}
+.cart-line .price{font-family:var(--px);font-size:.52rem;color:var(--ink-soft);letter-spacing:.02em}
 .cart-line .row{display:flex;align-items:center;gap:.6rem;margin-top:.3rem}
 .cart-line .row .leader{transform:translateY(.35em)}
 .qty-stepper{display:flex;align-items:center;border:1.5px solid var(--ink);border-radius:999px;height:36px;overflow:hidden}
 .qty-stepper button{width:34px;height:100%;border:none;background:none;cursor:pointer;font-size:1.05rem;color:var(--ink);display:flex;align-items:center;justify-content:center;transition:background .15s ease}
 .qty-stepper button:active{background:var(--paper-2)}
 @media(hover:hover){.qty-stepper button:hover{background:var(--paper-2)}}
-.qty-stepper span{min-width:26px;text-align:center;font-family:var(--mono);font-size:.78rem;font-weight:700}
-.cart-remove{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+.qty-stepper span{min-width:26px;text-align:center;font-family:var(--px);font-size:.58rem;font-weight:400}
+.cart-remove{font-family:var(--px);font-size:.44rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
   background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:.5rem 0;margin:-.5rem 0;display:inline-block;transition:color .2s ease}
 .cart-remove:active{color:var(--pop)}
 @media(hover:hover){.cart-remove:hover{color:var(--pop)}}
-.cart-line .linetotal{font-family:var(--mono);font-size:.82rem;font-weight:800}
+.cart-line .linetotal{font-family:var(--px);font-size:.58rem;font-weight:400}
 
 .cart-foot{border-top:1.5px solid var(--ink);padding:1.2rem var(--pad) calc(1.3rem + env(safe-area-inset-bottom));background:var(--paper)}
 .cart-subtotal{display:flex;align-items:baseline;gap:.6rem;margin-bottom:1rem}
-.cart-subtotal .label{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
-.cart-subtotal .amt{font-size:1.35rem;font-weight:900;letter-spacing:-.02em}
-.checkout-btn{width:100%;background:var(--ink);color:var(--paper);border:1.5px solid var(--ink);border-radius:13px;
-  font-family:var(--mono);font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;
+.cart-subtotal .label{font-family:var(--px);font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.cart-subtotal .amt{font-family:var(--px);font-size:.95rem;font-weight:400;letter-spacing:.01em}
+.checkout-btn{width:100%;background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:0;
+  font-family:var(--px);font-weight:400;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;
+  box-shadow:3px 3px 0 0 var(--sh);
   padding:1.05rem;cursor:pointer;transition:background .25s ease,transform .15s ease,box-shadow .3s ease}
-.checkout-btn:active{transform:scale(.97)}
-@media(hover:hover){.checkout-btn:hover{background:var(--tile-ink);box-shadow:0 8px 20px -8px rgba(18,16,14,.5)}}
+.checkout-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 0 var(--sh)}
+@media(hover:hover){.checkout-btn:hover{background:var(--tile-ink);transform:translate(-1px,-1px);box-shadow:4px 4px 0 0 var(--sh)}}
 .checkout-btn:disabled{opacity:.6;cursor:default}
-.cart-legal{margin-top:.7rem;text-align:center;font-family:var(--mono);font-size:.56rem;line-height:1.5;letter-spacing:.02em;color:var(--ink-soft)}
+.cart-legal{margin-top:.7rem;text-align:center;font-family:var(--px);font-size:.4rem;line-height:1.9;letter-spacing:.02em;color:var(--ink-soft)}
 .cart-legal a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
 
 @media (max-width:480px){
@@ -303,7 +289,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .wordmark-img{display:block;width:100%;aspect-ratio:1500/362;background-position:center;background-size:contain;background-repeat:no-repeat;
   filter:drop-shadow(0 1px 1px rgba(46,36,26,.32)) drop-shadow(0 8px 13px rgba(46,36,26,.16));
   opacity:0;transform:translateY(26px);animation:rise .7s .15s var(--ease) forwards}
-.hero-meta{font-family:var(--mono);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft);margin-top:1.4rem;opacity:0;animation:rise .8s .55s var(--ease) forwards}
+.hero-meta{font-family:var(--px);font-size:.5rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin-top:1.4rem;opacity:0;animation:rise .8s .55s var(--ease) forwards}
 /* the ENTER key: a chunky pixel button in the game's .px-btn language —
    ink slab, hard offset shadow, press pushes it into the paper. The
    steps() arrow nudge is the "tap me" cue now. */
@@ -329,7 +315,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 @keyframes enterArrow{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
 .divecue{position:absolute;bottom:calc(1.3rem + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:1;
   display:flex;flex-direction:column;align-items:center;gap:.5rem;
-  font-family:var(--mono);font-size:.55rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;
+  font-family:var(--px);font-size:.42rem;font-weight:400;letter-spacing:.22em;text-transform:uppercase;
   color:var(--ink-soft);
   transition:opacity .5s ease}
 .divecue i{width:1.5px;height:26px;background:var(--ink-soft);transform-origin:top;animation:cue 1.8s ease-in-out infinite}
@@ -399,7 +385,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .drop-sub{font-family:var(--px);font-size:.4rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82);text-shadow:1px 1px 0 rgba(16,14,12,.7);margin-top:.65rem;padding-right:6rem;opacity:0;transition:opacity .8s ease .4s}
 .drop-photo.seen .drop-sub{opacity:1}
 @media(max-width:359px){.drop-sub{display:none}}
-.drop-photo .ph-note{position:absolute;top:1rem;left:var(--pad);z-index:2;font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
+.drop-photo .ph-note{position:absolute;top:1rem;left:var(--pad);z-index:2;font-family:var(--px);font-size:.44rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
 
 /* ===== OUR STORY — a quiet centered manifesto over one wide
    photograph. No frames, no tape, no props: type, paper, and the sea. */
@@ -496,17 +482,17 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   transform:rotate(-2.5deg) scaleY(.1);transform-origin:50% 12%;opacity:0;
   transition:transform .55s var(--ease) .18s,opacity .3s ease .18s}
 .note-drop.open .note-sheet{transform:rotate(-1deg) scaleY(1);opacity:1}
-.note-eyebrow{font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
-.note-q{font-family:var(--display);font-weight:900;font-size:clamp(1.15rem,3vw,1.6rem);letter-spacing:-.04em;line-height:1;
+.note-eyebrow{font-family:var(--px);font-size:.42rem;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.note-q{font-family:var(--px);font-weight:400;font-size:clamp(.72rem,2vw,1rem);letter-spacing:.01em;line-height:1.35;
   display:flex;align-items:baseline;min-height:1em;white-space:pre}
 .note-cursor{display:inline-block;width:.52em;height:.92em;background:var(--ink);transform:translateY(.08em);margin-left:.08em;
   animation:noteblink 1.1s steps(1) infinite;opacity:0}
 .note-cursor.on{opacity:1}
 @keyframes noteblink{50%{opacity:0}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.vote-btn{background:var(--ink);color:var(--paper);border:1.5px solid var(--ink);
-  border-radius:999px;font-family:var(--mono);font-weight:700;
-  font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+.vote-btn{background:var(--ink);color:var(--paper);border:2px solid var(--ink);
+  border-radius:0;box-shadow:3px 3px 0 0 var(--sh);font-family:var(--px);font-weight:400;
+  font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;
   padding:.9rem 2.4rem .9rem 2.6rem;min-height:44px;cursor:pointer;
   opacity:0;transform:translateY(10px);
   transition:opacity .5s var(--ease),transform .5s var(--ease),background .25s ease,box-shadow .3s ease}
@@ -531,24 +517,25 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 @keyframes bubbleRiseY{0%{transform:translateY(0);opacity:1}82%{opacity:1}100%{transform:translateY(-118vh);opacity:0}}
 .ib-sway{width:100%;height:100%;animation:bubbleSway 3.4s ease-in-out infinite alternate;will-change:transform}
 @keyframes bubbleSway{from{transform:translateX(-10px)}to{transform:translateX(10px)}}
-.ib-core{position:relative;width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;padding:.65rem;
-  font-family:var(--mono);font-weight:700;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;
-  color:#fff;text-shadow:0 1px 2px rgba(8,14,22,.55),0 1px 10px rgba(8,14,22,.4);
+.ib-core{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:.7rem;
+  font-family:var(--px);font-weight:400;font-size:.4rem;letter-spacing:.06em;line-height:1.8;text-transform:uppercase;
+  color:#fff;text-shadow:1px 1px 0 rgba(8,14,22,.65);
   will-change:transform,opacity;
-  animation:bubbleBirth .9s var(--ease) both}
+  animation:bubbleBirth .5s steps(4,end) both}
 @keyframes bubbleBirth{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
-/* the ring itself is drawn by hand: an imperfect open circle, a partial
-   re-stroke, and a small shine arc — fully clear inside */
-.ib-ring{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(8,14,22,.45))}
+/* the ring is PIXEL now: a stepped 8-bit circle with a square shine —
+   crisp edges, no smooth curve anywhere */
+.ib-ring{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;
+  image-rendering:pixelated;filter:drop-shadow(1px 1px 0 rgba(8,14,22,.4))}
 .info-bubble.mini .ib-core{padding:0}
-/* pop: the sphere swells and vanishes while its carrier keeps rising —
-   the flight never stops */
-.ib-core.popping{animation:bubblePop .2s ease-out forwards!important}
+/* pop: the sphere swells and vanishes in chunky steps while its carrier
+   keeps rising — the flight never stops */
+.ib-core.popping{animation:bubblePop .22s steps(3,end) forwards!important}
 @keyframes bubblePop{0%{transform:scale(1);opacity:1}55%{transform:scale(1.22);opacity:.65}100%{transform:scale(1.38);opacity:0}}
-.bub-drop{position:absolute;width:9px;height:9px;border-radius:50%;pointer-events:none;
-  border:1.5px solid rgba(255,255,255,.9);background:transparent;
-  animation:bubDrop .5s ease-out forwards;will-change:transform,opacity}
-@keyframes bubDrop{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
+.bub-drop{position:absolute;width:8px;height:8px;border-radius:0;pointer-events:none;
+  border:2px solid rgba(255,255,255,.92);background:transparent;
+  animation:bubDrop .45s steps(4,end) forwards;will-change:transform,opacity}
+@keyframes bubDrop{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.5);opacity:0}}
 
 /* ARCHIVE — banner reuses .drop-photo so it reads exactly like a series
    banner; clicking it fades the whole screen to black with the story
@@ -589,9 +576,9 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 .archive-copy{margin:auto;max-width:56ch;text-align:center;
   opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s var(--ease)}
 .archive-overlay.open .archive-copy{opacity:1;transform:translateY(0);transition-delay:.25s}
-.archive-copy p{font-size:.8rem;line-height:1.8;letter-spacing:.02em;color:rgba(233,230,223,.6)}
-.archive-copy p+p{margin-top:1rem}
-.archive-copy .archive-eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(233,230,223,.42)}
+.archive-copy p{font-family:var(--px);font-size:.52rem;line-height:2.2;letter-spacing:.02em;color:rgba(233,230,223,.6)}
+.archive-copy p+p{margin-top:1.1rem}
+.archive-copy .archive-eyebrow{font-family:var(--px);font-size:.48rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(233,230,223,.42)}
 .archive-copy .archive-eyebrow{margin-bottom:1.3rem}
 .archive-close{position:fixed;top:calc(.9rem + env(safe-area-inset-top));right:.9rem;z-index:2;width:44px;height:44px;border:none;border-radius:50%;
   background:rgba(233,230,223,.12);color:var(--paper);font-size:1.4rem;line-height:1;cursor:pointer;
@@ -613,7 +600,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   transition:background .2s ease,transform .2s ease;-webkit-tap-highlight-color:transparent}
 .gal-arrow:active{transform:scale(.94)}
 @media(hover:hover){.gal-arrow:hover{background:rgba(233,230,223,.14)}}
-.gal-count{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.22em;color:rgba(233,230,223,.6);min-width:4.2em;text-align:center}
+.gal-count{font-family:var(--px);font-size:.48rem;font-weight:400;letter-spacing:.16em;color:rgba(233,230,223,.6);min-width:4.2em;text-align:center}
 
 /* ===== ZONES — user-placeable section backdrops =================
    story-bg.jpg backs the Our Story row (always, if the file exists).
@@ -784,10 +771,9 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 .modal-color[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper);box-shadow:2px 2px 0 0 var(--sh)}
 @media(hover:hover){.modal-color:hover{border-color:var(--ink);color:var(--ink)}
   .modal-color[aria-pressed="true"]:hover{color:var(--paper)}}
-.modal-desc{font-size:.8rem;line-height:1.75;letter-spacing:.02em;color:var(--ink-soft);margin-top:1rem}
+.modal-desc{font-size:.5rem;line-height:2.1;letter-spacing:.02em;color:var(--ink-soft);margin-top:1rem}
 .modal-soldout{margin-top:1.1rem;padding:1.1rem 1.2rem;border:2px solid var(--line);border-radius:0;background:var(--paper-2)}
-.modal-soldout .sold-flag{font-weight:700}
-.modal-soldout-note{font-size:.88rem;line-height:1.55;color:var(--ink-soft);margin-top:.5rem}
+.modal-soldout-note{font-size:.5rem;line-height:2;color:var(--ink-soft);margin-top:.5rem}
 
 .modal-actions{display:flex;gap:.7rem;margin-top:1.7rem}
 .btn-buy,.btn-cart{flex:1;font-family:var(--px);font-weight:400;font-size:.5rem;letter-spacing:.04em;text-transform:uppercase;padding:.95rem .5rem;border-radius:0;cursor:pointer;
@@ -809,18 +795,18 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 
 /* FOOTER */
 .foot{padding:1.4rem var(--pad) calc(1rem + env(safe-area-inset-bottom));border-top:1.5px solid var(--ink);display:flex;flex-direction:column;gap:.7rem}
-.foot-brand{display:flex;align-items:center;gap:.45rem;font-weight:900;font-size:1.1rem;letter-spacing:-.03em}
+.foot-brand{display:flex;align-items:center;gap:.45rem;font-family:var(--px);font-weight:400;font-size:.66rem;letter-spacing:.02em}
 .foot-brand img{height:20px;width:auto}
 .foot-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
-.foot-links{display:flex;flex-wrap:wrap;gap:.5rem 1rem;font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase}
+.foot-links{display:flex;flex-wrap:wrap;gap:.5rem 1rem;font-family:var(--px);font-size:.46rem;letter-spacing:.1em;text-transform:uppercase}
 .foot-links a{color:var(--ink-soft);padding-bottom:2px;
   background:linear-gradient(currentColor,currentColor) left bottom/0 1px no-repeat;
   transition:color .2s ease,background-size .3s var(--ease)}
 @media(hover:hover){.foot-links a:hover{background-size:100% 1px}}
 .foot-top{display:flex;flex-direction:column;align-items:center;width:100%;color:var(--ink-soft)}
-.foot-tag{font-family:var(--mono);font-size:.54rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
+.foot-tag{font-family:var(--px);font-size:.42rem;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
 .foot-links a:active,.foot-links a:hover{color:var(--ink)}
-.foot-copy{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;color:var(--ink-soft);text-transform:uppercase}
+.foot-copy{font-family:var(--px);font-size:.42rem;letter-spacing:.1em;color:var(--ink-soft);text-transform:uppercase}
 
 /* TABLET (bridges the gap between phones and desktop) */
 @media(min-width:541px) and (max-width:759px){
@@ -925,7 +911,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 </head>
 <body>
 
-<a class="mark" id="mark" href="#top"><img loading="lazy" decoding="async" class="no-vs" src="logo.png" alt=""/>earlspade</a>
 
 <button class="cart-btn" id="cartBtn" aria-label="View cart" onclick="openCart()">
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1264,7 +1249,13 @@ document.querySelectorAll('.zone').forEach(zone=>{
   const m=(img.style.backgroundImage||'').match(/url\(["']?([^"')]+)/);
   if(!m) return;
   const probe=new Image();
-  probe.onload=()=>zone.classList.add('has-bg');
+  probe.onload=()=>{
+    zone.classList.add('has-bg');
+    /* if a series was opened before the photo finished (deep link on a
+       slow connection), the bubbles bailed on the has-bg gate — launch
+       them now that the white ink has its backdrop */
+    if(zone.id==='series'&&document.querySelector('.drop.open')) launchInfoBubbles();
+  };
   probe.src=m[1];
 });
 
@@ -1658,15 +1649,9 @@ function onScroll(){
     ticking=true;
   }
 }
-const mark=document.getElementById('mark');
-/* Cache the viewport height and only flip the corner-mark class when the
-   threshold is actually crossed, so each scroll frame stays cheap (no layout
-   read, no redundant classList writes) — keeps touch scrolling fluid. */
-let _vh=window.innerHeight,_markOn=false;
+let _vh=window.innerHeight;
 const _divecue=document.getElementById('divecue');
 function updateMark(){
-  const on=window.scrollY > _vh*0.72;
-  if(on!==_markOn){ _markOn=on; mark.classList.toggle('show',on); }
   if(_divecue&&window.scrollY>40) _divecue.classList.add('off');
 }
 
@@ -2036,10 +2021,19 @@ function makeBubble(opts){
   sway.style.animationDelay=(-Math.random()*3).toFixed(2)+'s';
   const core=document.createElement('div');
   core.className='ib-core';
-  core.innerHTML='<svg class="ib-ring" viewBox="0 0 100 100" fill="none" stroke="rgba(255,255,255,.9)" stroke-linecap="round" aria-hidden="true">'
-    +'<path stroke-width="1.7" d="M 50,5.5 A 45,46 0 1 1 47.5,5.6"/>'
-    +'<path stroke-width="1.1" opacity=".45" d="M 12.5,64 A 44,45 0 0 1 9.5,44"/>'
-    +'<path stroke-width="2" opacity=".85" d="M 25,21.5 A 33,33 0 0 1 44.5,11.5"/>'
+  /* an 8-bit circle: stepped outline cells on a 16-grid, plus a square
+     shine in the upper-left — every edge stays a hard pixel */
+  core.innerHTML='<svg class="ib-ring" viewBox="0 0 16 16" shape-rendering="crispEdges" fill="rgba(255,255,255,.92)" aria-hidden="true">'
+    +'<rect x="5" y="0" width="6" height="1"/><rect x="5" y="15" width="6" height="1"/>'
+    +'<rect x="3" y="1" width="2" height="1"/><rect x="11" y="1" width="2" height="1"/>'
+    +'<rect x="3" y="14" width="2" height="1"/><rect x="11" y="14" width="2" height="1"/>'
+    +'<rect x="2" y="2" width="1" height="1"/><rect x="13" y="2" width="1" height="1"/>'
+    +'<rect x="2" y="13" width="1" height="1"/><rect x="13" y="13" width="1" height="1"/>'
+    +'<rect x="1" y="3" width="1" height="2" /><rect x="14" y="3" width="1" height="2"/>'
+    +'<rect x="1" y="11" width="1" height="2"/><rect x="14" y="11" width="1" height="2"/>'
+    +'<rect x="0" y="5" width="1" height="6"/><rect x="15" y="5" width="1" height="6"/>'
+    +'<rect x="3" y="3" width="1" height="1" opacity=".7"/>'
+    +'<rect x="4" y="2" width="2" height="1" opacity=".7"/><rect x="2" y="4" width="1" height="2" opacity=".7"/>'
     +'</svg>';
   if(opts.phrase){
     const t=document.createElement('span');
