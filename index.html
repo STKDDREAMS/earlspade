@@ -407,7 +407,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* ===== THREE THINGS — a row of hand-drawn objects in the bottle's
    illustrated language: postcard -> our story page, bottle -> the
    series 3 note, photo stack -> the gallery lightbox. */
-.things-row{display:grid;grid-template-columns:repeat(3,1fr);align-items:end;justify-items:center;gap:clamp(.5rem,3vw,2.5rem)}
+.things-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;justify-items:center;gap:clamp(.5rem,3vw,2.5rem)}
 .thing{display:flex;flex-direction:column;align-items:center;gap:.15rem;border:none;background:transparent;padding:0 .2rem;
   cursor:pointer;color:var(--ink);text-decoration:none;font-family:inherit;
   transition:transform .3s var(--ease);-webkit-tap-highlight-color:transparent}
@@ -428,24 +428,28 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* keyboard users get the brand outline */
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D70000;outline-offset:2px}
 
-/* ===== mini leaderboard — the top three in a compact red pixel
-   frame above the play button. Stacked rows, fixed width: long names
-   can never stretch the page sideways again. Appears only with real
-   scores. */
-.mini-board{display:flex;flex-direction:column;align-items:stretch;gap:.42rem;
-  width:min(230px,72vw);margin:0 auto .9rem;padding:.55rem .6rem .6rem;
-  font-family:var(--px);font-size:.34rem;letter-spacing:.04em;text-transform:uppercase;
-  background:rgba(233,230,223,.96);border:2px solid var(--ink);
-  box-shadow:0 0 0 4px #C9463B,4px 4px 0 4px rgba(22,20,18,.22);
+/* ===== THE PODIUM — the top three divers stand on pixel steps:
+   gold, silver, bronze. Small, centered, and it can never stretch
+   the page (fixed step widths + ellipsized names). ===== */
+.mini-board{display:flex;align-items:flex-end;justify-content:center;gap:.5rem;
+  width:fit-content;margin:0 auto 1.2rem;font-family:var(--px);text-transform:uppercase;
   opacity:0;transform:translateY(8px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
 .mini-board.in{opacity:1;transform:none}
-.mini-board svg{align-self:center;width:15px;height:15px;margin-bottom:.1rem}
-.mini-board .mbd{display:none}
-.mini-board .mbe{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;min-width:0}
-.mini-board .mbn{color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mini-board .mbe:first-of-type .mbn,.mini-board .mbe:first-of-type .mbs{color:#D70000}
-.mini-board .mbs{font-size:.3rem;color:var(--ink-soft);opacity:.85;font-variant-numeric:tabular-nums;flex:none}
-@media(max-width:560px){.mini-board{font-size:.3rem;margin-bottom:.7rem}.mini-board .mbs{font-size:.26rem}}
+.pod-col{display:flex;flex-direction:column;align-items:center;gap:.3rem;width:min(86px,24vw)}
+.pod-col svg{margin-bottom:.05rem}
+.pod-col .mbn{font-size:.32rem;letter-spacing:.02em;color:var(--ink-soft);
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod-col .mbs{font-size:.28rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.p1 .mbn,.p1 .mbs{color:#D70000}
+.pod-block{display:block;width:100%;border:2px solid var(--ink);
+  box-shadow:2px 2px 0 0 rgba(22,20,18,.22);position:relative}
+.p1 .pod-block{height:46px;background:#E8B33C}
+.p2 .pod-block{height:31px;background:#C9CFD4}
+.p3 .pod-block{height:22px;background:#C98A5A}
+.pod-block::after{content:"1";position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-size:.42rem;color:rgba(22,20,18,.5)}
+.p2 .pod-block::after{content:"2"}
+.p3 .pod-block::after{content:"3"}
 
 /* SERIES 3 — a pixel-art treasure chest moored below the archive.
    Press it: the lid swaps open, the gold inside twinkles, and the
@@ -992,6 +996,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
           </radialGradient>
           <clipPath id="hbClip"><path d="M -58,-20 C -65,-20 -67,-11 -67,0 C -67,11 -65,20 -58,20 L 20,20 C 29,20 33,14 38,10.5 C 42,8 47,7.5 50,7.5 L 50,-7.5 C 47,-7.5 42,-8 38,-10.5 C 33,-14 29,-20 20,-20 Z"/></clipPath>
         </defs></svg>
+  <!-- THE PODIUM — top three divers on gold / silver / bronze steps -->
+  <div class="mini-board" id="miniBoard" hidden aria-label="Top three game scores">
+    <div class="pod-col p2"><span class="mbn" id="mb2"></span><span class="mbs" id="ms2"></span><i class="pod-block"></i></div>
+    <div class="pod-col p1">
+      <svg width="15" height="15" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="8" height="1" fill="#E8B33C"/><rect x="2" y="2" width="8" height="3" fill="#E8B33C"/><rect x="0" y="2" width="2" height="1" fill="#E8B33C"/><rect x="10" y="2" width="2" height="1" fill="#E8B33C"/><rect x="0" y="3" width="1" height="2" fill="#E8B33C"/><rect x="11" y="3" width="1" height="2" fill="#E8B33C"/><rect x="1" y="5" width="1" height="1" fill="#E8B33C"/><rect x="10" y="5" width="1" height="1" fill="#E8B33C"/><rect x="3" y="5" width="6" height="2" fill="#C4922A"/><rect x="4" y="7" width="4" height="1" fill="#E8B33C"/><rect x="5" y="8" width="2" height="2" fill="#C4922A"/><rect x="3" y="10" width="6" height="1" fill="#E8B33C"/><rect x="6" y="3" width="1" height="1" fill="#F2CC70"/></svg>
+      <span class="mbn" id="mb1"></span><span class="mbs" id="ms1"></span><i class="pod-block"></i>
+    </div>
+    <div class="pod-col p3"><span class="mbn" id="mb3"></span><span class="mbs" id="ms3"></span><i class="pod-block"></i></div>
+  </div>
   <div class="things-row r">
 
     <a class="thing" href="about.html" aria-label="About us">
@@ -1000,7 +1013,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
     </a>
 
     <a class="thing" href="game.html" aria-label="Play our game">
-      <span class="mini-board" id="miniBoard" hidden><svg width="13" height="13" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="8" height="1" fill="#E8B33C"/><rect x="2" y="2" width="8" height="3" fill="#E8B33C"/><rect x="0" y="2" width="2" height="1" fill="#E8B33C"/><rect x="10" y="2" width="2" height="1" fill="#E8B33C"/><rect x="0" y="3" width="1" height="2" fill="#E8B33C"/><rect x="11" y="3" width="1" height="2" fill="#E8B33C"/><rect x="1" y="5" width="1" height="1" fill="#E8B33C"/><rect x="10" y="5" width="1" height="1" fill="#E8B33C"/><rect x="3" y="5" width="6" height="2" fill="#C4922A"/><rect x="4" y="7" width="4" height="1" fill="#E8B33C"/><rect x="5" y="8" width="2" height="2" fill="#C4922A"/><rect x="3" y="10" width="6" height="1" fill="#E8B33C"/><rect x="6" y="3" width="1" height="1" fill="#F2CC70"/></svg><span class="mbe"><span class="mbn" id="mb1"></span><span class="mbs" id="ms1"></span></span><span class="mbd">&middot;</span><span class="mbe"><span class="mbn" id="mb2"></span><span class="mbs" id="ms2"></span></span><span class="mbd">&middot;</span><span class="mbe"><span class="mbn" id="mb3"></span><span class="mbs" id="ms3"></span></span></span>
       <svg class="thing-art" viewBox="0 0 120 102" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true"><ellipse cx="60" cy="94" rx="32" ry="5.5" fill="url(#gShadow)"/><g class="pc-float" style="animation-delay:.5s"><rect x="45" y="14" width="30" height="5" fill="#2A1D10"/><rect x="35" y="19" width="10" height="5" fill="#2A1D10"/><rect x="45" y="19" width="5" height="5" fill="#D70000"/><rect x="50" y="19" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="19" width="5" height="5" fill="#5F9D96"/><rect x="75" y="19" width="10" height="5" fill="#2A1D10"/><rect x="30" y="24" width="5" height="5" fill="#2A1D10"/><rect x="35" y="24" width="15" height="5" fill="#D70000"/><rect x="50" y="24" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="24" width="15" height="5" fill="#5F9D96"/><rect x="85" y="24" width="5" height="5" fill="#2A1D10"/><rect x="25" y="29" width="5" height="5" fill="#2A1D10"/><rect x="30" y="29" width="20" height="5" fill="#D70000"/><rect x="50" y="29" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="29" width="20" height="5" fill="#5F9D96"/><rect x="90" y="29" width="5" height="5" fill="#2A1D10"/><rect x="25" y="34" width="5" height="5" fill="#2A1D10"/><rect x="30" y="34" width="15" height="5" fill="#D70000"/><rect x="45" y="34" width="5" height="5" fill="#FFFFFF"/><rect x="50" y="34" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="34" width="20" height="5" fill="#5F9D96"/><rect x="90" y="34" width="5" height="5" fill="#2A1D10"/><rect x="20" y="39" width="5" height="5" fill="#2A1D10"/><rect x="25" y="39" width="15" height="5" fill="#D70000"/><rect x="40" y="39" width="10" height="5" fill="#FFFFFF"/><rect x="50" y="39" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="39" width="25" height="5" fill="#5F9D96"/><rect x="95" y="39" width="5" height="5" fill="#2A1D10"/><rect x="20" y="44" width="5" height="5" fill="#2A1D10"/><rect x="25" y="44" width="20" height="5" fill="#D70000"/><rect x="45" y="44" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="44" width="20" height="5" fill="#5F9D96"/><rect x="95" y="44" width="5" height="5" fill="#2A1D10"/><rect x="20" y="49" width="5" height="5" fill="#2A1D10"/><rect x="25" y="49" width="20" height="5" fill="#D70000"/><rect x="45" y="49" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="49" width="20" height="5" fill="#5F9D96"/><rect x="95" y="49" width="5" height="5" fill="#2A1D10"/><rect x="20" y="54" width="5" height="5" fill="#2A1D10"/><rect x="25" y="54" width="20" height="5" fill="#D70000"/><rect x="45" y="54" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="54" width="20" height="5" fill="#5F9D96"/><rect x="95" y="54" width="5" height="5" fill="#2A1D10"/><rect x="20" y="59" width="5" height="5" fill="#2A1D10"/><rect x="25" y="59" width="5" height="5" fill="#9E0000"/><rect x="30" y="59" width="15" height="5" fill="#D70000"/><rect x="45" y="59" width="30" height="5" fill="#EDE7DA"/><rect x="75" y="59" width="10" height="5" fill="#5F9D96"/><rect x="85" y="59" width="5" height="5" fill="#35706B"/><rect x="90" y="59" width="5" height="5" fill="#5F9D96"/><rect x="95" y="59" width="5" height="5" fill="#2A1D10"/><rect x="25" y="64" width="5" height="5" fill="#2A1D10"/><rect x="30" y="64" width="5" height="5" fill="#9E0000"/><rect x="35" y="64" width="15" height="5" fill="#D70000"/><rect x="50" y="64" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="64" width="10" height="5" fill="#5F9D96"/><rect x="80" y="64" width="10" height="5" fill="#35706B"/><rect x="90" y="64" width="5" height="5" fill="#2A1D10"/><rect x="25" y="69" width="5" height="5" fill="#2A1D10"/><rect x="30" y="69" width="10" height="5" fill="#9E0000"/><rect x="40" y="69" width="10" height="5" fill="#D70000"/><rect x="50" y="69" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="69" width="5" height="5" fill="#5F9D96"/><rect x="75" y="69" width="15" height="5" fill="#35706B"/><rect x="90" y="69" width="5" height="5" fill="#2A1D10"/><rect x="30" y="74" width="5" height="5" fill="#2A1D10"/><rect x="35" y="74" width="10" height="5" fill="#9E0000"/><rect x="45" y="74" width="5" height="5" fill="#D70000"/><rect x="50" y="74" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="74" width="5" height="5" fill="#5F9D96"/><rect x="75" y="74" width="10" height="5" fill="#35706B"/><rect x="85" y="74" width="5" height="5" fill="#2A1D10"/><rect x="35" y="79" width="10" height="5" fill="#2A1D10"/><rect x="45" y="79" width="5" height="5" fill="#9E0000"/><rect x="50" y="79" width="20" height="5" fill="#EDE7DA"/><rect x="70" y="79" width="5" height="5" fill="#35706B"/><rect x="75" y="79" width="10" height="5" fill="#2A1D10"/><rect x="45" y="84" width="30" height="5" fill="#2A1D10"/></g></svg>
       <span class="hb-caption"><span class="hb-top">take a break</span><span class="hb-series">play our game</span></span>
     </a>

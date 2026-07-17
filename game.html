@@ -64,7 +64,6 @@ body{
   overscroll-behavior:none;      /* no pull-to-refresh */
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
   display:flex;flex-direction:column;
-  padding-top:env(safe-area-inset-top);
 }
 /* paper grain, same recipe as the main site (no blend mode) */
 body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opacity:.045;
@@ -112,22 +111,20 @@ body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opa
 .board-btn{width:46px;height:46px}
 /* THE DEEP TEN wears the red pixel frame — compact, contained, unmistakable */
 #boardDialog{border:2px solid var(--ink);box-shadow:0 0 0 4px #C9463B,5px 5px 0 4px rgba(22,20,18,.28)}
-/* small screens: tighten the floating HUD so nothing ever clips */
-@media(max-width:400px){
-  .hud{padding-left:.45rem;padding-right:.45rem}
-  .hud-in{gap:.35rem}
-  .hud-left{gap:.35rem}
-  .hud-stats{gap:.35rem}
-  .back{font-size:.38rem;padding:.28rem .4rem .28rem .32rem}
-  .hud-right{gap:.35rem}
+/* phones + in-app browsers: the HUD becomes TWO rows — back/stats up
+   top, controls right-aligned beneath — so chips can never overlap */
+@media(max-width:560px){
+  .hud{padding-left:.5rem;padding-right:.5rem}
+  .hud-in{flex-wrap:wrap;row-gap:.4rem}
+  .hud-left{width:100%;justify-content:space-between;gap:.4rem}
+  .hud-right{width:100%;justify-content:flex-end;gap:.45rem}
 }
 @media(max-width:350px){
   .hud-stat:nth-child(2){display:none}   /* BEST folds away on tiny phones */
 }
 
 /* ===== PLAY AREA ===== */
-.stage{flex:1;min-height:0;position:relative;display:flex;justify-content:center;
-  padding:0 0 env(safe-area-inset-bottom)}
+.stage{flex:1;min-height:0;position:relative;display:flex;justify-content:center}
 .play{position:relative;height:100%;width:100%}
 canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
   touch-action:none;             /* the finger belongs to the game */
@@ -143,7 +140,9 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 .howto.off{opacity:0}
 
 /* ===== PIXEL DIALOG (same look as the site's fauna cards) ===== */
-.dialog{position:absolute;left:50%;top:8%;transform:translateX(-50%);z-index:10;
+/* z-index 25 > .hud's 20: dialogs are modal and must paint over the
+   floating HUD buttons, not under them */
+.dialog{position:absolute;left:50%;top:8%;transform:translateX(-50%);z-index:25;
   width:min(320px,88vw);background:var(--paper);color:var(--ink);
   max-height:86%;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
   padding:1.1rem 1rem 1.15rem;border:2px solid var(--ink);box-shadow:5px 5px 0 0 rgba(22,20,18,.28);
@@ -167,10 +166,16 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
    can type into. */
 #nameInput,#emailInput{width:100%;min-width:0;box-sizing:border-box;border:2px solid var(--ink);
   background:var(--paper);color:var(--ink);
-  font-family:var(--px);font-size:16px;text-transform:uppercase;
+  font-family:var(--px);font-size:16px;
   padding:.55rem .55rem .5rem;letter-spacing:.02em;border-radius:0;-webkit-appearance:none;
   box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
-#nameInput::placeholder,#emailInput::placeholder{color:#9a968e;text-transform:uppercase}
+/* names live in caps on the board, so the field types in caps too —
+   what you see is exactly what gets saved. Email keeps true case in
+   a mono font so there's never any guessing while typing. */
+#nameInput{text-transform:uppercase}
+#emailInput{font-family:var(--mono);font-weight:700;text-transform:none;letter-spacing:.03em}
+#nameInput::placeholder{color:#9a968e;text-transform:uppercase}
+#emailInput::placeholder{color:#9a968e;text-transform:none}
 #nameInput:focus,#emailInput:focus{background:#fff}
 #nameInput:focus,#emailInput:focus{outline:2px solid var(--red);outline-offset:1px}
 #nameInput.bad,#emailInput.bad{border-color:var(--red);background:#FBEDEA}
@@ -281,6 +286,14 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 /* keyboard users get the brand outline */
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 
+/* two-row HUD spacing (must trail the base rules to win the cascade) */
+@media(max-width:560px){
+  .howto{top:calc(152px + env(safe-area-inset-top))}
+  #toast{top:calc(178px + env(safe-area-inset-top))}
+  .play-chip{top:calc(156px + env(safe-area-inset-top))}
+  #beatChip{top:calc(186px + env(safe-area-inset-top))}
+}
+
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
@@ -304,8 +317,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
   }
   function set(){document.documentElement.style.setProperty('--vh100',measure()+'px');}
   set();
+  var hLast=window.innerHeight,hT=null;
   window.addEventListener('resize',function(){
-    if(window.innerWidth!==w){w=window.innerWidth;set();}
+    if(window.innerWidth!==w){w=window.innerWidth;hLast=window.innerHeight;set();return;}
+    /* height-only change (desktop resize, in-app chrome settling):
+       accept it after a beat so the artwork always fills the window */
+    if(Math.abs(window.innerHeight-hLast)>40){
+      clearTimeout(hT);
+      hT=setTimeout(function(){hLast=window.innerHeight;set();},220);
+    }
   },{passive:true});
   window.addEventListener('orientationchange',function(){
     setTimeout(function(){w=window.innerWidth;set();},300);
@@ -327,27 +347,12 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
   <div class="hud-right">
     <div class="next-wrap"><span class="next-label">NEXT</span><canvas id="nextPrev" width="60" height="60"></canvas></div>
     <button class="mute-btn" id="aquaBtn" aria-haspopup="dialog" aria-controls="aquaDialog" aria-label="The aquarium">
-      <!-- a proper pixel fish: red body, ink outline, white eye, fanned tail -->
-      <svg width="24" height="24" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">
-        <rect x="4" y="4" width="8" height="1" fill="#161412"/>
-        <rect x="3" y="5" width="1" height="1" fill="#161412"/><rect x="12" y="5" width="1" height="1" fill="#161412"/>
-        <rect x="2" y="6" width="1" height="4" fill="#161412"/><rect x="13" y="6" width="1" height="1" fill="#161412"/>
-        <rect x="3" y="10" width="1" height="1" fill="#161412"/><rect x="12" y="10" width="1" height="1" fill="#161412"/>
-        <rect x="4" y="11" width="8" height="1" fill="#161412"/>
-        <rect x="4" y="5" width="8" height="6" fill="#D70000"/>
-        <rect x="3" y="6" width="1" height="4" fill="#D70000"/>
-        <rect x="12" y="6" width="1" height="4" fill="#D70000"/>
-        <rect x="5" y="5" width="3" height="2" fill="#E8534A"/>
-        <rect x="13" y="7" width="1" height="2" fill="#161412"/>
-        <rect x="14" y="5" width="2" height="2" fill="#D70000"/>
-        <rect x="14" y="9" width="2" height="2" fill="#D70000"/>
-        <rect x="14" y="7" width="1" height="2" fill="#9E0000"/>
-        <rect x="15" y="4" width="1" height="1" fill="#161412"/><rect x="15" y="11" width="1" height="1" fill="#161412"/>
-        <rect x="4" y="7" width="2" height="2" fill="#FFFFFF"/>
-        <rect x="5" y="7" width="1" height="1" fill="#161412"/>
-        <rect x="7" y="9" width="4" height="1" fill="#9E0000"/>
-        <rect x="0" y="7" width="2" height="1" fill="#7FB2D9"/>
-        <rect x="1" y="5" width="1" height="1" fill="#7FB2D9"/>
+      <!-- a plain pixel "i": info about every creature you've made -->
+      <svg width="20" height="20" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true">
+        <rect x="5" y="1" width="2" height="2" fill="#161412"/>
+        <rect x="4" y="4" width="3" height="1" fill="#161412"/>
+        <rect x="5" y="5" width="2" height="4" fill="#161412"/>
+        <rect x="4" y="9" width="4" height="1" fill="#161412"/>
       </svg>
     </button>
     <button class="mute-btn board-btn" id="boardBtn" aria-haspopup="dialog" aria-controls="boardDialog" aria-label="Leaderboard">
@@ -402,7 +407,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
       <div class="lb" id="lbList" style="display:none"></div>
       <div class="name-row" id="nameRow" style="display:none">
         <input id="nameInput" maxlength="16" placeholder="YOUR NAME" autocomplete="nickname" enterkeyhint="next"/>
-        <input id="emailInput" type="email" maxlength="254" placeholder="YOUR EMAIL" autocomplete="email" inputmode="email" enterkeyhint="send"/>
+        <input id="emailInput" type="email" maxlength="254" placeholder="your@email.com" autocomplete="email" inputmode="email" enterkeyhint="send"/>
         <p class="gift-note">you may receive a little gift from earlspade</p>
         <button class="px-btn" id="submitBtn">SAVE MY SCORE</button>
       </div>
