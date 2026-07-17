@@ -30,6 +30,7 @@
 }
 </script>
 <title>earlspade — the game</title>
+<meta name="theme-color" id="themeColor" content="#E9E6DF"/>
 <link rel="icon" href="logo.png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
 <link rel="preload" as="image" href="logo.png"/>
@@ -47,10 +48,14 @@
 :root{
   --paper:#E9E6DF;
   --paper-2:#DDD8CC;
+  --paper-hi:#F4F1E9;            /* lifted cream — top light on chips */
   --ink:#161412;
   --ink-soft:#6B6862;
   --red:#D70000;
   --gold:#E8B33C;
+  --gold-deep:#C4922A;
+  --gold-hi:#F2CC70;
+  --chip:linear-gradient(180deg,var(--paper-hi),var(--paper));
   --mono:'Space Mono',ui-monospace,monospace;
   --px:'Press Start 2P',var(--mono);
 }
@@ -79,22 +84,23 @@ body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opa
 /* the way home: flower + wordmark as ONE pixel chip */
 .back{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--px);font-size:.44rem;color:var(--ink);
   text-decoration:none;letter-spacing:.04em;white-space:nowrap;
-  border:2px solid var(--ink);background:var(--paper);padding:.32rem .5rem .32rem .4rem;
+  border:2px solid var(--ink);background:var(--chip);padding:.32rem .5rem .32rem .4rem;
   box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
+.back-arrow{display:block;flex:none}
 .back-logo{image-rendering:pixelated;width:16px;height:18px;flex:none;display:block}
 .back:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 rgba(22,20,18,.22)}
 .hud-stats{display:flex;align-items:stretch;gap:.5rem;font-family:var(--px)}
 .hud-stat{display:flex;flex-direction:column;gap:.26rem;align-items:flex-start;
-  border:2px solid var(--ink);background:var(--paper);padding:.3rem .5rem .26rem;
+  border:2px solid var(--ink);background:var(--chip);padding:.3rem .5rem .26rem;
   box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
-.hud-label{font-size:.34rem;color:var(--ink-soft);letter-spacing:.08em}
+.hud-label{font-size:.34rem;color:var(--gold-deep);letter-spacing:.08em}
 .hud-value{font-size:.62rem;color:var(--ink);font-variant-numeric:tabular-nums}
 .hud-right{display:flex;align-items:center;gap:.55rem}
 /* next-fruit preview: a small pixel-framed swatch */
 .next-wrap{display:flex;flex-direction:column;align-items:center;gap:.24rem}
-.next-label{font-family:var(--px);font-size:.34rem;color:var(--ink-soft);letter-spacing:.08em}
+.next-label{font-family:var(--px);font-size:.34rem;color:var(--gold-deep);letter-spacing:.08em}
 #nextPrev{width:30px;height:30px;display:block}
-.mute-btn{width:42px;height:42px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);
+.mute-btn{width:42px;height:42px;border:2px solid var(--ink);background:var(--chip);color:var(--ink);
   font-family:var(--px);font-size:.6rem;cursor:pointer;box-shadow:2px 2px 0 0 rgba(22,20,18,.28);line-height:1}
 .mute-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 rgba(22,20,18,.28)}
 .mute-btn{position:relative;display:inline-flex;align-items:center;justify-content:center}
@@ -103,14 +109,15 @@ body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opa
   height:2.5px;background:var(--red);transform:rotate(-32deg)}
 @media(hover:hover){
   .mute-btn:hover,.px-btn:hover{animation:btnHop .28s steps(3,end)}
+  /* the gold wink: ink buttons flash gold type, ghosts take a gold frame */
+  .px-btn:hover{color:var(--gold-hi)}
+  .px-btn.ghost:hover{color:var(--ink);border-color:var(--gold-deep)}
 }
 @keyframes btnHop{0%{transform:translateY(0)}40%{transform:translateY(-3px)}100%{transform:translateY(0)}}
-.next-wrap{border:2px solid var(--ink);background:var(--paper);padding:.26rem .45rem .3rem;
+.next-wrap{border:2px solid var(--ink);background:var(--chip);padding:.26rem .45rem .3rem;
   box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
 
 .board-btn{width:46px;height:46px}
-/* THE DEEP TEN wears the red pixel frame — compact, contained, unmistakable */
-#boardDialog{border:2px solid var(--ink);box-shadow:0 0 0 4px #C9463B,5px 5px 0 4px rgba(22,20,18,.28)}
 /* phones + in-app browsers: the HUD becomes TWO rows — back/stats up
    top, controls right-aligned beneath — so chips can never overlap */
 @media(max-width:560px){
@@ -143,13 +150,17 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 /* z-index 25 > .hud's 20: dialogs are modal and must paint over the
    floating HUD buttons, not under them */
 .dialog{position:absolute;left:50%;top:8%;transform:translateX(-50%);z-index:25;
-  width:min(320px,88vw);background:var(--paper);color:var(--ink);
+  width:min(320px,88vw);background:var(--chip);color:var(--ink);
   max-height:86%;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
-  padding:1.1rem 1rem 1.15rem;border:2px solid var(--ink);box-shadow:5px 5px 0 0 rgba(22,20,18,.28);
+  padding:1.1rem 1rem 1.15rem;border:2px solid var(--ink);
+  box-shadow:0 0 0 3px var(--gold),6px 6px 0 3px rgba(22,20,18,.28);
   font-family:var(--px);text-align:center;
   opacity:0;visibility:hidden;transition:opacity .16s steps(3,end),visibility 0s linear .16s}
 .dialog.show{opacity:1;visibility:visible;transition:opacity .16s steps(3,end)}
 .dialog h2{font-size:.66rem;font-weight:400;margin-bottom:.85rem;letter-spacing:.04em}
+/* the engraved-plate rule: a short gold pixel bar under every title */
+.dialog h2::after{content:"";display:block;width:26px;height:3px;margin:.55rem auto 0;
+  background:var(--gold);box-shadow:2px 2px 0 0 rgba(22,20,18,.25)}
 .dialog .big-score{font-size:1.1rem;color:var(--red);margin-bottom:.8rem;font-variant-numeric:tabular-nums}
 .dialog .sub{font-size:.4rem;color:var(--ink-soft);line-height:2;margin-bottom:.75rem}
 .lb{margin:0 0 .85rem;text-align:left}
@@ -165,15 +176,16 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
    size, ink border, hard offset shadow: they read like px-btns you
    can type into. */
 #nameInput,#emailInput{width:100%;min-width:0;box-sizing:border-box;border:2px solid var(--ink);
-  background:var(--paper);color:var(--ink);
+  background:var(--chip);color:var(--ink);
   font-family:var(--px);font-size:16px;
   padding:.55rem .55rem .5rem;letter-spacing:.02em;border-radius:0;-webkit-appearance:none;
   box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
 /* names live in caps on the board, so the field types in caps too —
-   what you see is exactly what gets saved. Email keeps true case in
-   a mono font so there's never any guessing while typing. */
+   what you see is exactly what gets saved. Email shares the same pixel
+   font but keeps true case (Press Start 2P has real lowercase glyphs),
+   so there's never any guessing while typing. */
 #nameInput{text-transform:uppercase}
-#emailInput{font-family:var(--mono);font-weight:700;text-transform:none;letter-spacing:.03em}
+#emailInput{text-transform:none}
 #nameInput::placeholder{color:#9a968e;text-transform:uppercase}
 #emailInput::placeholder{color:#9a968e;text-transform:none}
 #nameInput:focus,#emailInput:focus{background:#fff}
@@ -185,7 +197,7 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
   box-shadow:3px 3px 0 0 rgba(22,20,18,.28)}
 .px-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 rgba(22,20,18,.28)}
 .px-btn:disabled{opacity:.55;cursor:default}
-.px-btn.ghost{background:var(--paper);color:var(--ink)}
+.px-btn.ghost{background:var(--chip);color:var(--ink)}
 .px-btn.wide{width:100%;padding:.8rem .9rem;font-size:.56rem}
 .px-btn.red{background:var(--red);border-color:var(--red)}
 .dialog .row2{display:flex;gap:.6rem}
@@ -244,7 +256,7 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 /* pixel toast — announcements slide in under the HUD */
 #toast{position:absolute;top:calc(92px + env(safe-area-inset-top));left:50%;transform:translateX(-50%) translateY(-14px);z-index:5;
   pointer-events:none;font-family:var(--px);font-size:.42rem;letter-spacing:.08em;white-space:nowrap;
-  background:var(--paper);border:2px solid var(--ink);color:var(--ink);
+  background:var(--chip);border:2px solid var(--ink);color:var(--ink);
   padding:.5rem .7rem;box-shadow:3px 3px 0 0 rgba(22,20,18,.25);
   opacity:0;visibility:hidden}
 #toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);
@@ -338,7 +350,16 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 <header class="hud">
  <div class="hud-in">
   <div class="hud-left">
-    <a class="back" href="/#series"><img class="back-logo" src="logo.png" alt="" width="16" height="18"/>earlspade</a>
+    <a class="back" href="/#series" aria-label="Back to the earlspade shop">
+      <!-- pixel arrow: this chip is the way OUT, and it says so -->
+      <svg class="back-arrow" width="12" height="12" viewBox="0 0 10 10" shape-rendering="crispEdges" aria-hidden="true">
+        <rect x="3" y="1" width="2" height="2" fill="#161412"/>
+        <rect x="1" y="4" width="8" height="2" fill="#161412"/>
+        <rect x="3" y="7" width="2" height="2" fill="#161412"/>
+        <rect x="2" y="3" width="2" height="1" fill="#161412"/>
+        <rect x="2" y="6" width="2" height="1" fill="#161412"/>
+      </svg>
+      <img class="back-logo" src="logo.png" alt="" width="16" height="18"/>SHOP</a>
     <div class="hud-stats">
       <div class="hud-stat"><span class="hud-label">SCORE</span><span class="hud-value" id="score">0</span></div>
       <div class="hud-stat"><span class="hud-label">BEST</span><span class="hud-value" id="best">0</span></div>
