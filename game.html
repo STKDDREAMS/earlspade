@@ -161,13 +161,17 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 .lb-row.me{color:var(--red)}
 .lb-note{font-size:.38rem;color:var(--ink-soft);line-height:2;margin-bottom:.8rem}
 .name-row{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.85rem}
-/* 16px minimum or iOS Safari zooms the whole page in on focus and
-   leaves it there — the classic mobile heartbreak. Typed text wears
-   the mono face at a real size; the pixel font stays on the labels. */
-#nameInput,#emailInput{width:100%;min-width:0;box-sizing:border-box;border:2px solid var(--ink);background:#fff;color:var(--ink);
-  font-family:var(--mono);font-weight:700;font-size:16px;text-transform:uppercase;
-  padding:.5rem .55rem;letter-spacing:.06em;border-radius:0;-webkit-appearance:none}
-#nameInput::placeholder,#emailInput::placeholder{text-transform:none;font-weight:400;color:#9a968e}
+/* Full pixel treatment on the inputs — but NEVER under 16px, or iOS
+   zooms the page on focus and leaves it there. Pixel font at a real
+   size, ink border, hard offset shadow: they read like px-btns you
+   can type into. */
+#nameInput,#emailInput{width:100%;min-width:0;box-sizing:border-box;border:2px solid var(--ink);
+  background:var(--paper);color:var(--ink);
+  font-family:var(--px);font-size:16px;text-transform:uppercase;
+  padding:.55rem .55rem .5rem;letter-spacing:.02em;border-radius:0;-webkit-appearance:none;
+  box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
+#nameInput::placeholder,#emailInput::placeholder{color:#9a968e;text-transform:uppercase}
+#nameInput:focus,#emailInput:focus{background:#fff}
 #nameInput:focus,#emailInput:focus{outline:2px solid var(--red);outline-offset:1px}
 #nameInput.bad,#emailInput.bad{border-color:var(--red);background:#FBEDEA}
 .gift-note{font-size:.34rem;color:var(--ink-soft);line-height:2;text-align:left;margin:0}
@@ -323,7 +327,28 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
   <div class="hud-right">
     <div class="next-wrap"><span class="next-label">NEXT</span><canvas id="nextPrev" width="60" height="60"></canvas></div>
     <button class="mute-btn" id="aquaBtn" aria-haspopup="dialog" aria-controls="aquaDialog" aria-label="The aquarium">
-      <svg width="18" height="18" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="3" y="4" width="6" height="4" fill="#161412"/><rect x="4" y="3" width="4" height="1" fill="#161412"/><rect x="4" y="8" width="4" height="1" fill="#161412"/><rect x="1" y="4" width="2" height="1" fill="#D70000"/><rect x="0" y="5" width="2" height="2" fill="#D70000"/><rect x="1" y="7" width="2" height="1" fill="#D70000"/><rect x="9" y="5" width="1" height="1" fill="#161412"/><rect x="7" y="5" width="1" height="1" fill="#FFFFFF"/><rect x="10" y="2" width="1" height="1" fill="#7FB2D9"/><rect x="11" y="4" width="1" height="1" fill="#7FB2D9"/><rect x="10" y="9" width="1" height="1" fill="#7FB2D9"/></svg>
+      <!-- a proper pixel fish: red body, ink outline, white eye, fanned tail -->
+      <svg width="24" height="24" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">
+        <rect x="4" y="4" width="8" height="1" fill="#161412"/>
+        <rect x="3" y="5" width="1" height="1" fill="#161412"/><rect x="12" y="5" width="1" height="1" fill="#161412"/>
+        <rect x="2" y="6" width="1" height="4" fill="#161412"/><rect x="13" y="6" width="1" height="1" fill="#161412"/>
+        <rect x="3" y="10" width="1" height="1" fill="#161412"/><rect x="12" y="10" width="1" height="1" fill="#161412"/>
+        <rect x="4" y="11" width="8" height="1" fill="#161412"/>
+        <rect x="4" y="5" width="8" height="6" fill="#D70000"/>
+        <rect x="3" y="6" width="1" height="4" fill="#D70000"/>
+        <rect x="12" y="6" width="1" height="4" fill="#D70000"/>
+        <rect x="5" y="5" width="3" height="2" fill="#E8534A"/>
+        <rect x="13" y="7" width="1" height="2" fill="#161412"/>
+        <rect x="14" y="5" width="2" height="2" fill="#D70000"/>
+        <rect x="14" y="9" width="2" height="2" fill="#D70000"/>
+        <rect x="14" y="7" width="1" height="2" fill="#9E0000"/>
+        <rect x="15" y="4" width="1" height="1" fill="#161412"/><rect x="15" y="11" width="1" height="1" fill="#161412"/>
+        <rect x="4" y="7" width="2" height="2" fill="#FFFFFF"/>
+        <rect x="5" y="7" width="1" height="1" fill="#161412"/>
+        <rect x="7" y="9" width="4" height="1" fill="#9E0000"/>
+        <rect x="0" y="7" width="2" height="1" fill="#7FB2D9"/>
+        <rect x="1" y="5" width="1" height="1" fill="#7FB2D9"/>
+      </svg>
     </button>
     <button class="mute-btn board-btn" id="boardBtn" aria-haspopup="dialog" aria-controls="boardDialog" aria-label="Leaderboard">
       <svg width="22" height="22" viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true">
@@ -378,7 +403,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
       <div class="name-row" id="nameRow" style="display:none">
         <input id="nameInput" maxlength="16" placeholder="YOUR NAME" autocomplete="nickname" enterkeyhint="next"/>
         <input id="emailInput" type="email" maxlength="254" placeholder="YOUR EMAIL" autocomplete="email" inputmode="email" enterkeyhint="send"/>
-        <p class="gift-note">name + email put you on the board &mdash; you may receive a little gift from earlspade</p>
+        <p class="gift-note">you may receive a little gift from earlspade</p>
         <button class="px-btn" id="submitBtn">SAVE MY SCORE</button>
       </div>
       <div class="row2">

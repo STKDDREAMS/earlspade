@@ -1552,9 +1552,9 @@ const store = (() => {
   };
 })();
 
-/* the mechanics gate: retention mechanics (fever, golden, splash, clutch,
-   rival) are OFF under ?debug=1 so every automated
-   test sees today's exact scoring. Tests opt in via __suika.mech(true). */
+/* the mechanics gate: bonus mechanics (legendary, splash, clutch, rival)
+   are OFF under ?debug=1 so every automated test sees the exact classic
+   scoring. Tests opt in via __suika.mech(true). */
 let mechOn = !location.search.includes('debug=1');
 
 /* ================= STATE ================= */
@@ -1595,16 +1595,10 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 /* ===== play mechanics state =====
    Everything here is gated by mechOn where it touches scoring, so
    ?debug=1 test runs see the exact classic economy. */
-/* fever: merges charge the meter, a full meter ignites 12s of double points */
-const FEVER_NEED = 8, FEVER_MS = 12000;
-const fev = { charge: 0, on: false, until: 0, lastMergeAt: 0, decayAt: 0, remaining: 0 };
-let feverRain = [];                       // gold pixels raining inside the bucket
-/* golden creature: a rare gilded drop whose merges pay double */
-let nextGold = false, heldGold = false;
-/* the legendary axolotl: rarer still, a wild that ascends whatever it touches */
-let nextLegend = false, heldLegend = false, legendSeen = false;
+/* the legendary axolotl: a once-in-a-tide wild that ascends whatever it touches */
+let nextLegend = false, heldLegend = false;
 let flashAt = 0;                          // full-screen jackpot flash
-let splashes = 0, goldenMerges = 0;       // run counters (for tests)
+let splashes = 0;                         // run counter (for tests)
 /* clutch save */
 let dangerPeak = false, lastClutchAt = -1e9;
 /* the aquarium: lifetime counts of every creature made
@@ -1624,13 +1618,6 @@ function bumpCollect(i){
 function flushCollect(){ if(collectDirty){ collectDirty = 0; store.setJSON(KEY_COLLECT, collect); } }
 document.addEventListener('visibilitychange', () => { if(document.hidden) flushCollect(); });
 
-function startFever(t){
-  fev.on = true;
-  fev.until = t + FEVER_MS;
-  fev.charge = FEVER_NEED;
-  showToast('FEVER!! x2 POINTS', true);
-  sndBig();
-}
 
 /* ================= AUDIO (synth, no files) ================= */
 let actx = null;
@@ -1815,24 +1802,6 @@ function onCollisions(ev){
     const vy = (a.velocity.y + b.velocity.y) / 2;
     removeFruit(a); removeFruit(b);
 
-    /* multipliers, rebalanced: fever x2, golden x2, and the whole
-       stack (combo x fever x golden) caps at x8 so no jackpot ever
-       trivializes a well-built run. Flower bonus stays flat. */
-    const feverMult = (mechOn && fev.on) ? 2 : 1;
-    const goldMult = (mechOn && (a.golden || b.golden)) ? 2 : 1;
-    if(goldMult > 1){
-      goldenMerges++;
-      burst(mx, my, '#E8B33C', 14);
-    }
-    if(mechOn){
-      const tNow = performance.now();
-      fev.lastMergeAt = tNow;
-      if(!fev.on){
-        fev.charge = Math.min(FEVER_NEED, fev.charge + 1);
-        if(fev.charge >= FEVER_NEED) startFever(tNow);
-      }
-    }
-
     if(tier === TIERS.length - 1){
       addScore(FLOWER_BONUS, mx, my);   /* the jackpot is the jackpot — flat */
       celebrate(mx, my);
@@ -1858,8 +1827,7 @@ function onCollisions(ev){
     combo = (nowMs - comboAt < COMBO_WINDOW_MS) ? Math.min(COMBO_CAP, combo + 1) : 1;
     comboAt = nowMs;
     if(nt > runBestTier) runBestTier = nt;
-    const mult = Math.min(8, combo * feverMult * goldMult);
-    addScore(MERGE_POINTS[nt] * mult, mx, my - TIERS[nt].r);
+    addScore(MERGE_POINTS[nt] * combo, mx, my - TIERS[nt].r);
     /* SPLASH: the drop merged the instant it landed — pure skill, paid
        as a clean double of the merge. An undefined touchedAt means this
        merge IS the body's first contact (the merge listener can run
@@ -1970,28 +1938,16 @@ function paintNext(){
     return;
   }
   drawFruitAt(nextCtx, s/2, s/2, s*0.36, nextTier, 0);
-  if(nextGold){   /* a golden is coming — let them see it and want it */
-    nextCtx.save();
-    nextCtx.strokeStyle = '#E8B33C';
-    nextCtx.lineWidth = 3;
-    nextCtx.beginPath(); nextCtx.arc(s/2, s/2, s*0.44, 0, Math.PI*2); nextCtx.stroke();
-    nextCtx.fillStyle = '#F2CC70';
-    nextCtx.fillRect(s*0.78, s*0.12, 4, 4); nextCtx.fillRect(s*0.12, s*0.76, 4, 4);
-    nextCtx.restore();
-  }
   nextCv.classList.remove('pop');
   void nextCv.offsetWidth;
   nextCv.classList.add('pop');
 }
-function rollGold(){ return mechOn && Math.random() < 1/35; }
 function rollLegend(){ return mechOn && Math.random() < 1/90; }
 function promoteNext(){
   heldTier = nextTier;
-  heldGold = nextGold;
   heldLegend = nextLegend;
   nextTier = rollSpawnTier();
   nextLegend = rollLegend();
-  nextGold = !nextLegend && rollGold();
   if(nextLegend) showToast('✦ A LEGEND STIRS ✦', true);
   paintNext();
 }
@@ -2009,7 +1965,6 @@ function drop(){
   const x = clampAim(aimX);
   const b = heldLegend ? legendBody(x, heldY()) : fruitBody(heldTier, x, heldY());
   b.byPlayer = true;                       // splash-bonus eligibility
-  if(heldGold && !heldLegend){ b.golden = true; heldGold = false; }
   if(heldLegend) heldLegend = false;
   Composite.add(world, b);
   bodies.push(b);
@@ -2150,21 +2105,6 @@ function drawLegendAura(x, y, r, now){
   }
   ctx.restore();
 }
-/* the golden halo: ring + two orbiting sparks (the legend's recipe) */
-function drawGoldRing(x, y, r, now){
-  ctx.save();
-  ctx.strokeStyle = '#E8B33C';
-  ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.arc(x, y, r + 4, 0, Math.PI * 2); ctx.stroke();
-  if(!reduceMotion){
-    ctx.fillStyle = '#F2CC70';
-    for(const ph of [0, Math.PI]){
-      const a = now / 480 + ph;
-      ctx.fillRect(x + Math.cos(a) * (r + 8) - 2, y + Math.sin(a) * (r + 8) - 2, 4, 4);
-    }
-  }
-  ctx.restore();
-}
 function drawFruitAt(c, x, y, r, tier, angle, sqx, sqy){
   const t = TIERS[tier];
   c.save();
@@ -2223,6 +2163,10 @@ function render(now){
     shake *= 0.85; if(shake < .4) shake = 0;
   }
   drawBeach(now);
+  /* a breath of paper over the whole scenery: the cove steps back,
+     the game steps forward. Readability first, always. */
+  ctx.fillStyle = 'rgba(233,230,223,.22)';
+  ctx.fillRect(0, 0, cssW, cssH);
   ctx.save();
   ctx.translate(offX, offY);
   ctx.scale(scale, scale);
@@ -2245,7 +2189,7 @@ function render(now){
      softly lightened so the creatures own the foreground — with an
      extra readability fade up top where the over-line lives. */
   vesselPath(WALL_T/2);
-  ctx.fillStyle = 'rgba(233,230,223,.62)';
+  ctx.fillStyle = 'rgba(233,230,223,.8)';
   ctx.fill();
   ctx.save();
   vesselPath(WALL_T/2);
@@ -2275,18 +2219,6 @@ function render(now){
     ctx.fillStyle = g;
     ctx.fillRect(BOX_L, BOX_TOP, BOX_W, 130);
   }
-  /* FEVER: gold rain inside the bucket while it burns */
-  if(mechOn && fev.on && !reduceMotion){
-    if(feverRain.length < 12 && Math.random() < .5)
-      feverRain.push({ x: IN_L + 8 + Math.random() * (IN_R - IN_L - 16), y: BOX_TOP + 4, sp: 1.6 + Math.random() * 1.8 });
-    ctx.fillStyle = 'rgba(232,179,60,.8)';
-    for(let i = feverRain.length - 1; i >= 0; i--){
-      const fr = feverRain[i];
-      fr.y += fr.sp;
-      if(fr.y > BOX_BOTTOM - 6){ feverRain.splice(i, 1); continue; }
-      ctx.fillRect(fr.x - 1.5, fr.y, 3, 5);
-    }
-  }else if(feverRain.length) feverRain = [];
   ctx.restore();
 
   /* game-over line — subtle dashes; red flash while threatened */
@@ -2322,7 +2254,6 @@ function render(now){
       drawLegendAura(hx, hy, hr, now);
     }else{
       drawFruitAt(ctx, hx, hy, hr, heldTier, 0);
-      if(heldGold) drawGoldRing(hx, hy, hr, now);
     }
     ctx.globalAlpha = 1;
   }
@@ -2361,14 +2292,6 @@ function render(now){
       continue;
     }
     drawFruitAt(ctx, b.position.x, b.position.y, r, b.tier, b.angle, sqx, sqy);
-    if(b.golden){
-      drawGoldRing(b.position.x, b.position.y, r, now);
-      /* a golden trail while it falls */
-      if(!reduceMotion && b.velocity.y > 2 && Math.floor(now / 34) % 2 === 0 && particles.length < MAX_PARTICLES){
-        particles.push({ x: b.position.x + (Math.random() - .5) * r, y: b.position.y - r * .5,
-          vx: 0, vy: -.4, r: 2, color: '#F2CC70', life: .5 });
-      }
-    }
   }
 
   /* THE BEACH BUCKET — a painted red sand pail, not a black-line box.
@@ -2404,28 +2327,6 @@ function render(now){
     ctx.fillStyle = 'rgba(22,20,18,.25)';
     ctx.fillRect(wx + 1.5, BOX_TOP + 26 + 18, WALL_T - 3, 1.2);   /* rope shadow */
   }
-  /* FEVER METER: eight pips climbing the left wall; during fever it
-     becomes a draining gold bar */
-  if(mechOn){
-    const pipH = 26, pipGap = 8, baseY = BOX_BOTTOM - CORNER_R - 12;
-    const lit = fev.on
-      ? Math.ceil(FEVER_NEED * Math.max(0, (fev.until - now) / FEVER_MS))
-      : fev.charge;
-    for(let i = 0; i < FEVER_NEED; i++){
-      const py4 = baseY - i * (pipH + pipGap);
-      ctx.fillStyle = i < lit ? '#E8B33C' : 'rgba(22,20,18,.28)';
-      ctx.fillRect(BOX_L + 2.5, py4 - pipH, WALL_T - 5, pipH);
-    }
-    if(fev.on){
-      ctx.save();
-      ctx.globalAlpha = reduceMotion ? .3 : .35 + .15 * Math.sin(now / 160);
-      ctx.strokeStyle = '#E8B33C';
-      ctx.lineWidth = 5;
-      vesselPath(-4);
-      ctx.stroke();
-      ctx.restore();
-    }
-  }
   /* chunky rim caps with a glint */
   for(const rx of [BOX_L - 5, BOX_R - WALL_T - 5]){
     ctx.fillStyle = '#C9463B';
@@ -2435,22 +2336,6 @@ function render(now){
     ctx.strokeRect(rx, BOX_TOP - 6, WALL_T + 10, 13);
     ctx.fillStyle = '#F2EFE6';
     ctx.fillRect(rx + 3, BOX_TOP - 3, 4, 3);
-  }
-  /* the flower charm on the right rim */
-  if(FLOWER_IMG.complete && FLOWER_IMG.naturalWidth){
-    const chx = BOX_R + 9, chy = BOX_TOP + 20;
-    ctx.strokeStyle = INK;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(BOX_R + 2, BOX_TOP + 4);
-    ctx.lineTo(chx, chy - 9);
-    ctx.stroke();
-    ctx.save();
-    ctx.translate(chx, chy);
-    ctx.rotate(-0.22 + (reduceMotion ? 0 : Math.sin(now / 1100) * 0.1));
-    const chw = 20, chh = chw * (FLOWER_IMG.naturalHeight / FLOWER_IMG.naturalWidth);
-    ctx.drawImage(FLOWER_IMG, -chw/2, -chh/2 + 9, chw, chh);
-    ctx.restore();
   }
   /* gold flash around the bucket on big combos */
   if(goldFlashAt && now - goldFlashAt < 550 && !reduceMotion){
@@ -2577,15 +2462,6 @@ function loop(now){
     acc -= STEP; steps++;
   }
   if(steps === 3) acc = 0;
-  /* fever clock: expire, or bleed idle charge */
-  if(mechOn){
-    const tp = performance.now();
-    if(fev.on && tp >= fev.until){ fev.on = false; fev.charge = 0; }
-    else if(!fev.on && fev.charge > 0 && tp - fev.lastMergeAt > 2500){
-      if(!fev.decayAt) fev.decayAt = tp + 700;
-      if(tp >= fev.decayAt){ fev.charge--; fev.decayAt = tp + 700; }
-    }else fev.decayAt = 0;
-  }
   /* belt-and-braces: if anything ever escapes the vessel (a pathological
      frame spike), lift it gently back in rather than losing it */
   for(const b of bodies){
@@ -2601,14 +2477,8 @@ function loop(now){
   if(perfLast){ perfT.push(now - perfLast); if(perfT.length > 120) perfT.shift(); }
   perfLast = now;
 }
-function pause(){
-  if(rafId){ cancelAnimationFrame(rafId); rafId = null; lastT = 0; acc = 0; }
-  if(fev.on) fev.remaining = Math.max(0, fev.until - performance.now());   // freeze fever
-}
-function resume(){
-  if(fev.on && fev.remaining){ fev.until = performance.now() + fev.remaining; fev.remaining = 0; }
-  if(!rafId && running) rafId = requestAnimationFrame(loop);
-}
+function pause(){ if(rafId){ cancelAnimationFrame(rafId); rafId = null; lastT = 0; acc = 0; } }
+function resume(){ if(!rafId && running) rafId = requestAnimationFrame(loop); }
 document.addEventListener('visibilitychange', () => { document.hidden ? pause() : resume(); });
 
 /* ================= GAME OVER FLOW / LEADERBOARD ================= */
@@ -2640,7 +2510,6 @@ function endGame(){
   running = false;
   blip(300, 80, 0.5, 0.1);
   finalScoreEl.textContent = score;
-  fev.on = false; feverRain = [];
   flushCollect();
   if(rivalEl) rivalEl.style.display = 'none';
   /* the furthest creature this run, drawn into the dialog */
@@ -2964,14 +2833,11 @@ function reset(){
   bestAtStart = best;
   over = false; shake = 0; canDrop = true; lastDrop = 0;
   /* v13 run state */
-  fev.on = false; fev.charge = 0; fev.decayAt = 0; fev.remaining = 0;
-  feverRain = [];
-  splashes = 0; goldenMerges = 0;
+  splashes = 0;
   dangerPeak = false; lastClutchAt = -1e9;
   passedNames.clear();
-  heldGold = false; heldLegend = false;
+  heldLegend = false;
   nextLegend = rollLegend();
-  nextGold = !nextLegend && rollGold();
   flashAt = 0;
   if(rivalEl) rivalEl.style.display = 'none';
   overDialog.classList.remove('show');
@@ -3008,13 +2874,8 @@ if(location.search.includes('debug=1')){
     tiers(){ return TIERS.length; },
     /* ===== v13 hooks ===== */
     mech(v){ mechOn = !!v; return mechOn; },
-    fever(){ return { charge: fev.charge, on: fev.on, remaining: fev.on ? Math.max(0, fev.until - performance.now()) : 0 }; },
-    charge(n){ fev.charge = Math.min(FEVER_NEED, n); fev.lastMergeAt = performance.now(); if(fev.charge >= FEVER_NEED) startFever(performance.now()); },
-    forceFever(){ startFever(performance.now()); },
-    gild(){ nextGold = true; nextLegend = false; paintNext(); },
-    legend(){ nextLegend = true; nextGold = false; paintNext(); },
+    legend(){ nextLegend = true; paintNext(); },
     heldLegend(){ return heldLegend; },
-    heldGold(){ return heldGold; },
     setBestAtStart(n){ bestAtStart = n; },
     collect(){ return collect.slice(); },
     clearCollect(){ collect = new Array(collect.length).fill(0); store.setJSON(KEY_COLLECT, collect); },
@@ -3025,7 +2886,7 @@ if(location.search.includes('debug=1')){
       if(beatEl){ beatEl.textContent = 'BEAT ' + nm + ' · ' + sc2; beatEl.classList.remove('won'); beatEl.style.display = 'block'; }
     },
     held(){ return heldTier; },
-    counters(){ return { splashes, goldenMerges }; },
+    counters(){ return { splashes }; },
     perf(){ return perfStats(); }
   };
 }
