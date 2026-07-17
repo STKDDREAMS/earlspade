@@ -852,6 +852,27 @@ function buildSprite(t){
 }
 const SPRITE_OVER = GRID / (2 * DISC_R);
 
+/* ---- sprite mips: draw-size copies of every creature, resampled ONCE
+   per resize instead of once per body per frame. The 288px masters stay
+   for the aquarium dialog and anything drawn at other scales. ---- */
+let SPRITES_MIP = [], mipKey = '';
+function bakeMips(dpr){
+  const key = scale + '|' + dpr;
+  if(key === mipKey || !scale) return;
+  mipKey = key;
+  SPRITES_MIP = TIERS.map((t, i) => {
+    if(t.flower) return null;
+    const d = Math.max(4, Math.round(t.r * 2 * SPRITE_OVER * scale * dpr));
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = d;
+    const g = cv.getContext('2d');
+    g.imageSmoothingEnabled = true;
+    if('imageSmoothingQuality' in g) g.imageSmoothingQuality = 'high';
+    g.drawImage(SPRITES[i], 0, 0, d, d);
+    return cv;
+  });
+}
+
 /* the secret disc: ink body, gold "?" — the legend keeps its secrets */
 const SECRET_SPRITE = buildSprite({
   fill:'#161412', dk:'#161412', lt:'#3A342E', face:false,
@@ -1637,14 +1658,26 @@ paintMute();
 /* ================= SIZING (fixed scene, zoomed) ================= */
 function resize(){
   const r = playEl.getBoundingClientRect();
-  cssW = r.width; cssH = r.height;
-  const dpr = Math.min(window.devicePixelRatio || 1, dprCap);   // 3x buys nothing here and triples fill cost
-  canvas.width  = Math.round(cssW * dpr);
-  canvas.height = Math.round(cssH * dpr);
+  const w = r.width, h = r.height;
+  let dpr = Math.min(window.devicePixelRatio || 1, dprCap);   // 3x buys nothing here and triples fill cost
+  /* pixel budget: fill cost scales with the buffer, so the buffer gets a
+     hard ceiling (~ a 6.1" phone at 2x). Tall flagships and desktops
+     render at an effective 1.2–1.7x — pixel art hides it completely. */
+  const BUDGET = 2.8e6;
+  if(w * h * dpr * dpr > BUDGET) dpr = Math.sqrt(BUDGET / (w * h));
+  const bw = Math.round(w * dpr), bh = Math.round(h * dpr);
+  /* identical target -> DON'T touch the canvas. Setting canvas.width
+     always clears + reallocates the whole backing store, and iOS fires
+     resize events all through its bar animations. */
+  if(bw === canvas.width && bh === canvas.height && w === cssW && h === cssH) return;
+  cssW = w; cssH = h;
+  canvas.width  = bw;
+  canvas.height = bh;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   scale = Math.min(cssW / SCENE_W, cssH / SCENE_H);
   offX = (cssW - SCENE_W * scale) / 2;
   offY = (cssH - SCENE_H * scale) / 2;
+  bakeMips(dpr);
 }
 
 /* ================= WORLD SETUP ================= */
@@ -2007,7 +2040,10 @@ function drawFruitAt(c, x, y, r, tier, angle, sqx, sqy){
       c.fillStyle = '#D70000'; c.fill();
     }
   }else{
-    const s = SPRITES[tier];
+    /* the main canvas draws at world scale, so its mip lands 1:1 on
+       device pixels — zero per-frame resampling. Other surfaces
+       (aquarium cells) keep the full-res master. */
+    const s = (c === ctx && SPRITES_MIP[tier]) ? SPRITES_MIP[tier] : SPRITES[tier];
     const d = r * 2 * SPRITE_OVER;
     c.drawImage(s, -d/2, -d/2, d, d);
   }
@@ -2315,12 +2351,14 @@ function loop(now){
   if(dt > 100) dt = 100;
   acc += dt;
   let steps = 0;
-  while(acc >= STEP && steps < 3){
+  /* enough catch-up budget that the SIMULATION stays real-time down to
+     ~12fps — a struggling phone gets fewer frames, never slow motion */
+  while(acc >= STEP && steps < 5){
     Engine.update(engine, STEP);
     checkOverLine(STEP / 1000);
     acc -= STEP; steps++;
   }
-  if(steps === 3) acc = 0;
+  if(steps === 5) acc = Math.min(acc, STEP);   // drop backlog, no spiral
   /* belt-and-braces: if anything ever escapes the vessel (a pathological
      frame spike), lift it gently back in rather than losing it */
   for(const b of bodies){
@@ -2337,10 +2375,10 @@ function loop(now){
     const d = now - perfLast;
     perfT.push(d); perfSum += d;
     if(perfT.length > 120) perfSum -= perfT.shift();
-    /* the smoothness guarantee: if a device can't hold ~40fps for a
-       full window, drop to the light path once and stay there —
+    /* the smoothness guarantee: if a device can't hold ~40fps for even
+       a short window, drop to the light path once and stay there —
        lower DPR, fewer garnish effects, same game */
-    if(!lowFx && perfT.length === 120 && perfSum > 25 * 120){
+    if(!lowFx && perfT.length >= 45 && perfSum > 25 * perfT.length){
       lowFx = true; dprCap = 1.5;
       perfT = []; perfSum = 0; perfLast = 0;
       legendKey = ''; lastCoveKey = '';
@@ -2714,7 +2752,14 @@ function reset(){
 }
 againBtn.addEventListener('click', reset);
 
-window.addEventListener('resize', () => { resize(); }, { passive: true });
+/* debounced: iOS/in-app browsers fire resize continuously while their
+   chrome animates; one call after things settle is all we need (the
+   guard inside resize() makes no-op calls free anyway) */
+let _rzT = null;
+window.addEventListener('resize', () => {
+  clearTimeout(_rzT);
+  _rzT = setTimeout(resize, 150);
+}, { passive: true });
 
 /* debug hooks for automated testing only (?debug=1) */
 if(location.search.includes('debug=1')){
@@ -2793,7 +2838,10 @@ function perfStats(){
   try{
     await Promise.race([
       Promise.all([whenLoaded, whenFonts, whenFlower]),
-      new Promise(r => setTimeout(r, 10000)) /* safety net, not a target */
+      /* a crawling CDN never gets to hold the curtain: fonts are
+         display:swap, so revealing without them is safe — they pop
+         in the moment they arrive */
+      new Promise(r => setTimeout(r, 3500))
     ]);
   }catch(e){}
   /* two clean frames behind the curtain, then reveal */
