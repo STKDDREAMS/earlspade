@@ -428,20 +428,24 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* keyboard users get the brand outline */
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D70000;outline-offset:2px}
 
-/* ===== mini leaderboard — a whisper above the play button:
-   a trophy, then the top three names. Appears only with real scores. */
-.mini-board{display:flex;align-items:center;justify-content:center;gap:.5rem;
-  margin-bottom:.9rem;font-family:var(--px);font-size:.36rem;
-  letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;
+/* ===== mini leaderboard — the top three in a compact red pixel
+   frame above the play button. Stacked rows, fixed width: long names
+   can never stretch the page sideways again. Appears only with real
+   scores. */
+.mini-board{display:flex;flex-direction:column;align-items:stretch;gap:.42rem;
+  width:min(230px,72vw);margin:0 auto .9rem;padding:.55rem .6rem .6rem;
+  font-family:var(--px);font-size:.34rem;letter-spacing:.04em;text-transform:uppercase;
+  background:rgba(233,230,223,.96);border:2px solid var(--ink);
+  box-shadow:0 0 0 4px #C9463B,4px 4px 0 4px rgba(22,20,18,.22);
   opacity:0;transform:translateY(8px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
 .mini-board.in{opacity:1;transform:none}
-.mini-board .mbe{display:inline-flex;align-items:baseline;gap:.28rem}
-.mini-board .mbn{color:var(--ink-soft)}
+.mini-board svg{align-self:center;width:15px;height:15px;margin-bottom:.1rem}
+.mini-board .mbd{display:none}
+.mini-board .mbe{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;min-width:0}
+.mini-board .mbn{color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mini-board .mbe:first-of-type .mbn,.mini-board .mbe:first-of-type .mbs{color:#D70000}
-.mini-board .mbs{font-size:.3rem;color:var(--ink-soft);opacity:.85;font-variant-numeric:tabular-nums}
-.mini-board .mbd{color:var(--ink-soft);opacity:.45}
-.mini-board svg{flex:none}
-@media(max-width:560px){.mini-board{font-size:.3rem;gap:.34rem;margin-bottom:.7rem}.mini-board .mbs{font-size:.26rem}}
+.mini-board .mbs{font-size:.3rem;color:var(--ink-soft);opacity:.85;font-variant-numeric:tabular-nums;flex:none}
+@media(max-width:560px){.mini-board{font-size:.3rem;margin-bottom:.7rem}.mini-board .mbs{font-size:.26rem}}
 
 /* SERIES 3 — a pixel-art treasure chest moored below the archive.
    Press it: the lid swaps open, the gold inside twinkles, and the

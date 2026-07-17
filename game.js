@@ -908,6 +908,39 @@ const SECRET_GOLD_SPRITE = buildSprite({
     ] }
 });
 
+/* ===== THE LEGENDARY AXOLOTL =====================================
+   The game's first legendary: a pearl axolotl with rainbow gill
+   frills, once in a great while offered as the next drop. It is a
+   WILD — merge it into any creature and that creature ascends a
+   tier, with a jackpot to match. (This block lives OUTSIDE the
+   genart splice region and owns its own pixel map.) */
+const LGD_R = 30;
+const LGD_MAPS = (() => {
+  const W = 36;
+  const grid = (h) => Array.from({ length: h }, () => Array(W).fill('.'));
+  const g1 = grid(17);
+  const mput = (g, r, c, s) => { for(let i = 0; i < s.length; i++){ g[r][c + i] = s[i]; g[r][W - 1 - c - i] = s[i]; } };
+  /* three rainbow gill frills a side, reaching well past the disc:
+     gold, white, sky */
+  mput(g1, 5, 5, 'GG');  mput(g1, 6, 3, 'GGG');
+  mput(g1, 9, 2, 'EEE'); mput(g1, 10, 1, 'EEE');
+  mput(g1, 13, 2, 'LLL'); mput(g1, 14, 1, 'LLL');
+  const g2 = grid(26);
+  /* the famous axolotl smile + a pearl shine on the cheek */
+  mput(g2, 19, 15, 'K');
+  const put = (g, r, c, s) => { for(let i = 0; i < s.length; i++) g[r][c + i] = s[i]; };
+  put(g2, 20, 16, 'KKKK');
+  put(g2, 23, 10, 'E'); put(g2, 24, 11, 'EE');
+  return {
+    feat:  { ox: 0, oy: 0, rows: g1.map(r => r.join('')) },
+    feat2: { ox: 0, oy: 0, rows: g2.map(r => r.join('')) }
+  };
+})();
+const LGD_SPRITE = buildSprite({
+  fill: '#F6C6D4', dk: '#DE9DB4', lt: '#FFEFF4',
+  feat: LGD_MAPS.feat, feat2: LGD_MAPS.feat2
+});
+
 /* effects budgets (kept cheap for phones) */
 const MAX_PARTICLES = 80;
 const SHAKE_TIER    = 8;
@@ -930,35 +963,51 @@ function beachPeriod(){
   if(h >= 17 && h < 20) return 'gold';
   return 'night';
 }
+/* v13: paradise. The cove finally gets its colors — turquoise water,
+   real sky, golden sand, lush palms. Readability holds because the
+   bucket's sea-glass wash (rgba(233,230,223,.62)) lifts anything
+   behind the play area to a light tone no matter the palette. */
 const BEACH_PAL = {
-  day:   { skyTop:'#DFE0D4', skyMid:'#E4E3D7', skyLow:'#E8E5DB', sea:'#CBDBD3', foam:'#DAE5DF',
-           waveA:'#BCD0C8', waveB:'#D8E3DD', sand:'#E4D6B9', speckle:'#D6C4A0',
-           sun:'#EBD494', ray:'rgba(235,212,148,.55)', cloud:'#F2EFE5', sunY: 98,
-           rock:'#B9AF9C', rockDk:'#9C9280', rockLt:'#CDC4B0',
-           palm:'#8FAE7E', palmDk:'#6F8F63', palmLt:'#A9C295',
-           trunk:'#A98D68', trunkDk:'#8A7052', shimmer:'rgba(246,241,230,.5)',
-           hull:'#8A867E', sail:'#F2EFE6', coral:'#D98B7E', bird:'#6B6862' },
-  dawn:  { skyTop:'#E8DBD4', skyMid:'#EAE0D7', skyLow:'#EDE5DC', sea:'#CDD9D4', foam:'#DEE6E1',
-           waveA:'#C2CFC9', waveB:'#DCE2DD', sand:'#E6D8BC', speckle:'#D8C6A2',
-           sun:'#F0CFA0', ray:'rgba(240,207,160,.5)', cloud:'#F5EFE8', sunY: 196,
-           rock:'#C2B4A4', rockDk:'#A69888', rockLt:'#D4C7B6',
-           palm:'#9CB18A', palmDk:'#7D9270', palmLt:'#B4C4A0',
-           trunk:'#B29674', trunkDk:'#93795E', shimmer:'rgba(246,241,230,.42)',
-           hull:'#94908A', sail:'#F4F0E8', coral:'#DE9584', bird:'#757068' },
-  gold:  { skyTop:'#E9DCC2', skyMid:'#ECE0CA', skyLow:'#EFE4D1', sea:'#CBD5C9', foam:'#DDE2D6',
-           waveA:'#BFCDBE', waveB:'#DAE0D3', sand:'#E6D5B4', speckle:'#D8C293',
-           sun:'#EDBF7C', ray:'rgba(237,191,124,.55)', cloud:'#F4ECDD', sunY: 238,
-           rock:'#C0AC8E', rockDk:'#A28F74', rockLt:'#D2BFA0',
-           palm:'#A3AC72', palmDk:'#86905B', palmLt:'#BCC287',
-           trunk:'#AE8C60', trunkDk:'#8F704A', shimmer:'rgba(242,220,160,.5)',
-           hull:'#7E7468', sail:'#EFE0C4', coral:'#D98460', bird:'#6E6455' },
-  night: { skyTop:'#C7CBCC', skyMid:'#CDD1D1', skyLow:'#D3D6D4', sea:'#B9C9C4', foam:'#C9D6D1',
-           waveA:'#ACBEB8', waveB:'#C4D2CC', sand:'#D6C9B0', speckle:'#C6B694',
-           sun:'#EFE9D8', ray:'rgba(239,233,216,.4)', cloud:'#DBDDD7', sunY: 90, moon:true,
-           rock:'#9AA099', rockDk:'#7F8580', rockLt:'#ACB1A8',
-           palm:'#7E9187', palmDk:'#66786F', palmLt:'#93A69B',
-           trunk:'#8F8570', trunkDk:'#746B58', shimmer:'rgba(239,233,216,.3)',
-           hull:'#6E6F6B', sail:'#D7D9D2', coral:'#B08A84', bird:null },
+  day:   { skyTop:'#86C7E3', skyMid:'#A3D4EA', skyLow:'#C4E3F0', sea:'#3FB8AC', foam:'#EFF8F1',
+           seaDeep:'#2E9AA0', waveA:'#63CCBE', waveB:'#9ADFD4', sand:'#F0D9A0', speckle:'#D9BB79',
+           sun:'#FFD75E', ray:'rgba(255,215,94,.55)', cloud:'#FBF9F1', cloudShade:'#D9E7E3', sunY: 98,
+           rock:'#B08A5F', rockDk:'#86653F', rockLt:'#CFAE7F',
+           palm:'#55AC64', palmDk:'#3B854D', palmLt:'#83CC8D',
+           trunk:'#AB7E50', trunkDk:'#7F5B35', shimmer:'rgba(255,247,214,.55)',
+           hull:'#C9463B', sail:'#F6F1E6', coral:'#F2707A', bird:'#4A6670',
+           isle:'#4F8C73', isleDk:'#3B6C58', bloom:'#E84A5F', bloomC:'#E8B33C',
+           umbA:'#D70000', umbB:'#F6F1E6', towel:'#5FA9D0', board:'#E8B33C',
+           dolA:'#6FA8C8', dolB:'#9CC6DC', crab:'#E8734A', tide:'#F6FBF6' },
+  dawn:  { skyTop:'#C6B3DE', skyMid:'#E3B9D2', skyLow:'#F6CDB8', sea:'#7FB9C6', foam:'#F8ECE8',
+           seaDeep:'#5E9AAE', waveA:'#9BCFD4', waveB:'#C6E4E1', sand:'#EEDCBB', speckle:'#D6BD92',
+           sun:'#FFB77E', ray:'rgba(255,183,126,.5)', cloud:'#F8DDE4', cloudShade:'#DFBCCA', sunY: 196,
+           rock:'#AC8E74', rockDk:'#82684F', rockLt:'#C9AF92',
+           palm:'#6FA878', palmDk:'#4F8259', palmLt:'#97C494',
+           trunk:'#AA815D', trunkDk:'#7F5D3F', shimmer:'rgba(255,203,173,.5)',
+           hull:'#B45A50', sail:'#F8EFE4', coral:'#EE8C90', bird:'#7A6E80',
+           isle:'#5E7F89', isleDk:'#48626D', bloom:'#E86A78', bloomC:'#E8B33C',
+           umbA:'#C9463B', umbB:'#F6EFE2', towel:'#C48CB0', board:'#D9A45E',
+           dolA:'#8CA8C4', dolB:'#B4C8DC', crab:'#D4744E', tide:'#FAEFE9' },
+  gold:  { skyTop:'#E8875A', skyMid:'#F2A968', skyLow:'#F8C983', sea:'#3E8CA0', foam:'#F6E4C9',
+           seaDeep:'#2E6E88', waveA:'#64A9B5', waveB:'#9AC9CD', sand:'#E8C88C', speckle:'#C8A468',
+           sun:'#FFC24A', ray:'rgba(255,194,74,.55)', cloud:'#F8D9A9', cloudShade:'#E2B283', sunY: 238,
+           rock:'#A87C54', rockDk:'#7C583A', rockLt:'#C89E74',
+           palm:'#5E9450', palmDk:'#417038', palmLt:'#88B870',
+           trunk:'#9C7040', trunkDk:'#71502C', shimmer:'rgba(255,194,74,.55)',
+           hull:'#8C5A48', sail:'#F4DCB4', coral:'#E86848', bird:'#6E5844',
+           isle:'#4E6E60', isleDk:'#3A5548', bloom:'#E85048', bloomC:'#FFC24A',
+           umbA:'#C9463B', umbB:'#F2E2C4', towel:'#D08C4E', board:'#C9463B',
+           dolA:'#7098A8', dolB:'#98BCC4', crab:'#D45E38', tide:'#F8E9CB' },
+  night: { skyTop:'#26304F', skyMid:'#2E3A63', skyLow:'#3C4A78', sea:'#1F505F', foam:'#7FCCC5',
+           seaDeep:'#173B4B', waveA:'#2F6F79', waveB:'#3F8B8D', sand:'#9891A9', speckle:'#7E7891',
+           sun:'#F0EAD8', ray:'rgba(246,241,230,.4)', cloud:'#46527A', cloudShade:'#38446A', sunY: 90, moon:true,
+           rock:'#4A5570', rockDk:'#39435C', rockLt:'#5E6A88',
+           palm:'#2F5F55', palmDk:'#20473F', palmLt:'#3F7B6B',
+           trunk:'#56496B', trunkDk:'#3F3551', shimmer:'rgba(126,232,212,.35)',
+           hull:'#38445E', sail:'#B8C2CC', coral:'#6F5F81', bird:null,
+           isle:'#2A3A58', isleDk:'#1E2C44', bloom:'#8C4A6E', bloomC:'#C4922A',
+           umbA:'#6E3A44', umbB:'#A8A4B0', towel:'#3E5E74', board:'#55628A',
+           dolA:'#46688C', dolB:'#5E88A8', crab:'#8C5E54', glow:'#7EE8D4', tide:'#6FB8B2' },
 };
 const STARS = (() => {
   const s = [];
@@ -1007,6 +1056,18 @@ let coveL = null, coveR = null, coveLW = 0, coveRW = 0;
 let frondL = null, frondR = null, frondK = 1, crown = null, crownAt = null;
 let lastCoveKey = '';
 let leaf = null, nextLeafAt = 14000;
+/* v13 scenery layers + actors */
+let isleCv = null, tideA = null, tideB = null, dolUp = null, dolDn = null;
+let pod = null, nextPodAt = 9000;                 // dolphin pod
+let crabAx = { x: .25, dir: 1, mode: 'walk', until: 0 };  // x as fraction of cssW
+let fish = null, nextFishAt = 6000;               // splash ring in the sea
+const FIREFLIES = (() => {                        // night sparks: fixed seeds
+  const f = []; let seed = 47;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for(let i = 0; i < 8; i++) f.push({ cx: i < 4 ? rnd() * .16 : 1 - rnd() * .16, y: 60 + rnd() * 160, ph: rnd() * 6 });
+  for(let i = 0; i < 6; i++) f.push({ cx: .1 + rnd() * .8, y: HORIZON + 40 + rnd() * 150, ph: rnd() * 6, wave: true });
+  return f;
+})();
 
 function makeLayer(w, h){
   const k = Math.min(window.devicePixelRatio || 1, 2);   // same cap as resize()
@@ -1050,6 +1111,10 @@ function paintFronds(g, pal, wB, hB, mir){
   B(19, 2, 3, 1, pal.palmLt);
   B(11, 2, 1, 2, pal.palmDk); B(14, 2, 1, 2, pal.palm); B(17, 2, 1, 1, pal.palmDk);
   B(20, 3, 1, 1, pal.palm);
+  /* hibiscus blooms tucked into the canopy — the color pops */
+  B(3, 2, 1, 1, pal.bloom); B(3.3, 2.3, .4, .4, pal.bloomC);
+  B(7, 5, 1, 1, pal.bloom); B(7.3, 5.3, .4, .4, pal.bloomC);
+  B(12, 1, 1, 1, pal.bloom); B(12.3, 1.3, .4, .4, pal.bloomC);
 }
 /* a full palm crown for the desktop headland tree — fronds radiate
    from a center anchor with a coconut pair beneath it */
@@ -1070,8 +1135,64 @@ function paintCrown(g, pal, wB, hB){
   B(cx - 1, 0, 2, 2, pal.palm);                    /* top tuft */
   B(cx - 2, 2, 2, 2, pal.trunkDk); B(cx, 2, 2, 2, pal.trunk);  /* coconuts */
 }
+/* the far island: a stepped silhouette with two palms and a hut speck,
+   sitting right on the horizon line */
+function paintIsle(pal){
+  const p = PX * scale;
+  const wB = 15, hB = 5;
+  const [cv, g] = makeLayer(wB * p, (hB + 1) * p);
+  const B = (x, y, w, h, col) => { g.fillStyle = col;
+    g.fillRect(Math.round(x * p), Math.round(y * p), Math.ceil(w * p) + .5, Math.ceil(h * p) + .5); };
+  B(2, 3, 11, 2, pal.isle); B(4, 2, 7, 1, pal.isle); B(6, 1.4, 3, 1, pal.isleDk);
+  B(2, 4.4, 11, .6, pal.isleDk);                       /* waterline shade */
+  B(4, 0.6, 1, 2, pal.isleDk); B(3, 0, 3, 1, pal.palmDk);   /* palm one */
+  B(10, 1, 1, 1.6, pal.isleDk); B(9, 0.3, 3, 1, pal.palmDk); /* palm two */
+  B(6.6, 2.2, 1.6, 1, pal.sail);                       /* hut roof glint */
+  return cv;
+}
+/* two frames of scalloped tide foam where the sea meets the sand */
+function paintTide(pal, phase){
+  const p = PX * scale;
+  const [cv, g] = makeLayer(cssW, 12 * Math.max(1, scale));
+  const step = 4 * p;
+  g.fillStyle = pal.tide;
+  for(let x = -step; x < cssW + step; x += step){
+    const off = phase ? step / 2 : 0;
+    g.fillRect(x + off, 0, step * .6, 2.4 * scale);
+    g.fillRect(x + off + step * .12, 2.4 * scale, step * .36, 1.6 * scale);
+  }
+  /* dry foam flecks a little higher up the sand */
+  let seed = phase ? 13 : 29;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for(let i = 0; i < 10; i++) g.fillRect(rnd() * cssW, 5 * scale + rnd() * 5 * scale, 2.2 * scale, 1.4 * scale);
+  return cv;
+}
+/* one dolphin, two poses (rising / diving) */
+function paintDolphin(pal, down){
+  const p = PX * scale;
+  const [cv, g] = makeLayer(5 * p, 3 * p);
+  const B = (x, y, w, h, col) => { g.fillStyle = col;
+    g.fillRect(Math.round(x * p), Math.round(y * p), Math.ceil(w * p) + .5, Math.ceil(h * p) + .5); };
+  if(!down){
+    B(0, 1.4, 1.4, 1, pal.dolA);                 /* tail low, nose high */
+    B(1, .8, 2.4, 1.2, pal.dolA); B(3.2, .4, 1.4, 1, pal.dolA);
+    B(1.6, 0, .8, .7, pal.dolA);                 /* fin */
+    B(1.4, 1.6, 2, .6, pal.dolB);                /* belly */
+  }else{
+    B(0, .2, 1.4, 1, pal.dolA);                  /* tail high, nose low */
+    B(1, .8, 2.4, 1.2, pal.dolA); B(3.2, 1.4, 1.4, 1, pal.dolA);
+    B(1.6, .2, .8, .7, pal.dolA);
+    B(1.4, 1.8, 2, .6, pal.dolB);
+  }
+  return cv;
+}
 function buildCove(pal){
   const p = PX * scale;
+  isleCv = paintIsle(pal);
+  tideA = paintTide(pal, 0);
+  tideB = paintTide(pal, 1);
+  dolUp = paintDolphin(pal, false);
+  dolDn = paintDolphin(pal, true);
   /* --- side strips: headland rocks + (wide screens) sand garnish --- */
   const wl = Math.min(offX + 44 * scale, 320 * scale);
   const wr = Math.min(offX + 44 * scale, 230 * scale) * 0.82;
@@ -1099,7 +1220,7 @@ function buildCove(pal){
     B(0, seaTop + 3 * p, wB, 1, pal.rockDk);                 /* waterline base */
     for(let gx = 0; gx < wB; gx += 2)
       if(rnd() < .5) B(gx, seaTop + 3.6 * p, 1, .5, pal.foam); /* lapping foam */
-    /* wide screens: greenery sprig + shells resting on the sand */
+    /* wide screens: beach props + greenery + shells resting on the sand */
     if(wCss > 120 * scale){
       const sandTop = offY + (SAND_Y + 26) * scale;
       const sh = (x, y) => {   /* a tiny coral starfish */
@@ -1109,10 +1230,30 @@ function buildCove(pal){
       B(Math.floor(wB * .55), sandTop + 90 * scale, 2, 1, pal.rockDk);       /* pebble */
       B(Math.floor(wB * .18), sandTop + 120 * scale, 2, 2, pal.trunk);       /* driftwood chip */
       B(Math.floor(wB * .19), sandTop + 120 * scale, 1, 1, pal.trunkDk);
-      /* sprig at the bottom corner */
+      if(!mir){
+        /* the left beach: striped umbrella leaning over a towel */
+        const ux = Math.floor(wB * .3), uy = sandTop + 44 * scale;
+        for(let i = 0; i < 5; i++) B(ux - 3 + i, uy - (2 - Math.abs(i - 2) * .5) * p, 1, 1.6 - Math.abs(i - 2) * .3, i % 2 ? pal.umbB : pal.umbA);
+        B(ux - 3.4, uy - .4 * p, 5.8, .5, pal.rockDk);                        /* canopy edge */
+        B(ux, uy + p, .4, 3.4, pal.trunkDk);                                  /* pole */
+        B(ux - 2, uy + 3.6 * p, 4, 1.4, pal.towel);                           /* towel */
+        B(ux - 2, uy + 4.2 * p, 4, .3, pal.umbB);
+      }else{
+        /* the right beach: a surfboard stuck in the sand + a sandcastle */
+        const bx = Math.floor(wB * .4), by2 = sandTop + 30 * scale;
+        B(bx, by2 - 2 * p, 1.6, 5.4, pal.board);
+        B(bx + .55, by2 - 1.6 * p, .35, 4.6, pal.umbB);                       /* stringer */
+        B(bx - .2, by2 - 2.4 * p, 2, .6, pal.board);                          /* nose */
+        const cx2 = Math.floor(wB * .18), cy2 = sandTop + 96 * scale;
+        B(cx2, cy2, 3, 2, pal.speckle); B(cx2 + .6, cy2 - p, 1.8, 1, pal.speckle);
+        B(cx2 + 1, cy2 - 1.8 * p, .8, .9, pal.sand);
+        B(cx2 + 1.2, cy2 - 2.4 * p, .5, .7, pal.bloom);                       /* the flag */
+      }
+      /* sprig at the bottom corner, now blooming */
       const by = cssH - 8 * p;
       B(0, by, 2, 8, pal.palmDk); B(1, by - 2 * p, 2, 4, pal.palm);
       B(2, by - 3 * p, 2, 3, pal.palmLt); B(3, by + p, 2, 3, pal.palm);
+      B(2.4, by - 1.2 * p, 1, 1, pal.bloom); B(2.7, by - .9 * p, .4, .4, pal.bloomC);
     }
     return cv;
   };
@@ -1200,19 +1341,26 @@ function drawBeach(now){
       ctx.fillRect(bx2 + p*1.4, by2 + (flap ? 0 : -p*.6), p, p*.7);
     }
   }
-  /* clouds: chunky, hopping the FULL viewport width 8px at a time */
+  /* clouds: chunky two-tone puffs hopping the FULL viewport width */
   const wrapW = cssW + 260 * scale;
   for(const cl of CLOUDS){
     const cxs = snapC(((cl.base * scale + now * cl.sp * scale) % wrapW + wrapW) % wrapW) - 130 * scale;
-    ctx.fillStyle = pal.cloud;
-    for(const [row, dx, w] of cl.blocks)
+    for(const [row, dx, w] of cl.blocks){
+      ctx.fillStyle = pal.cloud;
       ctx.fillRect(cxs + dx*p, sy(cl.y + row*PX), w*p + .5, p + .5);
+      ctx.fillStyle = pal.cloudShade;
+      ctx.fillRect(cxs + (dx + .4)*p, sy(cl.y + row*PX) + p*.75, (w - .8)*p + .5, p*.35 + .5);
+    }
   }
-  /* the sea: quiet band + stepped two-tone wave dashes, full width */
+  /* the sea: deep band under the horizon, then the shallows */
+  ctx.fillStyle = pal.seaDeep;
+  ctx.fillRect(0, sy(HORIZON), cssW, Math.max(0, sy(HORIZON + 30) - sy(HORIZON)));
   ctx.fillStyle = pal.sea;
-  ctx.fillRect(0, sy(HORIZON), cssW, Math.max(0, sy(SAND_Y) - sy(HORIZON)));
+  ctx.fillRect(0, sy(HORIZON + 30), cssW, Math.max(0, sy(SAND_Y) - sy(HORIZON + 30)));
   ctx.fillStyle = pal.foam;
   ctx.fillRect(0, sy(HORIZON), cssW, Math.max(1.5, 3 * scale));
+  /* the far island, sitting right on the line */
+  if(isleCv) ctx.drawImage(isleCv, snapC(cssW * .3), sy(HORIZON) - isleCv._h + 10 * scale, isleCv._w, isleCv._h);
   /* sun glitter on the water just past the horizon */
   ctx.fillStyle = pal.shimmer;
   for(let i = 0; i < 12; i++){
@@ -1229,6 +1377,53 @@ function drawBeach(now){
     ctx.fillStyle = row % 2 ? pal.waveA : pal.waveB;
     for(let wx = -step + off; wx < cssW + step; wx += step)
       ctx.fillRect(wx, sy(wy), 20 * scale, 3.2 * scale);
+  }
+  /* dolphins! every so often a little pod arcs across the shallows */
+  if(!reduceMotion){
+    if(!pod && now > nextPodAt){
+      pod = { t0: now, dir: Math.random() < .5 ? 1 : -1, n: 2 + (Math.random() < .4 ? 1 : 0) };
+    }
+    if(pod && dolUp){
+      const DUR = 2400, GAP = 450, baseY = HORIZON + 42;
+      let alive = false;
+      for(let i = 0; i < pod.n; i++){
+        const t = (now - pod.t0 - i * GAP) / DUR;
+        if(t < 0 || t > 1){ if(t <= 1) alive = true; continue; }
+        alive = true;
+        const px3 = pod.dir > 0
+          ? cssW * .18 + t * cssW * .3 + i * 26 * scale
+          : cssW * .82 - t * cssW * .3 - i * 26 * scale;
+        const py3 = sy(baseY) - Math.sin(t * Math.PI) * 34 * scale;
+        const spr = t < .5 ? dolUp : dolDn;
+        ctx.save();
+        if(pod.dir < 0){ ctx.translate(px3 + spr._w / 2, 0); ctx.scale(-1, 1); ctx.translate(-(px3 + spr._w / 2), 0); }
+        ctx.drawImage(spr, px3, py3, spr._w, spr._h);
+        ctx.restore();
+        /* droplets at entry/exit */
+        if(t < .12 || t > .88){
+          ctx.fillStyle = pal.tide;
+          const dx2 = px3 + spr._w / 2;
+          ctx.fillRect(dx2 - 3 * scale, sy(baseY) + 2 * scale, 2.2 * scale, 2.2 * scale);
+          ctx.fillRect(dx2 + 2 * scale, sy(baseY) - scale, 2.2 * scale, 2.2 * scale);
+        }
+      }
+      if(!alive){ pod = null; nextPodAt = now + 18000 + Math.random() * 7000; }
+    }
+    /* a fish flips somewhere out there — an expanding splash ring */
+    if(!fish && now > nextFishAt){
+      fish = { x: cssW * (.15 + Math.random() * .7), y: HORIZON + 60 + Math.random() * 120, t0: now };
+    }
+    if(fish){
+      const ft = (now - fish.t0) / 700;
+      if(ft > 1){ fish = null; nextFishAt = now + 6000 + Math.random() * 5000; }
+      else{
+        ctx.fillStyle = pal.tide;
+        const fr = (2 + ft * 8) * scale;
+        ctx.fillRect(fish.x - fr, sy(fish.y), fr * .5, 1.6 * scale);
+        ctx.fillRect(fish.x + fr * .5, sy(fish.y), fr * .5, 1.6 * scale);
+        if(ft < .4) ctx.fillRect(fish.x - scale, sy(fish.y) - 4 * scale * ft, 2 * scale, 2 * scale);
+      }
+    }
   }
   /* a little fleet crossing the cove — nearer boats sit lower, sail
      larger, and one runs the other way. Whole-pixel bob, as ever. */
@@ -1252,6 +1447,28 @@ function drawBeach(now){
   ctx.fillRect(0, sy(SAND_Y), cssW, Math.max(0, cssH - sy(SAND_Y)));
   ctx.fillStyle = pal.speckle;
   for(const [px2, py2] of SPECKLES) ctx.fillRect(snapC(px2 / SCENE_W * cssW), sy(py2), 3.5 * scale, 3.5 * scale);
+  /* the tide lapping at the sand — two foam frames trading places */
+  {
+    const tf = (!reduceMotion && Math.floor(now / 900) % 2) ? tideB : tideA;
+    if(tf) ctx.drawImage(tf, 0, sy(SAND_Y) - 2 * scale, tf._w, tf._h);
+  }
+  /* the crab, going about its business along the tide line */
+  if(!reduceMotion){
+    if(crabAx.mode === 'walk'){
+      crabAx.x += crabAx.dir * 0.00022 * scale;
+      if(crabAx.x > .94){ crabAx.x = .94; crabAx.dir = -1; }
+      if(crabAx.x < .06){ crabAx.x = .06; crabAx.dir = 1; }
+      if(Math.random() < .002){ crabAx.mode = 'pause'; crabAx.until = now + 1000 + Math.random() * 1200; }
+    }else if(now > crabAx.until){ crabAx.mode = 'walk'; if(Math.random() < .4) crabAx.dir *= -1; }
+    const cx3 = snapC(crabAx.x * cssW), cy3 = sy(SAND_Y + 18);
+    const step2 = crabAx.mode === 'walk' && Math.floor(now / 240) % 2;
+    ctx.fillStyle = pal.crab;
+    ctx.fillRect(cx3, cy3, 5 * scale, 3 * scale);                       /* body */
+    ctx.fillRect(cx3 - 1.6 * scale, cy3 - 1.4 * scale, 1.6 * scale, 1.6 * scale);  /* claws */
+    ctx.fillRect(cx3 + 5 * scale, cy3 - 1.4 * scale, 1.6 * scale, 1.6 * scale);
+    ctx.fillRect(cx3 + (step2 ? 0 : scale), cy3 + 3 * scale, 1.2 * scale, 1.2 * scale);  /* legs */
+    ctx.fillRect(cx3 + (step2 ? 3.6 : 2.6) * scale, cy3 + 3 * scale, 1.2 * scale, 1.2 * scale);
+  }
 
   /* ---- the cove itself: headlands, then the swaying canopy ---- */
   if(coveL) ctx.drawImage(coveL, 0, 0, coveL._w, coveL._h);
@@ -1272,6 +1489,18 @@ function drawBeach(now){
     ctx.save(); ctx.translate(crownAt[0], crownAt[1]); ctx.rotate(sway2 * .8);
     ctx.drawImage(crown, -crown._w / 2, -4, crown._w, crown._h);
     ctx.restore();
+  }
+  /* night: fireflies in the canopy + bioluminescent sparks riding the
+     waves (the birds are asleep) */
+  if(pal.glow){
+    for(const f of FIREFLIES){
+      const a = reduceMotion ? .45 : .25 + .5 * (0.5 + 0.5 * Math.sin(now / 1600 * Math.PI + f.ph));
+      ctx.globalAlpha = a;
+      ctx.fillStyle = pal.glow;
+      const fx2 = f.wave && !reduceMotion ? snapC(f.cx * cssW + Math.sin(now / 2200 + f.ph) * 14 * scale) : snapC(f.cx * cssW);
+      ctx.fillRect(fx2, sy(f.y), 2.4 * scale, 2.4 * scale);
+    }
+    ctx.globalAlpha = 1;
   }
   /* every so often a palm leaf lets go and see-saws down to the sand */
   if(!reduceMotion){
@@ -1297,6 +1526,36 @@ const KEY_NAME  = 'earlspade_player_v1';
 const KEY_EMAIL = 'earlspade_email_v1';
 const KEY_SOUND = 'earlspade_game_sound_v1';
 const KEY_SEEN  = 'earlspade_game_seen_v1';
+const KEY_COLLECT = 'earlspade_collect_v1';
+/* retired retention features (streak / quests / ranks) — leave no data behind */
+try{ localStorage.removeItem('earlspade_streak_v1'); localStorage.removeItem('earlspade_quests_v1'); }catch(e){}
+
+/* safe storage: Safari private mode throws on setItem — fall back to a
+   session-only Map so the game never dies over a preference. */
+const store = (() => {
+  const mem = new Map();
+  return {
+    get(k, fb){
+      try{ const v = localStorage.getItem(k); if(v !== null) return v; }catch(e){}
+      return mem.has(k) ? mem.get(k) : fb;
+    },
+    set(k, v){
+      mem.set(k, String(v));
+      try{ localStorage.setItem(k, String(v)); }catch(e){}
+    },
+    getJSON(k, fb){
+      const raw = this.get(k, null);
+      if(raw === null) return fb;
+      try{ return JSON.parse(raw); }catch(e){ return fb; }
+    },
+    setJSON(k, v){ this.set(k, JSON.stringify(v)); }
+  };
+})();
+
+/* the mechanics gate: retention mechanics (fever, golden, splash, clutch,
+   rival) are OFF under ?debug=1 so every automated
+   test sees today's exact scoring. Tests opt in via __suika.mech(true). */
+let mechOn = !location.search.includes('debug=1');
 
 /* ================= STATE ================= */
 const playEl  = document.getElementById('play');
@@ -1309,8 +1568,8 @@ let engine, world;
 let cssW = 0, cssH = 0;
 let scale = 1, offX = 0, offY = 0;
 let running = false, over = false;
-let score = 0, best = +(localStorage.getItem(KEY_BEST) || 0);
-let maxMade = Math.min(TIERS.length - 1, +(localStorage.getItem(KEY_SEEN) || 0));
+let score = 0, best = +(store.get(KEY_BEST, 0));
+let maxMade = Math.min(TIERS.length - 1, +(store.get(KEY_SEEN, 0)));
 let heldTier = 0, nextTier = 0;
 let aimX = SCENE_W / 2;
 let canDrop = true, lastDrop = 0, dropped = false;
@@ -1333,9 +1592,49 @@ let rafId = null, lastT = 0, acc = 0;
 const STEP = 1000 / 60;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* ===== play mechanics state =====
+   Everything here is gated by mechOn where it touches scoring, so
+   ?debug=1 test runs see the exact classic economy. */
+/* fever: merges charge the meter, a full meter ignites 12s of double points */
+const FEVER_NEED = 8, FEVER_MS = 12000;
+const fev = { charge: 0, on: false, until: 0, lastMergeAt: 0, decayAt: 0, remaining: 0 };
+let feverRain = [];                       // gold pixels raining inside the bucket
+/* golden creature: a rare gilded drop whose merges pay double */
+let nextGold = false, heldGold = false;
+/* the legendary axolotl: rarer still, a wild that ascends whatever it touches */
+let nextLegend = false, heldLegend = false, legendSeen = false;
+let flashAt = 0;                          // full-screen jackpot flash
+let splashes = 0, goldenMerges = 0;       // run counters (for tests)
+/* clutch save */
+let dangerPeak = false, lastClutchAt = -1e9;
+/* the aquarium: lifetime counts of every creature made
+   (slot 12 = the legendary axolotl) */
+const COLLECT_N = 13;
+let collect = (() => {
+  const c = store.getJSON(KEY_COLLECT, null);
+  const arr = Array.isArray(c) ? c.slice(0, COLLECT_N) : [];
+  while(arr.length < COLLECT_N) arr.push(0);
+  return arr.map(v => (Number.isFinite(+v) && +v >= 0) ? +v : 0);
+})();
+let collectDirty = 0;
+function bumpCollect(i){
+  collect[i] = (collect[i] || 0) + 1;
+  if(++collectDirty >= 10){ collectDirty = 0; store.setJSON(KEY_COLLECT, collect); }
+}
+function flushCollect(){ if(collectDirty){ collectDirty = 0; store.setJSON(KEY_COLLECT, collect); } }
+document.addEventListener('visibilitychange', () => { if(document.hidden) flushCollect(); });
+
+function startFever(t){
+  fev.on = true;
+  fev.until = t + FEVER_MS;
+  fev.charge = FEVER_NEED;
+  showToast('FEVER!! x2 POINTS', true);
+  sndBig();
+}
+
 /* ================= AUDIO (synth, no files) ================= */
 let actx = null;
-let soundOn = (localStorage.getItem(KEY_SOUND) || 'on') === 'on';
+let soundOn = store.get(KEY_SOUND, 'on') === 'on';
 function audio(){ if(!actx){ try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return actx; }
 function blip(freq0, freq1, dur, gain){
   if(!soundOn) return;
@@ -1358,7 +1657,7 @@ const muteBtn = document.getElementById('muteBtn');
 function paintMute(){ muteBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false'); }
 muteBtn.addEventListener('click', () => {
   soundOn = !soundOn;
-  localStorage.setItem(KEY_SOUND, soundOn ? 'on' : 'off');
+  store.set(KEY_SOUND, soundOn ? 'on' : 'off');
   paintMute();
 });
 paintMute();
@@ -1432,8 +1731,37 @@ function fruitBody(tier, x, y){
   b.bornAt = performance.now();
   return b;
 }
+/* the legendary's body: a plain circle, tier -1 so it never twins */
+function legendBody(x, y){
+  const b = Bodies.circle(x, y, LGD_R, {
+    restitution: RESTITUTION, friction: FRICTION,
+    frictionStatic: FRICTION_STATIC, frictionAir: AIR_FRICTION,
+    density: 0.0012,
+  });
+  b.tier = -1;
+  b.legendary = true;
+  b.merging = false;
+  b.bornAt = performance.now();
+  return b;
+}
+/* radius that survives the legendary's fake tier */
+function bodyR(b){ return b.legendary ? LGD_R : TIERS[b.tier].r; }
 
 /* ================= MERGING ================= */
+/* THE JACKPOT — the legendary's moment. Screen flash, double burst,
+   twin rings, shake, and a rising three-note fanfare. */
+function jackpotFX(x, y){
+  flashAt = performance.now();
+  if(!reduceMotion) shake = 16;
+  celebrate(x, y);
+  celebrate(SCENE_W / 2, BOX_TOP + 60);
+  rings.push({ x, y, r: 20, t: 0, color: '#E8B33C' });
+  rings.push({ x, y, r: 34, t: -0.25, color: '#F6C6D4' });
+  goldFlashAt = performance.now();
+  blip(392, 784, 0.12, 0.1);
+  setTimeout(() => blip(523, 1046, 0.12, 0.1), 90);
+  setTimeout(() => blip(659, 1318, 0.22, 0.12), 180);
+}
 function onCollisions(ev){
   if(over) return;
   for(const pair of ev.pairs){
@@ -1442,6 +1770,41 @@ function onCollisions(ev){
     const b = pair.bodyB.parent || pair.bodyB;
     if(a.tier === undefined || b.tier === undefined) continue;
     if(a === b) continue;
+    /* THE LEGENDARY WILD: it merges with whatever it touches and
+       ascends that creature one tier */
+    if(a.legendary || b.legendary){
+      if(a.merging || b.merging) continue;
+      const leg = a.legendary ? a : b;
+      const other = a.legendary ? b : a;
+      const mx2 = (a.position.x + b.position.x) / 2;
+      const my2 = (a.position.y + b.position.y) / 2;
+      a.merging = b.merging = true;
+      if(other.legendary || TIERS[other.tier].flower){
+        /* legendary + legendary (miracle) or + flower: pure jackpot */
+        removeFruit(a); removeFruit(b);
+        addScore(FLOWER_BONUS, mx2, my2);
+        jackpotFX(mx2, my2);
+        showToast('✦ LEGENDARY BLOOM +' + FLOWER_BONUS + ' ✦', true);
+        bumpCollect(TIERS.length);
+        continue;
+      }
+      const up = other.tier + 1;
+      removeFruit(leg); removeFruit(other);
+      const nb2 = fruitBody(up, mx2, my2);
+      Body.setVelocity(nb2, { x: 0, y: 0 });
+      Composite.add(world, nb2);
+      bodies.push(nb2);
+      popTweens.set(nb2.id, performance.now());
+      if(up > runBestTier) runBestTier = up;
+      if(up > maxMade){ maxMade = up; store.set(KEY_SEEN, maxMade); }
+      bumpCollect(up);
+      bumpCollect(TIERS.length);   /* the aquarium's legendary slot */
+      addScore(MERGE_POINTS[up] * 2 + 250, mx2, my2 - TIERS[up].r);
+      popups.push({ x: mx2, y: my2 - TIERS[up].r - 30, n: 0, t: 0, txt: 'LEGENDARY!!', big: true, gold: true });
+      jackpotFX(mx2, my2);
+      showToast('✦ THE LEGENDARY AXOLOTL ✦', true);
+      continue;
+    }
     if(a.tier !== b.tier) continue;
     if(a.merging || b.merging) continue;
     a.merging = b.merging = true;
@@ -1452,18 +1815,37 @@ function onCollisions(ev){
     const vy = (a.velocity.y + b.velocity.y) / 2;
     removeFruit(a); removeFruit(b);
 
+    /* multipliers, rebalanced: fever x2, golden x2, and the whole
+       stack (combo x fever x golden) caps at x8 so no jackpot ever
+       trivializes a well-built run. Flower bonus stays flat. */
+    const feverMult = (mechOn && fev.on) ? 2 : 1;
+    const goldMult = (mechOn && (a.golden || b.golden)) ? 2 : 1;
+    if(goldMult > 1){
+      goldenMerges++;
+      burst(mx, my, '#E8B33C', 14);
+    }
+    if(mechOn){
+      const tNow = performance.now();
+      fev.lastMergeAt = tNow;
+      if(!fev.on){
+        fev.charge = Math.min(FEVER_NEED, fev.charge + 1);
+        if(fev.charge >= FEVER_NEED) startFever(tNow);
+      }
+    }
+
     if(tier === TIERS.length - 1){
-      addScore(FLOWER_BONUS, mx, my);
+      addScore(FLOWER_BONUS, mx, my);   /* the jackpot is the jackpot — flat */
       celebrate(mx, my);
       sndBig();
       shake = reduceMotion ? 0 : 14;
       continue;
     }
     const nt = tier + 1;
+    bumpCollect(nt);   /* the aquarium remembers every creature ever made */
     const maxMade0 = maxMade;
     if(nt > maxMade){
       maxMade = nt;
-      try{ localStorage.setItem(KEY_SEEN, String(maxMade)); }catch(e){}
+      store.set(KEY_SEEN, maxMade);
     }
     const unlock = nt > maxMade0 && nt >= SECRET_FROM;
     const nb = fruitBody(nt, mx, my);
@@ -1476,7 +1858,23 @@ function onCollisions(ev){
     combo = (nowMs - comboAt < COMBO_WINDOW_MS) ? Math.min(COMBO_CAP, combo + 1) : 1;
     comboAt = nowMs;
     if(nt > runBestTier) runBestTier = nt;
-    addScore(MERGE_POINTS[nt] * combo, mx, my - TIERS[nt].r);
+    const mult = Math.min(8, combo * feverMult * goldMult);
+    addScore(MERGE_POINTS[nt] * mult, mx, my - TIERS[nt].r);
+    /* SPLASH: the drop merged the instant it landed — pure skill, paid
+       as a clean double of the merge. An undefined touchedAt means this
+       merge IS the body's first contact (the merge listener can run
+       before the touch listener in the same collision batch) — the
+       purest splash of all. Spawned/test bodies never carry byPlayer,
+       so automated scoring stays exact. */
+    if(mechOn && [a, b].some(x => x.byPlayer && (x.touchedAt === undefined || nowMs - x.touchedAt <= 350))){
+      splashes++;
+      addScore(MERGE_POINTS[nt] * combo, mx, my - TIERS[nt].r - 20);
+      popups.push({ x: mx, y: my - TIERS[nt].r - 48, n: 0, t: 0, txt: 'SPLASH!', big: true });
+      for(let i = 0; i < 6 && particles.length < MAX_PARTICLES; i++){
+        const an = Math.random() * Math.PI * 2, sp = 1 + Math.random() * 2;
+        particles.push({ x: mx, y: my, vx: Math.cos(an) * sp, vy: Math.sin(an) * sp - 1, r: 2, color: '#F6FBF6', life: .6 });
+      }
+    }
     if(combo >= 2){
       popups.push({ x: mx, y: my - TIERS[nt].r - 26, n: 0, t: 0,
         txt: 'COMBO x' + combo, big: true, gold: combo >= 4 });
@@ -1503,16 +1901,17 @@ function onCollisions(ev){
 }
 /* a tiny dust puff the first time a creature touches anything */
 function onFirstTouch(ev){
-  if(reduceMotion) return;
   for(const pair of ev.pairs){
     for(const raw of [pair.bodyA, pair.bodyB]){
       const b = raw.parent || raw;
       if(b.tier === undefined || b.puffed) continue;
       b.puffed = true;
+      b.touchedAt = performance.now();   // splash-bonus clock, always recorded
+      if(reduceMotion) continue;         // the dust below is visual only
       if(b.speed < 3.2) continue;
       b.squashAt = performance.now();
       const s = pair.collision && pair.collision.supports && pair.collision.supports[0];
-      const px = s ? s.x : b.position.x, py = s ? s.y : b.position.y + TIERS[b.tier].r;
+      const px = s ? s.x : b.position.x, py = s ? s.y : b.position.y + bodyR(b);
       for(let i = 0; i < 4 && particles.length < MAX_PARTICLES; i++){
         const a = -Math.PI/2 + (Math.random() - .5) * 2.2, sp = .6 + Math.random() * 1.4;
         particles.push({ x: px, y: py, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp * .5, r: 1.5 + Math.random()*2, color: 'rgba(107,104,98,.55)', life: .5 });
@@ -1533,11 +1932,12 @@ const scoreEl = document.getElementById('score');
 const bestEl  = document.getElementById('best');
 function addScore(n, x, y){
   score += n;
-  if(score > best){ best = score; bestEl.textContent = best; localStorage.setItem(KEY_BEST, String(best)); }
+  if(score > best){ best = score; bestEl.textContent = best; store.set(KEY_BEST, best); }
   popups.push({ x, y, n, t: 0 });
   scoreEl.classList.remove('bump');
   void scoreEl.offsetWidth;              // restart the pop animation
   scoreEl.classList.add('bump');
+  if(mechOn) rivalTick();
 }
 function tickScore(){
   if(shownScore === score) return;
@@ -1557,30 +1957,63 @@ function rollSpawnTier(){
 function paintNext(){
   const s = nextCv.width;
   nextCtx.clearRect(0,0,s,s);
+  if(nextLegend){  /* the legendary announces itself in the window */
+    const d = s * 0.36 * 2 * SPRITE_OVER;
+    nextCtx.drawImage(LGD_SPRITE, s/2 - d/2, s/2 - d/2, d, d);
+    nextCtx.save();
+    for(const [col, rr] of [['#F6C6D4', .46], ['#E8B33C', .42]]){
+      nextCtx.strokeStyle = col; nextCtx.lineWidth = 2.5;
+      nextCtx.beginPath(); nextCtx.arc(s/2, s/2, s * rr, 0, Math.PI*2); nextCtx.stroke();
+    }
+    nextCtx.restore();
+    nextCv.classList.remove('pop'); void nextCv.offsetWidth; nextCv.classList.add('pop');
+    return;
+  }
   drawFruitAt(nextCtx, s/2, s/2, s*0.36, nextTier, 0);
+  if(nextGold){   /* a golden is coming — let them see it and want it */
+    nextCtx.save();
+    nextCtx.strokeStyle = '#E8B33C';
+    nextCtx.lineWidth = 3;
+    nextCtx.beginPath(); nextCtx.arc(s/2, s/2, s*0.44, 0, Math.PI*2); nextCtx.stroke();
+    nextCtx.fillStyle = '#F2CC70';
+    nextCtx.fillRect(s*0.78, s*0.12, 4, 4); nextCtx.fillRect(s*0.12, s*0.76, 4, 4);
+    nextCtx.restore();
+  }
   nextCv.classList.remove('pop');
   void nextCv.offsetWidth;
   nextCv.classList.add('pop');
 }
+function rollGold(){ return mechOn && Math.random() < 1/35; }
+function rollLegend(){ return mechOn && Math.random() < 1/90; }
 function promoteNext(){
   heldTier = nextTier;
+  heldGold = nextGold;
+  heldLegend = nextLegend;
   nextTier = rollSpawnTier();
+  nextLegend = rollLegend();
+  nextGold = !nextLegend && rollGold();
+  if(nextLegend) showToast('✦ A LEGEND STIRS ✦', true);
   paintNext();
 }
+function heldR(){ return heldLegend ? LGD_R : TIERS[heldTier].r; }
 function clampAim(x){
-  const r = TIERS[heldTier].r;
+  const r = heldR();
   return Math.max(IN_L + r, Math.min(IN_R - r, x));
 }
-function heldY(){ return Math.min(BOX_TOP - TIERS[heldTier].r - 14, 150); }
+function heldY(){ return Math.min(BOX_TOP - heldR() - 14, 150); }
 function drop(){
   if(!canDrop || over || uiModal) return;
   const now = performance.now();
   if(now - lastDrop < DROP_COOLDOWN_MS) return;
   lastDrop = now; canDrop = false;
   const x = clampAim(aimX);
-  const b = fruitBody(heldTier, x, heldY());
+  const b = heldLegend ? legendBody(x, heldY()) : fruitBody(heldTier, x, heldY());
+  b.byPlayer = true;                       // splash-bonus eligibility
+  if(heldGold && !heldLegend){ b.golden = true; heldGold = false; }
+  if(heldLegend) heldLegend = false;
   Composite.add(world, b);
   bodies.push(b);
+  if(!b.legendary) bumpCollect(heldTier);
   sndDrop();
   if(!dropped){ dropped = true; document.getElementById('howto').classList.add('off'); }
   setTimeout(() => { promoteNext(); canDrop = true; }, DROP_COOLDOWN_MS);
@@ -1620,9 +2053,12 @@ function celebrate(x, y){
   }
 }
 
-/* pixel toast — a small announcement chip that slides in under the HUD */
+/* pixel toast — a small announcement chip that slides in under the HUD.
+   Ten mechanics can now announce at once, so a 3-deep queue drains them
+   politely; an empty queue behaves exactly like the old single toast. */
 let toastTimer = null;
-function showToast(txt, gold){
+const toastQ = [];
+function paintToast(txt, gold){
   const t = document.getElementById('toast');
   if(!t) return;
   t.textContent = txt;
@@ -1630,8 +2066,23 @@ function showToast(txt, gold){
   t.classList.remove('show');
   void t.offsetWidth;
   t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 1700);
+}
+function drainToast(){
+  const next = toastQ.shift();
+  if(!next){ const t = document.getElementById('toast'); if(t) t.classList.remove('show'); toastTimer = null; return; }
+  paintToast(next[0], next[1]);
+  toastTimer = setTimeout(drainToast, 1400);
+}
+function showToast(txt, gold){
+  if(toastTimer){
+    if(toastQ.length < 3 && !toastQ.some(q => q[0] === txt)) toastQ.push([txt, gold]);
+    return;
+  }
+  paintToast(txt, gold);
+  toastTimer = setTimeout(() => {
+    if(toastQ.length) drainToast();
+    else { const t = document.getElementById('toast'); if(t) t.classList.remove('show'); toastTimer = null; }
+  }, 1700);
 }
 
 /* slow ambient bubbles inside the vessel — the sea breathing */
@@ -1661,13 +2112,59 @@ function checkOverLine(dt){
       const t = (overTimers.get(b.id) || 0) + dt;
       overTimers.set(b.id, t);
       if(t >= OVER_SECONDS){ endGame(); return; }
+      if(mechOn && t >= OVER_SECONDS * 0.4) dangerPeak = true;   // deep in danger
     }else{
       overTimers.delete(b.id);
     }
   }
+  /* CLUTCH: they stared down the over-line and cleared it — pay the nerve */
+  if(mechOn && dangerPeak && !anyOverLine && !over){
+    if(now - lastClutchAt > 20000){
+      lastClutchAt = now;
+      addScore(120, SCENE_W / 2, BOX_TOP + 40);
+      popups.push({ x: SCENE_W / 2, y: BOX_TOP + 18, n: 0, t: 0, txt: 'CLUTCH!', big: true, gold: true });
+      showToast('CLUTCH SAVE +120', true);
+      blip(220, 660, 0.3, 0.1);   // the relief sweep
+    }
+    dangerPeak = false;
+  }
 }
 
 /* ================= RENDER ================= */
+/* the legendary's aura: pink + gold twin rings breathing out of phase,
+   three orbiting sparks — unmistakably above golden */
+function drawLegendAura(x, y, r, now){
+  ctx.save();
+  const pulse = reduceMotion ? 0 : Math.sin(now / 300) * 2;
+  for(const [col, off] of [['#F6C6D4', 4 + pulse], ['#E8B33C', 8 - pulse]]){
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(x, y, r + off, 0, Math.PI * 2); ctx.stroke();
+  }
+  if(!reduceMotion){
+    for(let k = 0; k < 3; k++){
+      const a = now / 380 + k * (Math.PI * 2 / 3);
+      ctx.fillStyle = k % 2 ? '#F2CC70' : '#FFD3DE';
+      ctx.fillRect(x + Math.cos(a) * (r + 13) - 2.5, y + Math.sin(a) * (r + 13) - 2.5, 5, 5);
+    }
+  }
+  ctx.restore();
+}
+/* the golden halo: ring + two orbiting sparks (the legend's recipe) */
+function drawGoldRing(x, y, r, now){
+  ctx.save();
+  ctx.strokeStyle = '#E8B33C';
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(x, y, r + 4, 0, Math.PI * 2); ctx.stroke();
+  if(!reduceMotion){
+    ctx.fillStyle = '#F2CC70';
+    for(const ph of [0, Math.PI]){
+      const a = now / 480 + ph;
+      ctx.fillRect(x + Math.cos(a) * (r + 8) - 2, y + Math.sin(a) * (r + 8) - 2, 4, 4);
+    }
+  }
+  ctx.restore();
+}
 function drawFruitAt(c, x, y, r, tier, angle, sqx, sqy){
   const t = TIERS[tier];
   c.save();
@@ -1778,6 +2275,18 @@ function render(now){
     ctx.fillStyle = g;
     ctx.fillRect(BOX_L, BOX_TOP, BOX_W, 130);
   }
+  /* FEVER: gold rain inside the bucket while it burns */
+  if(mechOn && fev.on && !reduceMotion){
+    if(feverRain.length < 12 && Math.random() < .5)
+      feverRain.push({ x: IN_L + 8 + Math.random() * (IN_R - IN_L - 16), y: BOX_TOP + 4, sp: 1.6 + Math.random() * 1.8 });
+    ctx.fillStyle = 'rgba(232,179,60,.8)';
+    for(let i = feverRain.length - 1; i >= 0; i--){
+      const fr = feverRain[i];
+      fr.y += fr.sp;
+      if(fr.y > BOX_BOTTOM - 6){ feverRain.splice(i, 1); continue; }
+      ctx.fillRect(fr.x - 1.5, fr.y, 3, 5);
+    }
+  }else if(feverRain.length) feverRain = [];
   ctx.restore();
 
   /* game-over line — subtle dashes; red flash while threatened */
@@ -1793,7 +2302,7 @@ function render(now){
 
   /* aim guide + held creature */
   if(!over){
-    const hx = clampAim(aimX), hr = TIERS[heldTier].r;
+    const hx = clampAim(aimX), hr = heldR();
     const hy = heldY() + (reduceMotion ? 0 : Math.sin(now / 480) * 3);
     ctx.save();
     /* solid paper under-stroke so the guide never drowns in the cove */
@@ -1807,13 +2316,20 @@ function render(now){
     ctx.beginPath(); ctx.moveTo(hx, hy + hr + 4); ctx.lineTo(hx, BOX_BOTTOM - 2); ctx.stroke();
     ctx.restore();
     ctx.globalAlpha = canDrop ? 1 : 0.45;
-    drawFruitAt(ctx, hx, hy, hr, heldTier, 0);
+    if(heldLegend){
+      const d = hr * 2 * SPRITE_OVER;
+      ctx.drawImage(LGD_SPRITE, hx - d/2, hy - d/2, d, d);
+      drawLegendAura(hx, hy, hr, now);
+    }else{
+      drawFruitAt(ctx, hx, hy, hr, heldTier, 0);
+      if(heldGold) drawGoldRing(hx, hy, hr, now);
+    }
     ctx.globalAlpha = 1;
   }
 
   /* creatures (with scale-pop on fresh merges) */
   for(const b of bodies){
-    let r = TIERS[b.tier].r;
+    let r = bodyR(b);
     const born = popTweens.get(b.id);
     if(born !== undefined){
       const p = (now - born) / 220;
@@ -1830,7 +2346,29 @@ function render(now){
       const st = Math.min(0.10, (b.velocity.y - 6) * 0.008);
       sqy = 1 + st; sqx = 1 - st * 0.7;
     }
+    if(b.legendary){
+      const d = r * 2 * SPRITE_OVER;
+      ctx.save();
+      ctx.translate(b.position.x, b.position.y);
+      if(b.angle) ctx.rotate(b.angle);
+      ctx.drawImage(LGD_SPRITE, -d/2, -d/2, d, d);
+      ctx.restore();
+      drawLegendAura(b.position.x, b.position.y, r, now);
+      if(!reduceMotion && Math.floor(now / 40) % 2 === 0 && particles.length < MAX_PARTICLES){
+        particles.push({ x: b.position.x + (Math.random() - .5) * r * 1.6, y: b.position.y - r * .4,
+          vx: 0, vy: -.5, r: 2, color: Math.random() < .5 ? '#F2CC70' : '#FFD3DE', life: .5 });
+      }
+      continue;
+    }
     drawFruitAt(ctx, b.position.x, b.position.y, r, b.tier, b.angle, sqx, sqy);
+    if(b.golden){
+      drawGoldRing(b.position.x, b.position.y, r, now);
+      /* a golden trail while it falls */
+      if(!reduceMotion && b.velocity.y > 2 && Math.floor(now / 34) % 2 === 0 && particles.length < MAX_PARTICLES){
+        particles.push({ x: b.position.x + (Math.random() - .5) * r, y: b.position.y - r * .5,
+          vx: 0, vy: -.4, r: 2, color: '#F2CC70', life: .5 });
+      }
+    }
   }
 
   /* THE BEACH BUCKET — a painted red sand pail, not a black-line box.
@@ -1865,6 +2403,28 @@ function render(now){
     }
     ctx.fillStyle = 'rgba(22,20,18,.25)';
     ctx.fillRect(wx + 1.5, BOX_TOP + 26 + 18, WALL_T - 3, 1.2);   /* rope shadow */
+  }
+  /* FEVER METER: eight pips climbing the left wall; during fever it
+     becomes a draining gold bar */
+  if(mechOn){
+    const pipH = 26, pipGap = 8, baseY = BOX_BOTTOM - CORNER_R - 12;
+    const lit = fev.on
+      ? Math.ceil(FEVER_NEED * Math.max(0, (fev.until - now) / FEVER_MS))
+      : fev.charge;
+    for(let i = 0; i < FEVER_NEED; i++){
+      const py4 = baseY - i * (pipH + pipGap);
+      ctx.fillStyle = i < lit ? '#E8B33C' : 'rgba(22,20,18,.28)';
+      ctx.fillRect(BOX_L + 2.5, py4 - pipH, WALL_T - 5, pipH);
+    }
+    if(fev.on){
+      ctx.save();
+      ctx.globalAlpha = reduceMotion ? .3 : .35 + .15 * Math.sin(now / 160);
+      ctx.strokeStyle = '#E8B33C';
+      ctx.lineWidth = 5;
+      vesselPath(-4);
+      ctx.stroke();
+      ctx.restore();
+    }
   }
   /* chunky rim caps with a glint */
   for(const rx of [BOX_L - 5, BOX_R - WALL_T - 5]){
@@ -1989,6 +2549,17 @@ function render(now){
   ctx.globalAlpha = 1;
   ctx.restore();
   ctx.restore();
+  /* the jackpot flash: one bright breath across the whole screen */
+  if(flashAt && now - flashAt < 450){
+    if(reduceMotion){ flashAt = 0; }
+    else{
+      const ft = (now - flashAt) / 450;
+      ctx.globalAlpha = 0.55 * (1 - ft) * (1 - ft);
+      ctx.fillStyle = '#FFFDF4';
+      ctx.fillRect(0, 0, cssW, cssH);
+      ctx.globalAlpha = 1;
+    }
+  }
 }
 
 /* ================= MAIN LOOP ================= */
@@ -2006,10 +2577,19 @@ function loop(now){
     acc -= STEP; steps++;
   }
   if(steps === 3) acc = 0;
+  /* fever clock: expire, or bleed idle charge */
+  if(mechOn){
+    const tp = performance.now();
+    if(fev.on && tp >= fev.until){ fev.on = false; fev.charge = 0; }
+    else if(!fev.on && fev.charge > 0 && tp - fev.lastMergeAt > 2500){
+      if(!fev.decayAt) fev.decayAt = tp + 700;
+      if(tp >= fev.decayAt){ fev.charge--; fev.decayAt = tp + 700; }
+    }else fev.decayAt = 0;
+  }
   /* belt-and-braces: if anything ever escapes the vessel (a pathological
      frame spike), lift it gently back in rather than losing it */
   for(const b of bodies){
-    const r = TIERS[b.tier].r;
+    const r = bodyR(b);
     if(b.position.y - r > BOX_BOTTOM + 4 || b.position.x < IN_L - r - 40 || b.position.x > IN_R + r + 40){
       Body.setPosition(b, { x: Math.max(IN_L + r, Math.min(IN_R - r, b.position.x)), y: BOX_TOP + r + 10 });
       Body.setVelocity(b, { x: 0, y: 0 });
@@ -2018,9 +2598,17 @@ function loop(now){
   }
   tickScore();
   render(now);
+  if(perfLast){ perfT.push(now - perfLast); if(perfT.length > 120) perfT.shift(); }
+  perfLast = now;
 }
-function pause(){ if(rafId){ cancelAnimationFrame(rafId); rafId = null; lastT = 0; acc = 0; } }
-function resume(){ if(!rafId && running) rafId = requestAnimationFrame(loop); }
+function pause(){
+  if(rafId){ cancelAnimationFrame(rafId); rafId = null; lastT = 0; acc = 0; }
+  if(fev.on) fev.remaining = Math.max(0, fev.until - performance.now());   // freeze fever
+}
+function resume(){
+  if(fev.on && fev.remaining){ fev.until = performance.now() + fev.remaining; fev.remaining = 0; }
+  if(!rafId && running) rafId = requestAnimationFrame(loop);
+}
 document.addEventListener('visibilitychange', () => { document.hidden ? pause() : resume(); });
 
 /* ================= GAME OVER FLOW / LEADERBOARD ================= */
@@ -2035,12 +2623,26 @@ const submitBtn = document.getElementById('submitBtn');
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const againBtn = document.getElementById('againBtn');
 
+/* a pixel segment bar: N cells, first `lit` filled */
+function paintBar(el, cells, lit, gold){
+  if(!el) return;
+  el.innerHTML = '';
+  for(let i = 0; i < cells; i++){
+    const c = document.createElement('i');
+    if(i < lit) c.className = gold ? 'gold' : 'on';
+    el.appendChild(c);
+  }
+}
+
 function endGame(){
   if(over) return;
   over = true;
   running = false;
   blip(300, 80, 0.5, 0.1);
   finalScoreEl.textContent = score;
+  fev.on = false; feverRain = [];
+  flushCollect();
+  if(rivalEl) rivalEl.style.display = 'none';
   /* the furthest creature this run, drawn into the dialog */
   const oc = document.getElementById('overFruit');
   if(oc){
@@ -2051,10 +2653,27 @@ function endGame(){
     document.getElementById('reachTxt').textContent = 'you reached ' + nm;
   }
   const nb = document.getElementById('newBest');
+  const isBest = score > 0 && score > bestAtStart;
   if(nb){
-    const isBest = score > 0 && score > bestAtStart;
     nb.style.display = isBest ? 'block' : 'none';
     if(isBest && !reduceMotion) celebrate(SCENE_W/2, BOX_TOP + 90);
+  }
+  /* near-miss framing: the honest "you almost had it" read */
+  const scEl2 = document.getElementById('soClose');
+  const gapEl = document.getElementById('bestGap');
+  if(mechOn){
+    const nearMiss = !isBest && bestAtStart >= 50 && score < bestAtStart;
+    if(scEl2) scEl2.style.display = (nearMiss && score >= bestAtStart * .85) ? 'block' : 'none';
+    if(gapEl){
+      gapEl.style.display = nearMiss ? 'flex' : 'none';
+      if(nearMiss){
+        document.getElementById('bestGapTxt').textContent = (bestAtStart - score) + ' FROM YOUR BEST';
+        paintBar(document.getElementById('bestGapBar'), 10, Math.max(0, Math.round(10 * score / bestAtStart)), false);
+      }
+    }
+  }else{
+    if(scEl2) scEl2.style.display = 'none';
+    if(gapEl) gapEl.style.display = 'none';
   }
   overDialog.classList.add('show');
   loadBoard();
@@ -2065,7 +2684,10 @@ function endGame(){
 const shareBtn = document.getElementById('shareBtn');
 if(shareBtn){
   shareBtn.addEventListener('click', async () => {
-    const url = location.origin + location.pathname;
+    /* carry a beat target so the link becomes a challenge */
+    const myName = String(store.get(KEY_NAME, '')).slice(0, 12);
+    const url = location.origin + location.pathname
+      + (score > 0 && myName ? '?beat=' + score + '&name=' + encodeURIComponent(myName) : '');
     const text = 'I scored ' + score + ' in the earlspade sea game — beat me';
     try{
       if(navigator.share){ await navigator.share({ text, url }); return; }
@@ -2091,6 +2713,56 @@ async function fetchBoard(force){
   if(!Array.isArray(data)) throw new Error('offline');
   boardCache = data; boardCacheAt = now;
   return data;
+}
+
+/* ===== RIVAL LINE + BEAT LINKS — play against real people =====
+   The rival chip appears once the live score enters top-10 territory;
+   beat links come in via ?beat=SCORE&name=NAME on shared URLs. */
+const rivalEl = document.getElementById('rival');
+const beatEl = document.getElementById('beatChip');
+let rivalAt = 0, passedNames = new Set(), beatTarget = null, beatDone = false;
+(function parseBeat(){
+  try{
+    const q = new URLSearchParams(location.search);
+    const bs = parseInt(q.get('beat'), 10);
+    if(!Number.isInteger(bs) || bs < 1 || bs > 999999) return;
+    let nm = q.get('name') || '';
+    try{ nm = decodeURIComponent(nm); }catch(e){}
+    nm = nm.replace(/[^A-Za-z0-9 ._-]/g, '').trim().slice(0, 12).toUpperCase() || 'A FRIEND';
+    beatTarget = { score: bs, name: nm };
+    if(beatEl && mechOn){ beatEl.textContent = 'BEAT ' + nm + ' · ' + bs; beatEl.style.display = 'block'; }
+  }catch(e){}
+})();
+function rivalTick(){
+  const nowMs = performance.now();
+  if(beatTarget && !beatDone && score > beatTarget.score){
+    beatDone = true;
+    showToast('YOU BEAT ' + beatTarget.name + '!', true);
+    celebrate(SCENE_W / 2, BOX_TOP + 90);
+    if(beatEl){ beatEl.textContent = '✓ BEAT ' + beatTarget.name; beatEl.classList.add('won'); }
+  }
+  if(!rivalEl || nowMs - rivalAt < 250) return;
+  rivalAt = nowMs;
+  /* keep the board warm while a run is live (cheap, throttled) */
+  if(Date.now() - boardCacheAt > 60000 && running && !document.hidden) fetchBoard(true).catch(() => {});
+  const rows = boardCache;
+  if(!rows || !rows.length || score <= 0 || over){ rivalEl.style.display = 'none'; return; }
+  const qual = rows.length < 10 || score > rows[rows.length - 1].score;
+  if(!qual){ rivalEl.style.display = 'none'; return; }
+  let ahead = null, place = rows.length + 1;
+  for(let i = rows.length - 1; i >= 0; i--){
+    if(score > rows[i].score){
+      place = i + 1;
+      if(!passedNames.has(rows[i].name)){
+        passedNames.add(rows[i].name);
+        showToast('PASSED ' + String(rows[i].name).slice(0, 10).toUpperCase() + '!', false);
+      }
+    }else{ ahead = rows[i]; break; }
+  }
+  rivalEl.style.display = 'block';
+  rivalEl.textContent = ahead
+    ? '#' + place + ' · ' + (ahead.score - score) + ' BEHIND ' + String(ahead.name).slice(0, 10).toUpperCase()
+    : '#1 — THE DEEP IS YOURS';
 }
 function renderBoardInto(listEl, rows, meName){
   listEl.innerHTML = '';
@@ -2118,8 +2790,8 @@ async function loadBoard(){
     else { lbStatus.textContent = 'no scores yet — be first'; }
     if(qualifies){
       nameRow.style.display = 'flex';
-      nameInput.value = (localStorage.getItem(KEY_NAME) || '');
-      emailInput.value = (localStorage.getItem(KEY_EMAIL) || '');
+      nameInput.value = store.get(KEY_NAME, '');
+      emailInput.value = store.get(KEY_EMAIL, '');
       submitBtn.disabled = false;
       submitBtn.textContent = 'SAVE MY SCORE';
     }
@@ -2127,23 +2799,55 @@ async function loadBoard(){
     lbStatus.textContent = 'leaderboard offline';
   }
 }
+/* ===== NAME FILTER — the board is a public wall, keep it clean.
+   Normalizes leetspeak / spacing / symbol evasions, then substring-
+   matches a blocklist of slurs and hate references. Mirrored
+   server-side in api/score.js — this copy just gives instant,
+   friendly feedback. */
+const NAME_BLOCK = ['nigger','nigga','niger','faggot','fagot','kike','chink','gook',
+  'wetback','beaner','tranny','dyke','coon','retard','rape','hitler','nazi','natzi',
+  'kkk','swastika','fuhrer','fhrer','heil','goebbels','himmler','klux'];
+function nameAllowed(raw){
+  const low = String(raw).toLowerCase();
+  if(low.includes('1488') || low.includes('卐') || low.includes('卍')) return false;
+  const subs = { '0':'o','1':'i','2':'z','3':'e','4':'a','5':'s','6':'g','7':'t','8':'b','9':'g','@':'a','$':'s','!':'i','|':'i','+':'t' };
+  let s = low.replace(/[0-9@$!|+]/g, c => subs[c] || c);
+  s = s.replace(/[^a-z]/g, '');                     // spacing/symbol evasion
+  const squeezed = s.replace(/(.)\1+/g, '$1');      // repeated-letter evasion
+  return !NAME_BLOCK.some(w => s.includes(w) || squeezed.includes(w));
+}
+function nameRejected(){
+  nameInput.classList.add('bad');
+  nameInput.focus();
+  try{ nameInput.select(); }catch(e){}
+  lbStatus.textContent = 'that name can’t go on the board — try another';
+  lbStatus.style.display = 'block';
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'SAVE MY SCORE';
+}
 async function submitScore(){
   /* both fields required — the name goes on the board, the email stays
      private server-side (the gift list). */
   const name = nameInput.value.trim().slice(0, 16);
   if(!name){ nameInput.classList.add('bad'); nameInput.focus(); return; }
+  if(!nameAllowed(name)){ nameRejected(); return; }
   const email = emailInput.value.trim().slice(0, 254);
   if(!EMAIL_RE.test(email)){ emailInput.classList.add('bad'); emailInput.focus(); return; }
   submitBtn.disabled = true;
   submitBtn.textContent = '…';
-  localStorage.setItem(KEY_NAME, name);
-  localStorage.setItem(KEY_EMAIL, email);
+  store.set(KEY_NAME, name);
+  store.set(KEY_EMAIL, email);
   try{
     const res = await fetch('/api/score', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, score, email })
     });
+    if(res.status === 400){
+      let data = null;
+      try{ data = await res.json(); }catch(e){}
+      if(data && data.error === 'name'){ nameRejected(); return; }
+    }
     if(!res.ok) throw new Error('bad');
     const rows = await fetchBoard(true);
     renderBoard(rows, name);
@@ -2183,7 +2887,7 @@ if(boardBtn){
     try{
       const rows = await fetchBoard();
       if(rows.length){
-        renderBoardInto(bdList, rows, localStorage.getItem(KEY_NAME) || '');
+        renderBoardInto(bdList, rows, store.get(KEY_NAME, ''));
         bdStatus.style.display = 'none';
       }else{
         bdStatus.textContent = 'no scores yet — be first';
@@ -2200,6 +2904,55 @@ if(boardBtn){
   });
 }
 
+/* ================= THE AQUARIUM — the collection book ================= */
+const aquaDialog = document.getElementById('aquaDialog');
+const aquaBtn = document.getElementById('aquaBtn');
+const aquaClose = document.getElementById('aquaClose');
+if(aquaBtn && aquaDialog){
+  aquaBtn.addEventListener('click', () => {
+    uiModal = true;
+    pause();
+    const grid = document.getElementById('aquaGrid');
+    grid.innerHTML = '';
+    let made = 0;
+    for(let i = 0; i < COLLECT_N; i++){
+      const isLgd = i === TIERS.length;    /* the 13th slot: the legendary */
+      const known = (collect[i] || 0) > 0 || (!isLgd && i <= maxMade);
+      if((collect[i] || 0) > 0) made++;
+      const cell = document.createElement('div');
+      cell.className = 'aqua-cell';
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 96;
+      const g = cv.getContext('2d');
+      if(known && isLgd){
+        g.drawImage(LGD_SPRITE, 48 - 30 * SPRITE_OVER, 48 - 30 * SPRITE_OVER, 60 * SPRITE_OVER, 60 * SPRITE_OVER);
+        g.strokeStyle = '#E8B33C'; g.lineWidth = 3;
+        g.beginPath(); g.arc(48, 48, 40, 0, Math.PI * 2); g.stroke();
+      }else if(known){
+        drawFruitAt(g, 48, 48, 30, i, 0);
+      }else{
+        /* keep the legend's secrecy: unmade mysteries stay hidden,
+           the final two + the legendary behind the gold twin */
+        const spr = (isLgd || i >= TIERS.length - 2) ? SECRET_GOLD_SPRITE : SECRET_SPRITE;
+        g.drawImage(spr, 48 - 30 * SPRITE_OVER, 48 - 30 * SPRITE_OVER, 60 * SPRITE_OVER, 60 * SPRITE_OVER);
+      }
+      const n = document.createElement('span');
+      n.className = 'ac-n';
+      n.textContent = known ? (isLgd ? 'LEGEND ×' + (collect[i] || 0) : '×' + (collect[i] || 0)) : '?';
+      cell.append(cv, n);
+      grid.appendChild(cell);
+    }
+    document.getElementById('aquaCount').textContent =
+      made + ' / ' + COLLECT_N + ' · ' + Math.round(made / COLLECT_N * 100) + '% OF THE SEA';
+    aquaDialog.classList.add('show');
+  });
+  aquaClose.addEventListener('click', () => {
+    aquaDialog.classList.remove('show');
+    setTimeout(() => { uiModal = false; }, 150);
+    resume();
+  });
+}
+
 /* ================= RESET / START ================= */
 function reset(){
   if(engine){ Events.off(engine); Engine.clear(engine); }
@@ -2210,6 +2963,17 @@ function reset(){
   combo = 0; comboAt = 0; runBestTier = 0; goldFlashAt = 0;
   bestAtStart = best;
   over = false; shake = 0; canDrop = true; lastDrop = 0;
+  /* v13 run state */
+  fev.on = false; fev.charge = 0; fev.decayAt = 0; fev.remaining = 0;
+  feverRain = [];
+  splashes = 0; goldenMerges = 0;
+  dangerPeak = false; lastClutchAt = -1e9;
+  passedNames.clear();
+  heldGold = false; heldLegend = false;
+  nextLegend = rollLegend();
+  nextGold = !nextLegend && rollGold();
+  flashAt = 0;
+  if(rivalEl) rivalEl.style.display = 'none';
   overDialog.classList.remove('show');
   buildWorld();
   initAmbient();
@@ -2241,8 +3005,38 @@ if(location.search.includes('debug=1')){
     info(){ return bodies.map(b => ({ x: b.position.x, y: b.position.y, tier: b.tier })); },
     maxMade(){ return maxMade; },
     clearSeen(){ maxMade = 0; try{ localStorage.removeItem('earlspade_game_seen_v1'); }catch(e){} },
-    tiers(){ return TIERS.length; }
+    tiers(){ return TIERS.length; },
+    /* ===== v13 hooks ===== */
+    mech(v){ mechOn = !!v; return mechOn; },
+    fever(){ return { charge: fev.charge, on: fev.on, remaining: fev.on ? Math.max(0, fev.until - performance.now()) : 0 }; },
+    charge(n){ fev.charge = Math.min(FEVER_NEED, n); fev.lastMergeAt = performance.now(); if(fev.charge >= FEVER_NEED) startFever(performance.now()); },
+    forceFever(){ startFever(performance.now()); },
+    gild(){ nextGold = true; nextLegend = false; paintNext(); },
+    legend(){ nextLegend = true; nextGold = false; paintNext(); },
+    heldLegend(){ return heldLegend; },
+    heldGold(){ return heldGold; },
+    setBestAtStart(n){ bestAtStart = n; },
+    collect(){ return collect.slice(); },
+    clearCollect(){ collect = new Array(collect.length).fill(0); store.setJSON(KEY_COLLECT, collect); },
+    clutch(){ return { dangerPeak, lastClutchAt }; },
+    rival(rows){ boardCache = rows; boardCacheAt = Date.now(); rivalAt = 0; rivalTick(); },
+    beat(sc2, nm){
+      beatTarget = { score: sc2, name: nm }; beatDone = false;
+      if(beatEl){ beatEl.textContent = 'BEAT ' + nm + ' · ' + sc2; beatEl.classList.remove('won'); beatEl.style.display = 'block'; }
+    },
+    held(){ return heldTier; },
+    counters(){ return { splashes, goldenMerges }; },
+    perf(){ return perfStats(); }
   };
+}
+/* rolling frame-time probe for the perf budget test */
+let perfT = [], perfLast = 0;
+function perfStats(){
+  const s = [...perfT].sort((a, b) => a - b);
+  return perfT.length ? {
+    avg: perfT.reduce((a, b) => a + b, 0) / perfT.length,
+    p95: s[Math.floor(s.length * .95)] || 0, n: perfT.length
+  } : { avg: 0, p95: 0, n: 0 };
 }
 
 /* ================= BOOT =================

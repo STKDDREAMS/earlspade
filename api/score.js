@@ -55,6 +55,22 @@ function cleanName(raw){
   return name.length >= 1 ? name : null;
 }
 
+// The board is public — block slurs and hate references, including
+// leetspeak / spacing / symbol-substitution evasions. Mirrors the
+// client-side filter in game.js; this is the authoritative gate.
+const NAME_BLOCK = ['nigger','nigga','niger','faggot','fagot','kike','chink','gook',
+  'wetback','beaner','tranny','dyke','coon','retard','rape','hitler','nazi','natzi',
+  'kkk','swastika','fuhrer','fhrer','heil','goebbels','himmler','klux'];
+function nameAllowed(raw){
+  const low = String(raw).toLowerCase();
+  if(low.includes('1488') || low.includes('卐') || low.includes('卍')) return false;
+  const subs = { '0':'o','1':'i','2':'z','3':'e','4':'a','5':'s','6':'g','7':'t','8':'b','9':'g','@':'a','$':'s','!':'i','|':'i','+':'t' };
+  let s = low.replace(/[0-9@$!|+]/g, c => subs[c] || c);
+  s = s.replace(/[^a-z]/g, '');
+  const squeezed = s.replace(/(.)\1+/g, '$1');
+  return !NAME_BLOCK.some(w => s.includes(w) || squeezed.includes(w));
+}
+
 // email rules: trimmed, lowercased, sane shape, sane length.
 function cleanEmail(raw){
   if(typeof raw !== 'string') return null;
@@ -81,6 +97,10 @@ module.exports = async (req, res) => {
   const score = body && body.score;
   if(!name || !email || !Number.isInteger(score) || score < 1 || score > MAX_SCORE){
     res.status(400).json({ ok: false, error: 'invalid' });
+    return;
+  }
+  if(!nameAllowed(name)){
+    res.status(400).json({ ok: false, error: 'name' });
     return;
   }
 

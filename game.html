@@ -70,14 +70,20 @@ body{
 body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opacity:.045;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
-/* ===== HUD ===== */
-.hud{flex:none;display:flex;justify-content:center;
-  padding:.55rem .8rem .5rem;border-bottom:2px solid var(--ink)}
+/* ===== HUD — floats over the sky. No bar, no border: the chips sit
+   directly on the cove so the whole screen reads as one scene. ===== */
+.hud{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:center;
+  padding:calc(.55rem + env(safe-area-inset-top)) .8rem .5rem;pointer-events:none}
+.hud a,.hud button,.hud .next-wrap{pointer-events:auto}
 .hud-in{width:100%;max-width:760px;display:flex;align-items:center;justify-content:space-between;gap:.6rem}
-.hud-left{display:flex;align-items:center;gap:.7rem;min-width:0}
-.back{display:flex;align-items:center;gap:.45rem;font-family:var(--px);font-size:.5rem;color:var(--ink);text-decoration:none;letter-spacing:.04em;white-space:nowrap}
-.back-logo{image-rendering:pixelated;width:20px;height:22px;flex:none}
-.back:active{opacity:.6}
+.hud-left{display:flex;align-items:center;gap:.55rem;min-width:0}
+/* the way home: flower + wordmark as ONE pixel chip */
+.back{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--px);font-size:.44rem;color:var(--ink);
+  text-decoration:none;letter-spacing:.04em;white-space:nowrap;
+  border:2px solid var(--ink);background:var(--paper);padding:.32rem .5rem .32rem .4rem;
+  box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
+.back-logo{image-rendering:pixelated;width:16px;height:18px;flex:none;display:block}
+.back:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 rgba(22,20,18,.22)}
 .hud-stats{display:flex;align-items:stretch;gap:.5rem;font-family:var(--px)}
 .hud-stat{display:flex;flex-direction:column;gap:.26rem;align-items:flex-start;
   border:2px solid var(--ink);background:var(--paper);padding:.3rem .5rem .26rem;
@@ -89,7 +95,7 @@ body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opa
 .next-wrap{display:flex;flex-direction:column;align-items:center;gap:.24rem}
 .next-label{font-family:var(--px);font-size:.34rem;color:var(--ink-soft);letter-spacing:.08em}
 #nextPrev{width:30px;height:30px;display:block}
-.mute-btn{width:38px;height:38px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);
+.mute-btn{width:42px;height:42px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);
   font-family:var(--px);font-size:.6rem;cursor:pointer;box-shadow:2px 2px 0 0 rgba(22,20,18,.28);line-height:1}
 .mute-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 rgba(22,20,18,.28)}
 .mute-btn{position:relative;display:inline-flex;align-items:center;justify-content:center}
@@ -103,6 +109,22 @@ body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opa
 .next-wrap{border:2px solid var(--ink);background:var(--paper);padding:.26rem .45rem .3rem;
   box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
 
+.board-btn{width:46px;height:46px}
+/* THE DEEP TEN wears the red pixel frame — compact, contained, unmistakable */
+#boardDialog{border:2px solid var(--ink);box-shadow:0 0 0 4px #C9463B,5px 5px 0 4px rgba(22,20,18,.28)}
+/* small screens: tighten the floating HUD so nothing ever clips */
+@media(max-width:400px){
+  .hud{padding-left:.45rem;padding-right:.45rem}
+  .hud-in{gap:.35rem}
+  .hud-left{gap:.35rem}
+  .hud-stats{gap:.35rem}
+  .back{font-size:.38rem;padding:.28rem .4rem .28rem .32rem}
+  .hud-right{gap:.35rem}
+}
+@media(max-width:350px){
+  .hud-stat:nth-child(2){display:none}   /* BEST folds away on tiny phones */
+}
+
 /* ===== PLAY AREA ===== */
 .stage{flex:1;min-height:0;position:relative;display:flex;justify-content:center;
   padding:0 0 env(safe-area-inset-bottom)}
@@ -113,7 +135,7 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 
 /* one-line how-to under the top of the play area; fades after first drop.
    Lives on a paper chip now — bare text would drown in the cove. */
-.howto{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:3;pointer-events:none;
+.howto{position:absolute;top:calc(66px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:3;pointer-events:none;
   font-family:var(--px);font-size:.4rem;letter-spacing:.06em;color:var(--ink-soft);white-space:nowrap;
   background:rgba(233,230,223,.92);border:2px solid var(--ink);padding:.35rem .55rem;
   box-shadow:2px 2px 0 0 rgba(22,20,18,.22);
@@ -139,8 +161,13 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 .lb-row.me{color:var(--red)}
 .lb-note{font-size:.38rem;color:var(--ink-soft);line-height:2;margin-bottom:.8rem}
 .name-row{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.85rem}
+/* 16px minimum or iOS Safari zooms the whole page in on focus and
+   leaves it there — the classic mobile heartbreak. Typed text wears
+   the mono face at a real size; the pixel font stays on the labels. */
 #nameInput,#emailInput{width:100%;min-width:0;box-sizing:border-box;border:2px solid var(--ink);background:#fff;color:var(--ink);
-  font-family:var(--px);font-size:.5rem;padding:.55rem .5rem;letter-spacing:.04em;border-radius:0;-webkit-appearance:none}
+  font-family:var(--mono);font-weight:700;font-size:16px;text-transform:uppercase;
+  padding:.5rem .55rem;letter-spacing:.06em;border-radius:0;-webkit-appearance:none}
+#nameInput::placeholder,#emailInput::placeholder{text-transform:none;font-weight:400;color:#9a968e}
 #nameInput:focus,#emailInput:focus{outline:2px solid var(--red);outline-offset:1px}
 #nameInput.bad,#emailInput.bad{border-color:var(--red);background:#FBEDEA}
 .gift-note{font-size:.34rem;color:var(--ink-soft);line-height:2;text-align:left;margin:0}
@@ -206,7 +233,7 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 @keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
 
 /* pixel toast — announcements slide in under the HUD */
-#toast{position:absolute;top:34px;left:50%;transform:translateX(-50%) translateY(-14px);z-index:5;
+#toast{position:absolute;top:calc(92px + env(safe-area-inset-top));left:50%;transform:translateX(-50%) translateY(-14px);z-index:5;
   pointer-events:none;font-family:var(--px);font-size:.42rem;letter-spacing:.08em;white-space:nowrap;
   background:var(--paper);border:2px solid var(--ink);color:var(--ink);
   padding:.5rem .7rem;box-shadow:3px 3px 0 0 rgba(22,20,18,.25);
@@ -223,6 +250,29 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
 .over-reach{display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:.75rem}
 #overFruit{width:44px;height:44px;flex:none}
 .over-reach span{font-size:.4rem;color:var(--ink-soft);letter-spacing:.04em;line-height:1.8;text-align:left}
+
+/* ===== v13: the hook UI ===== */
+/* SO CLOSE — the near-miss banner (red twin of NEW BEST) */
+.over-best.so-close{background:var(--red);color:var(--paper)}
+/* pixel segment bar (near-miss progress) */
+.px-bar{display:inline-flex;gap:2px;vertical-align:middle}
+.px-bar i{width:9px;height:9px;border:2px solid var(--ink);background:var(--paper);flex:none}
+.px-bar i.on{background:var(--red)}
+.px-bar i.gold{background:var(--gold)}
+.best-gap{display:flex;flex-direction:column;align-items:center;gap:.4rem;margin:-.3rem 0 .7rem}
+.best-gap .bg-txt{font-size:.36rem;color:var(--ink-soft);letter-spacing:.06em}
+/* the aquarium grid */
+.aqua-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin:0 0 .9rem}
+.aqua-cell{display:flex;flex-direction:column;align-items:center;gap:.25rem}
+.aqua-cell canvas{width:48px;height:48px}
+.aqua-cell .ac-n{font-size:.3rem;color:var(--ink-soft)}
+/* rival / beat chips floating over the play area */
+.play-chip{position:absolute;top:calc(70px + env(safe-area-inset-top));right:8px;z-index:4;pointer-events:none;
+  font-family:var(--px);font-size:.34rem;letter-spacing:.04em;color:var(--ink);
+  background:rgba(233,230,223,.92);border:2px solid var(--ink);padding:.3rem .45rem;
+  box-shadow:2px 2px 0 0 rgba(22,20,18,.22)}
+#beatChip{top:calc(100px + env(safe-area-inset-top))}
+#beatChip.won{background:var(--gold)}
 
 /* keyboard users get the brand outline */
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--red);outline-offset:2px}
@@ -264,7 +314,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 <header class="hud">
  <div class="hud-in">
   <div class="hud-left">
-    <a class="back" href="/#series"><img class="back-logo" src="logo.png" alt="" width="20" height="22"/>&larr; earlspade</a>
+    <a class="back" href="/#series"><img class="back-logo" src="logo.png" alt="" width="16" height="18"/>earlspade</a>
     <div class="hud-stats">
       <div class="hud-stat"><span class="hud-label">SCORE</span><span class="hud-value" id="score">0</span></div>
       <div class="hud-stat"><span class="hud-label">BEST</span><span class="hud-value" id="best">0</span></div>
@@ -272,8 +322,31 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
   </div>
   <div class="hud-right">
     <div class="next-wrap"><span class="next-label">NEXT</span><canvas id="nextPrev" width="60" height="60"></canvas></div>
-    <button class="mute-btn" id="boardBtn" aria-haspopup="dialog" aria-controls="boardDialog" aria-label="Leaderboard">
-      <svg width="18" height="18" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="8" height="1" fill="#E8B33C"/><rect x="2" y="2" width="8" height="3" fill="#E8B33C"/><rect x="0" y="2" width="2" height="1" fill="#E8B33C"/><rect x="10" y="2" width="2" height="1" fill="#E8B33C"/><rect x="0" y="3" width="1" height="2" fill="#E8B33C"/><rect x="11" y="3" width="1" height="2" fill="#E8B33C"/><rect x="1" y="5" width="1" height="1" fill="#E8B33C"/><rect x="10" y="5" width="1" height="1" fill="#E8B33C"/><rect x="3" y="5" width="6" height="2" fill="#C4922A"/><rect x="4" y="7" width="4" height="1" fill="#E8B33C"/><rect x="5" y="8" width="2" height="2" fill="#C4922A"/><rect x="3" y="10" width="6" height="1" fill="#E8B33C"/><rect x="6" y="3" width="1" height="1" fill="#F2CC70"/></svg>
+    <button class="mute-btn" id="aquaBtn" aria-haspopup="dialog" aria-controls="aquaDialog" aria-label="The aquarium">
+      <svg width="18" height="18" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="3" y="4" width="6" height="4" fill="#161412"/><rect x="4" y="3" width="4" height="1" fill="#161412"/><rect x="4" y="8" width="4" height="1" fill="#161412"/><rect x="1" y="4" width="2" height="1" fill="#D70000"/><rect x="0" y="5" width="2" height="2" fill="#D70000"/><rect x="1" y="7" width="2" height="1" fill="#D70000"/><rect x="9" y="5" width="1" height="1" fill="#161412"/><rect x="7" y="5" width="1" height="1" fill="#FFFFFF"/><rect x="10" y="2" width="1" height="1" fill="#7FB2D9"/><rect x="11" y="4" width="1" height="1" fill="#7FB2D9"/><rect x="10" y="9" width="1" height="1" fill="#7FB2D9"/></svg>
+    </button>
+    <button class="mute-btn board-btn" id="boardBtn" aria-haspopup="dialog" aria-controls="boardDialog" aria-label="Leaderboard">
+      <svg width="22" height="22" viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true">
+        <!-- ink-outlined golden cup with a red ribbon and a shine -->
+        <rect x="2" y="0" width="10" height="1" fill="#161412"/>
+        <rect x="2" y="1" width="1" height="4" fill="#161412"/><rect x="11" y="1" width="1" height="4" fill="#161412"/>
+        <rect x="3" y="1" width="8" height="1" fill="#F2CC70"/>
+        <rect x="3" y="2" width="8" height="3" fill="#E8B33C"/>
+        <rect x="0" y="1" width="2" height="1" fill="#161412"/><rect x="12" y="1" width="2" height="1" fill="#161412"/>
+        <rect x="0" y="2" width="1" height="2" fill="#161412"/><rect x="13" y="2" width="1" height="2" fill="#161412"/>
+        <rect x="1" y="2" width="1" height="2" fill="#C4922A"/><rect x="12" y="2" width="1" height="2" fill="#C4922A"/>
+        <rect x="1" y="4" width="2" height="1" fill="#161412"/><rect x="11" y="4" width="2" height="1" fill="#161412"/>
+        <rect x="3" y="5" width="8" height="1" fill="#C4922A"/>
+        <rect x="3" y="5" width="1" height="1" fill="#161412"/><rect x="10" y="5" width="1" height="1" fill="#161412"/>
+        <rect x="4" y="6" width="6" height="1" fill="#E8B33C"/><rect x="4" y="6" width="1" height="1" fill="#161412"/><rect x="9" y="6" width="1" height="1" fill="#161412"/>
+        <rect x="5" y="7" width="4" height="1" fill="#C4922A"/>
+        <rect x="6" y="8" width="2" height="2" fill="#C4922A"/>
+        <rect x="4" y="10" width="6" height="1" fill="#E8B33C"/>
+        <rect x="3" y="11" width="8" height="2" fill="#161412"/>
+        <rect x="4" y="11" width="6" height="1" fill="#D70000"/>
+        <rect x="4" y="2" width="1" height="2" fill="#FFF2C4"/>
+        <rect x="6" y="13" width="2" height="1" fill="#E8B33C"/>
+      </svg>
     </button>
     <button class="mute-btn" id="muteBtn" aria-pressed="true" aria-label="Toggle sound"><svg width="16" height="16" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="4" width="3" height="4" fill="#161412"/><rect x="4" y="3" width="2" height="6" fill="#161412"/><rect x="6" y="2" width="2" height="8" fill="#161412"/><rect x="9" y="4" width="1" height="1" fill="#161412"/><rect x="10" y="5" width="1" height="2" fill="#161412"/><rect x="9" y="7" width="1" height="1" fill="#161412"/></svg></button>
   </div>
@@ -290,7 +363,12 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
     <div class="dialog" id="overDialog" role="dialog" aria-modal="true" aria-label="Game over">
       <h2>GAME OVER</h2>
       <div class="over-best" id="newBest" style="display:none">&#9733; NEW BEST &#9733;</div>
+      <div class="over-best so-close" id="soClose" style="display:none">SO CLOSE!</div>
       <div class="big-score" id="finalScore">0</div>
+      <div class="best-gap" id="bestGap" style="display:none">
+        <span class="bg-txt" id="bestGapTxt"></span>
+        <span class="px-bar" id="bestGapBar" aria-hidden="true"></span>
+      </div>
       <div class="over-reach">
         <canvas id="overFruit" width="88" height="88"></canvas>
         <span id="reachTxt">you reached the baby chick</span>
@@ -317,6 +395,18 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
       <div class="lb" id="bdList" style="display:none"></div>
       <button class="px-btn wide" id="bdClose">BACK TO THE GAME</button>
     </div>
+
+    <!-- THE AQUARIUM — every creature you've ever made -->
+    <div class="dialog" id="aquaDialog" role="dialog" aria-modal="true" aria-label="The aquarium">
+      <h2>THE AQUARIUM</h2>
+      <div class="lb-note" id="aquaCount"></div>
+      <div class="aqua-grid" id="aquaGrid"></div>
+      <button class="px-btn wide" id="aquaClose">BACK TO THE GAME</button>
+    </div>
+
+    <!-- live rival / beat-a-friend chips -->
+    <div class="play-chip" id="rival" style="display:none"></div>
+    <div class="play-chip" id="beatChip" style="display:none"></div>
   </div>
 </main>
 
