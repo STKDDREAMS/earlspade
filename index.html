@@ -243,9 +243,25 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* HERO — quiet paper page: the embroidered flower sits perfectly still
    at the center, ink type below it. Exactly one frozen viewport tall,
    so the flat page begins right at the fold. */
-.hero{min-height:100vh;min-height:var(--vh100,100lvh);
+/* ===== TIDE TICKER — a slow pixel marquee of the facts that matter,
+   running the full width above the hero. Ink water, paper type, gold
+   pixel buoys between phrases. Two identical halves loop seamlessly. */
+.tide-ticker{position:relative;z-index:5;background:var(--ink);overflow:hidden}
+.tt-track{display:flex;width:max-content;animation:ttRoll 30s linear infinite}
+.tt-half{display:inline-flex;align-items:center;gap:1rem;padding:.55rem .5rem .5rem;flex:none}
+.tt-half b{font-family:var(--px);font-weight:400;font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;color:var(--paper);white-space:nowrap}
+.tt-half b.hot{color:var(--gold)}
+.tt-half i{width:6px;height:6px;background:var(--gold);flex:none}
+@keyframes ttRoll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ===== TIDE HEM — the stepped pixel waterline that separates each
+   stretch of the page, borrowed from the loader's tide sheet. */
+.tide-hem{height:26px;pointer-events:none;position:relative;z-index:2;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='32'%3E%3Cpath fill='%23DDD8CC' d='M0 0h64v12h-8v8h-8v8H32v-4H16v-8H8v-8H0z'/%3E%3C/svg%3E") repeat-x top / 64px 26px}
+
+.hero{min-height:calc(var(--vh100,100lvh) - 40px);
   overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  padding:6rem 1.2rem calc(4.5rem + env(safe-area-inset-bottom));position:relative;background:var(--paper)}
+  padding:4.5rem 1.2rem calc(4rem + env(safe-area-inset-bottom));position:relative;background:var(--paper)}
 .hero>*{position:relative;z-index:1}
 /* Embroidered sea creatures scattered on the same fabric: pinned to the
    hero's corners behind the lockup, perfectly still. Decorative only —
@@ -337,7 +353,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
    nothing overflows — placed after the base hero rules so it actually
    applies. */
 @media (max-height:560px) {
-  .hero{padding:2.4rem 1.2rem calc(2.4rem + env(safe-area-inset-bottom));min-height:100vh;min-height:var(--vh100,100lvh)}
+  .hero{padding:2.4rem 1.2rem calc(2.4rem + env(safe-area-inset-bottom));min-height:calc(var(--vh100,100lvh) - 40px)}
   .hero-logo{width:clamp(56px,11vw,84px);margin-bottom:.7rem}
   .wordmark{width:min(30vw,220px)}
   .hero-fauna.shark{width:clamp(120px,20vw,170px);top:1rem;right:-3%}
@@ -470,7 +486,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .trust-rows span{font-family:var(--px);font-size:.38rem;letter-spacing:.04em;color:var(--ink-soft);display:flex;align-items:center;gap:.5rem}
 .trust-rows i{width:6px;height:6px;background:var(--gold);border:1px solid var(--ink);flex:none}
 .cart-trust{font-family:var(--px);font-size:.38rem;letter-spacing:.04em;color:var(--ink-soft);text-align:center;margin-bottom:.7rem}
-.foot-letter{display:flex;flex-direction:column;gap:.15rem;max-width:360px}
+.foot-letter{display:flex;flex-direction:column;gap:.4rem;max-width:360px;margin-top:.6rem}
 .note-notify{width:100%;max-width:300px;margin-inline:auto;text-align:left}
 
 /* keyboard users get the brand outline */
@@ -729,8 +745,12 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));
   margin:0 auto;padding-bottom:1.1rem;border-bottom:2px solid var(--ink);
   scroll-margin-top:4.6rem} /* lands Enter below the fixed corner mark, with the .r reveal lift accounted for */
-.sec-eyebrow{font-family:var(--px);font-size:.44rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.sec-eyebrow{font-family:var(--px);font-size:.44rem;letter-spacing:.12em;text-transform:uppercase;color:#C4922A}
 .sec-title{font-family:var(--px);font-weight:400;font-size:clamp(1.05rem,4.5vw,1.9rem);letter-spacing:.02em;line-height:1.2;margin-top:.6rem}
+/* the engraved-plate rule from the game's dialogs: a short gold pixel
+   bar under the shop's title ties the storefront to the luxe system */
+.sec-title::after{content:"";display:block;width:30px;height:4px;margin-top:.6rem;
+  background:var(--gold);box-shadow:2px 2px 0 0 rgba(22,20,18,.3)}
 
 /* Products stay tucked behind the banner until it's pressed: grid-rows
    0fr -> 1fr animates the unfold smoothly without measuring heights. */
@@ -910,6 +930,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   html{scroll-behavior:auto}
   .hero-logo,.wordmark-img,.hero-meta,.shop-btn,.divecue{opacity:1!important;transform:none!important;translate:none!important}
   .divecue i,.hero-meta-cursor{animation:none}
+  .tt-track{animation:none}
   .modal-img::after{transition:none}
   .shop-btn .arr{transform:none!important}
   .r{opacity:1;transform:none}
@@ -1006,6 +1027,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   </svg>
 </button>
 
+<!-- the tide ticker: real facts about the run, drifting past like the tide -->
+<div class="tide-ticker" aria-hidden="true">
+  <div class="tt-track">
+    <span class="tt-half"><b class="hot">sea series &mdash; live</b><i></i><b>numbered by hand</b><i></i><b>one run only</b><i></i><b>tarnish free</b><i></i><b>water friendly</b><i></i><b>made in malibu</b><i></i></span><span class="tt-half"><b class="hot">sea series &mdash; live</b><i></i><b>numbered by hand</b><i></i><b>one run only</b><i></i><b>tarnish free</b><i></i><b>water friendly</b><i></i><b>made in malibu</b><i></i></span>
+  </div>
+</div>
+
 <header class="hero" id="top">
   <span class="hero-fauna shark no-vs" id="faunaShark" role="button" tabindex="0" aria-label="About the whale shark"></span>
   <span class="hero-fauna manta no-vs" id="faunaManta" role="button" tabindex="0" aria-label="About the spotted eagle ray"></span>
@@ -1019,6 +1047,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   <button class="shop-btn" onclick="onShop()"><span class="t">enter</span><span class="arr" aria-hidden="true">&rarr;</span></button>
   <div class="divecue" id="divecue" aria-hidden="true"><span>dive</span><i></i></div>
 </header>
+<div class="tide-hem" aria-hidden="true"></div>
 
 <!-- ZONES: each zone can carry a user-placeable backdrop photo — drop
      story-bg.jpg / series-bg.jpg (and series-bg-open.jpg for the open
@@ -1079,6 +1108,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   </div>
 
 </section>
+<div class="tide-hem" aria-hidden="true"></div>
+
 
 
 <section class="zone zone-story">
@@ -1230,6 +1261,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   </div>
 </aside>
 
+<div class="tide-hem" aria-hidden="true"></div>
 <footer class="foot">
   <div class="foot-top"><p class="foot-tag">made by the sea &mdash; malibu, california</p></div>
   <div class="foot-brand r"><img loading="lazy" decoding="async" class="no-vs" src="logo.png" alt=""/>earlspade</div>
