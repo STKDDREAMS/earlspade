@@ -294,10 +294,18 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   filter:drop-shadow(0 1px 1px rgba(46,36,26,.32)) drop-shadow(0 8px 13px rgba(46,36,26,.16));
   opacity:0;transform:translateY(26px);animation:rise .7s .15s var(--ease) forwards}
 .hero-meta{font-family:var(--px);font-size:.5rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin-top:1.4rem;opacity:0;animation:rise .8s .55s var(--ease) forwards}
+/* live-drop chip above the ENTER key: the one signal that there is
+   something to buy right now (words borrowed from the banner's tag) */
+.hero-live{display:inline-flex;align-items:center;gap:.45rem;margin-top:2.4rem;
+  font-family:var(--px);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--pop);color:#fff;border:2px solid var(--ink);padding:.42rem .6rem;
+  box-shadow:2px 2px 0 0 var(--sh);
+  opacity:0;animation:rise .8s .5s var(--ease) forwards}
+.hero-live i{width:6px;height:6px;background:#fff;flex:none;animation:liveDot 1.2s steps(1,end) infinite}
 /* the ENTER key: a chunky pixel button in the game's .px-btn language —
    ink slab, hard offset shadow, press pushes it into the paper. The
    steps() arrow nudge is the "tap me" cue now. */
-.shop-btn{margin-top:2.6rem;display:inline-flex;align-items:center;gap:.7rem;
+.shop-btn{margin-top:.9rem;display:inline-flex;align-items:center;gap:.7rem;
   background:var(--ink);color:var(--paper);
   font-family:var(--px);font-weight:400;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
   padding:1.05rem 1.5rem;min-height:52px;
@@ -438,6 +446,32 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* faint static top line for the non-bottle captions (the bottle keeps
    its breathing "coming soon") */
 .hb-top{font-size:.38rem;font-weight:400;letter-spacing:.14em;text-indent:.14em;opacity:.5}
+
+/* ===== WAITLIST — quiet pixel signups (sold-out modal, series 3 note,
+   the footer letter). Inputs at a REAL 16px like the game's, so iOS
+   never zooms; success swaps the row for a small gold check. ===== */
+.notify-row{display:flex;gap:.5rem;margin-top:.8rem}
+.notify-input{flex:1;min-width:0;box-sizing:border-box;border:2px solid var(--ink);background:var(--paper);color:var(--ink);
+  font-family:var(--px);font-size:16px;padding:.55rem;border-radius:0;-webkit-appearance:none;
+  box-shadow:2px 2px 0 0 var(--sh)}
+.notify-input::placeholder{color:#9a968e}
+.notify-input.bad{border-color:var(--pop);background:#FBEDEA}
+.notify-btn{flex:none;font-family:var(--px);font-size:.44rem;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:0;
+  padding:.55rem .7rem;cursor:pointer;box-shadow:2px 2px 0 0 var(--sh)}
+.notify-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 var(--sh)}
+.notify-btn:disabled{opacity:.55;cursor:default}
+.notify-done{display:none;font-family:var(--px);font-size:.44rem;color:var(--ink);background:var(--gold);border:2px solid var(--ink);
+  padding:.5rem .6rem;margin-top:.8rem;box-shadow:2px 2px 0 0 var(--sh)}
+.notify-wrap.sent .notify-row{display:none}
+.notify-wrap.sent .notify-done{display:inline-block}
+/* trust furniture at the money buttons */
+.trust-rows{margin-top:.9rem;display:flex;flex-direction:column;gap:.5rem}
+.trust-rows span{font-family:var(--px);font-size:.38rem;letter-spacing:.04em;color:var(--ink-soft);display:flex;align-items:center;gap:.5rem}
+.trust-rows i{width:6px;height:6px;background:var(--gold);border:1px solid var(--ink);flex:none}
+.cart-trust{font-family:var(--px);font-size:.38rem;letter-spacing:.04em;color:var(--ink-soft);text-align:center;margin-bottom:.7rem}
+.foot-letter{display:flex;flex-direction:column;gap:.15rem;max-width:360px}
+.note-notify{width:100%;max-width:300px;margin-inline:auto;text-align:left}
 
 /* keyboard users get the brand outline */
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D70000;outline-offset:2px}
@@ -713,6 +747,14 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   opacity:0;translate:0 16px;transition:opacity .5s var(--ease),translate .5s var(--ease)}
 .drop.open .items{opacity:1;translate:0 0;transition-delay:.06s}
 .item{display:block;cursor:pointer}
+/* the lead piece greets the buyer BIG: first tile spans the whole row
+   on phones (wider frame), two columns on desktop grids */
+.items .item:first-child{grid-column:1/-1}
+.items .item:first-child .item-tile{aspect-ratio:16/10}
+@media(min-width:700px){
+  .items .item:first-child{grid-column:span 2}
+  .items .item:first-child .item-tile{aspect-ratio:4/3}
+}
 .item-tile{position:relative;aspect-ratio:4/5;background:var(--tile);overflow:hidden;border-radius:0;border:2px solid var(--ink);box-shadow:4px 4px 0 0 var(--sh);display:flex;align-items:center;justify-content:center;transition:background .4s ease,transform .18s steps(3,end),box-shadow .18s steps(3,end)}
 .item-tile .ph{height:30%;max-height:74px;opacity:.16;transition:opacity .4s ease,transform .55s var(--ease)}
 .item-tile-photo{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .5s var(--ease)}
@@ -973,6 +1015,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   <span class="hero-logo no-vs" id="heroLogo" role="img" aria-label="earlspade flower"></span>
   <h1 class="wordmark" aria-label="earlspade"><span class="wordmark-img no-vs" id="wordmarkImg" aria-hidden="true"></span></h1>
   <p class="hero-meta" aria-label="Malibu, California"><span id="heroMetaTyped" aria-hidden="true"></span><span class="hero-meta-cursor" id="heroMetaCursor" aria-hidden="true"></span></p>
+  <span class="hero-live" aria-label="The Sea Series is live now"><i aria-hidden="true"></i>sea series &mdash; live</span>
   <button class="shop-btn" onclick="onShop()"><span class="t">enter</span><span class="arr" aria-hidden="true">&rarr;</span></button>
   <div class="divecue" id="divecue" aria-hidden="true"><span>dive</span><i></i></div>
 </header>
@@ -980,6 +1023,64 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 <!-- ZONES: each zone can carry a user-placeable backdrop photo — drop
      story-bg.jpg / series-bg.jpg (and series-bg-open.jpg for the open
      state) into the repo root and they render raw as the background. -->
+<section class="zone zone-series" id="series">
+  <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg.jpg')"></span></div></div>
+  <header class="shop-head r">
+    <div class="shop-head-text">
+      <p class="sec-eyebrow">earlspade &mdash; collections</p>
+      <h2 class="sec-title">The Series</h2>
+    </div>
+  </header>
+
+<main id="shop"></main>
+
+<!-- ARCHIVE — closed series end up here. There is deliberately no product
+     grid below the banner: archived pieces are sold and gone, so there is
+     nothing left to show. -->
+<section class="archive">
+  <button class="archive-strip r" id="archiveBox" aria-haspopup="dialog" aria-controls="archiveOverlay" onclick="openArchive()">
+    <svg class="archive-mark-ghost" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="#fff"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#15130F"/></svg>
+    <span class="archive-strip-left">
+      <svg class="archive-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="#fff"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#15130F"/></svg>
+      <span class="archive-strip-text">
+        <h2 class="archive-strip-title">The Archive</h2>
+      </span>
+    </span>
+    <span class="drop-tag">Closed</span>
+  </button>
+</section>
+
+<!-- SERIES 3 — the bottle moored below the archive; the note unfolds
+     beneath it. Fills the quiet water at the bottom of the zone. -->
+<div class="series3-moor r">
+  <button class="thing chest-btn" id="chestBtn" aria-expanded="false" aria-controls="noteDrop" aria-label="Series 3 — open the chest" onclick="openChest()">
+    <svg class="chest-art" viewBox="0 0 130 110" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true"><ellipse cx="65" cy="103" rx="46" ry="6" fill="url(#gShadow)"/><g class="chest-idle"><g class="chest-closed-g"><rect x="40" y="8" width="50" height="5" fill="#2A1D10"/><rect x="30" y="13" width="10" height="5" fill="#2A1D10"/><rect x="40" y="13" width="50" height="5" fill="#B07C46"/><rect x="90" y="13" width="10" height="5" fill="#2A1D10"/><rect x="25" y="18" width="5" height="5" fill="#2A1D10"/><rect x="30" y="18" width="5" height="5" fill="#B07C46"/><rect x="35" y="18" width="60" height="5" fill="#C98F52"/><rect x="95" y="18" width="5" height="5" fill="#B07C46"/><rect x="100" y="18" width="5" height="5" fill="#2A1D10"/><rect x="20" y="23" width="5" height="5" fill="#2A1D10"/><rect x="25" y="23" width="5" height="5" fill="#B07C46"/><rect x="30" y="23" width="10" height="5" fill="#C98F52"/><rect x="40" y="23" width="10" height="5" fill="#4A3B2A"/><rect x="50" y="23" width="30" height="5" fill="#C98F52"/><rect x="80" y="23" width="10" height="5" fill="#4A3B2A"/><rect x="90" y="23" width="10" height="5" fill="#C98F52"/><rect x="100" y="23" width="5" height="5" fill="#B07C46"/><rect x="105" y="23" width="5" height="5" fill="#2A1D10"/><rect x="15" y="28" width="5" height="5" fill="#2A1D10"/><rect x="20" y="28" width="5" height="5" fill="#B07C46"/><rect x="25" y="28" width="15" height="5" fill="#C98F52"/><rect x="40" y="28" width="5" height="5" fill="#4A3B2A"/><rect x="45" y="28" width="5" height="5" fill="#6B5844"/><rect x="50" y="28" width="30" height="5" fill="#C98F52"/><rect x="80" y="28" width="5" height="5" fill="#6B5844"/><rect x="85" y="28" width="5" height="5" fill="#4A3B2A"/><rect x="90" y="28" width="15" height="5" fill="#C98F52"/><rect x="105" y="28" width="5" height="5" fill="#B07C46"/><rect x="110" y="28" width="5" height="5" fill="#2A1D10"/><rect x="15" y="33" width="5" height="5" fill="#2A1D10"/><rect x="20" y="33" width="5" height="5" fill="#B07C46"/><rect x="25" y="33" width="10" height="5" fill="#C98F52"/><rect x="35" y="33" width="10" height="5" fill="#4A3B2A"/><rect x="45" y="33" width="40" height="5" fill="#C98F52"/><rect x="85" y="33" width="10" height="5" fill="#4A3B2A"/><rect x="95" y="33" width="10" height="5" fill="#C98F52"/><rect x="105" y="33" width="5" height="5" fill="#B07C46"/><rect x="110" y="33" width="5" height="5" fill="#2A1D10"/><rect x="15" y="38" width="5" height="5" fill="#2A1D10"/><rect x="20" y="38" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="38" width="5" height="5" fill="#C98F52"/><rect x="35" y="38" width="5" height="5" fill="#4A3B2A"/><rect x="40" y="38" width="5" height="5" fill="#6B5844"/><rect x="45" y="38" width="40" height="5" fill="#8B5A2B"/><rect x="85" y="38" width="5" height="5" fill="#6B5844"/><rect x="90" y="38" width="5" height="5" fill="#4A3B2A"/><rect x="95" y="38" width="5" height="5" fill="#C98F52"/><rect x="100" y="38" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="38" width="5" height="5" fill="#2A1D10"/><rect x="15" y="43" width="5" height="5" fill="#2A1D10"/><rect x="20" y="43" width="15" height="5" fill="#8B5A2B"/><rect x="35" y="43" width="10" height="5" fill="#4A3B2A"/><rect x="45" y="43" width="40" height="5" fill="#8B5A2B"/><rect x="85" y="43" width="10" height="5" fill="#4A3B2A"/><rect x="95" y="43" width="15" height="5" fill="#8B5A2B"/><rect x="110" y="43" width="5" height="5" fill="#2A1D10"/><rect x="15" y="48" width="100" height="5" fill="#2A1D10"/><rect x="15" y="53" width="5" height="5" fill="#2A1D10"/><rect x="20" y="53" width="10" height="5" fill="#B07C46"/><rect x="30" y="53" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="53" width="20" height="5" fill="#8B5A2B"/><rect x="60" y="53" width="10" height="5" fill="#E8B33C"/><rect x="70" y="53" width="20" height="5" fill="#8B5A2B"/><rect x="90" y="53" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="53" width="10" height="5" fill="#B07C46"/><rect x="110" y="53" width="5" height="5" fill="#2A1D10"/><rect x="15" y="58" width="5" height="5" fill="#2A1D10"/><rect x="20" y="58" width="10" height="5" fill="#B07C46"/><rect x="30" y="58" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="58" width="5" height="5" fill="#6B5844"/><rect x="40" y="58" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="58" width="20" height="5" fill="#E8B33C"/><rect x="75" y="58" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="58" width="5" height="5" fill="#6B5844"/><rect x="95" y="58" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="58" width="10" height="5" fill="#B07C46"/><rect x="110" y="58" width="5" height="5" fill="#2A1D10"/><rect x="15" y="63" width="5" height="5" fill="#2A1D10"/><rect x="20" y="63" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="63" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="63" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="63" width="5" height="5" fill="#E8B33C"/><rect x="60" y="63" width="10" height="5" fill="#1E150D"/><rect x="70" y="63" width="5" height="5" fill="#E8B33C"/><rect x="75" y="63" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="63" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="63" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="63" width="5" height="5" fill="#2A1D10"/><rect x="15" y="68" width="5" height="5" fill="#2A1D10"/><rect x="20" y="68" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="68" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="68" width="5" height="5" fill="#6B5844"/><rect x="40" y="68" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="68" width="5" height="5" fill="#E8B33C"/><rect x="60" y="68" width="5" height="5" fill="#C4922A"/><rect x="65" y="68" width="5" height="5" fill="#1E150D"/><rect x="70" y="68" width="5" height="5" fill="#E8B33C"/><rect x="75" y="68" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="68" width="5" height="5" fill="#6B5844"/><rect x="95" y="68" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="68" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="68" width="5" height="5" fill="#2A1D10"/><rect x="15" y="73" width="5" height="5" fill="#2A1D10"/><rect x="20" y="73" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="73" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="73" width="20" height="5" fill="#8B5A2B"/><rect x="60" y="73" width="10" height="5" fill="#E8B33C"/><rect x="70" y="73" width="20" height="5" fill="#8B5A2B"/><rect x="90" y="73" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="73" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="73" width="5" height="5" fill="#2A1D10"/><rect x="15" y="78" width="5" height="5" fill="#2A1D10"/><rect x="20" y="78" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="78" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="78" width="5" height="5" fill="#6B5844"/><rect x="40" y="78" width="50" height="5" fill="#8B5A2B"/><rect x="90" y="78" width="5" height="5" fill="#6B5844"/><rect x="95" y="78" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="78" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="78" width="5" height="5" fill="#2A1D10"/><rect x="15" y="83" width="5" height="5" fill="#2A1D10"/><rect x="20" y="83" width="10" height="5" fill="#5C3A1E"/><rect x="30" y="83" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="83" width="50" height="5" fill="#8B5A2B"/><rect x="90" y="83" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="83" width="10" height="5" fill="#5C3A1E"/><rect x="110" y="83" width="5" height="5" fill="#2A1D10"/><rect x="15" y="88" width="5" height="5" fill="#2A1D10"/><rect x="20" y="88" width="10" height="5" fill="#5C3A1E"/><rect x="30" y="88" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="88" width="5" height="5" fill="#6B5844"/><rect x="40" y="88" width="50" height="5" fill="#5C3A1E"/><rect x="90" y="88" width="5" height="5" fill="#6B5844"/><rect x="95" y="88" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="88" width="10" height="5" fill="#5C3A1E"/><rect x="110" y="88" width="5" height="5" fill="#2A1D10"/><rect x="15" y="93" width="10" height="5" fill="#2A1D10"/><rect x="25" y="93" width="80" height="5" fill="#5C3A1E"/><rect x="105" y="93" width="10" height="5" fill="#2A1D10"/><rect x="20" y="98" width="90" height="5" fill="#2A1D10"/></g><g class="chest-open-g"><rect x="20" y="3" width="90" height="5" fill="#2A1D10"/><rect x="15" y="8" width="5" height="5" fill="#2A1D10"/><rect x="20" y="8" width="90" height="5" fill="#5C3A1E"/><rect x="110" y="8" width="5" height="5" fill="#2A1D10"/><rect x="15" y="13" width="5" height="5" fill="#2A1D10"/><rect x="20" y="13" width="5" height="5" fill="#5C3A1E"/><rect x="25" y="13" width="80" height="5" fill="#1E150D"/><rect x="105" y="13" width="5" height="5" fill="#5C3A1E"/><rect x="110" y="13" width="5" height="5" fill="#2A1D10"/><rect x="15" y="18" width="5" height="5" fill="#2A1D10"/><rect x="20" y="18" width="5" height="5" fill="#5C3A1E"/><rect x="25" y="18" width="80" height="5" fill="#1E150D"/><rect x="105" y="18" width="5" height="5" fill="#5C3A1E"/><rect x="110" y="18" width="5" height="5" fill="#2A1D10"/><rect x="15" y="23" width="100" height="5" fill="#2A1D10"/><rect x="20" y="28" width="5" height="5" fill="#2A1D10"/><rect x="25" y="28" width="10" height="5" fill="#E8B33C"/><rect class="px-spark" style="animation-delay:0.00s" x="40" y="28" width="5" height="5" fill="#FFF3D6"/><rect x="45" y="28" width="10" height="5" fill="#E8B33C"/><rect x="55" y="28" width="5" height="5" fill="#D70000"/><rect x="60" y="28" width="10" height="5" fill="#E8B33C"/><rect x="75" y="28" width="10" height="5" fill="#E8B33C"/><rect class="px-spark" style="animation-delay:0.45s" x="85" y="28" width="5" height="5" fill="#FFF3D6"/><rect x="90" y="28" width="5" height="5" fill="#E8B33C"/><rect x="95" y="28" width="5" height="5" fill="#F6EFE2"/><rect x="15" y="33" width="5" height="5" fill="#2A1D10"/><rect x="20" y="33" width="25" height="5" fill="#E8B33C"/><rect x="45" y="33" width="15" height="5" fill="#D70000"/><rect x="60" y="33" width="45" height="5" fill="#E8B33C"/><rect x="105" y="33" width="5" height="5" fill="#2A1D10"/><rect x="15" y="38" width="5" height="5" fill="#2A1D10"/><rect x="20" y="38" width="5" height="5" fill="#E8B33C"/><rect x="25" y="38" width="5" height="5" fill="#C4922A"/><rect x="30" y="38" width="20" height="5" fill="#E8B33C"/><rect x="50" y="38" width="5" height="5" fill="#D70000"/><rect x="55" y="38" width="20" height="5" fill="#E8B33C"/><rect class="px-spark" style="animation-delay:0.90s" x="75" y="38" width="5" height="5" fill="#FFF3D6"/><rect x="80" y="38" width="20" height="5" fill="#E8B33C"/><rect x="100" y="38" width="5" height="5" fill="#C4922A"/><rect x="105" y="38" width="5" height="5" fill="#2A1D10"/><rect x="15" y="43" width="100" height="5" fill="#2A1D10"/><rect x="15" y="48" width="5" height="5" fill="#2A1D10"/><rect x="20" y="48" width="10" height="5" fill="#B07C46"/><rect x="30" y="48" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="48" width="20" height="5" fill="#8B5A2B"/><rect x="60" y="48" width="10" height="5" fill="#E8B33C"/><rect x="70" y="48" width="20" height="5" fill="#8B5A2B"/><rect x="90" y="48" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="48" width="10" height="5" fill="#B07C46"/><rect x="110" y="48" width="5" height="5" fill="#2A1D10"/><rect x="15" y="53" width="5" height="5" fill="#2A1D10"/><rect x="20" y="53" width="10" height="5" fill="#B07C46"/><rect x="30" y="53" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="53" width="5" height="5" fill="#6B5844"/><rect x="40" y="53" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="53" width="20" height="5" fill="#E8B33C"/><rect x="75" y="53" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="53" width="5" height="5" fill="#6B5844"/><rect x="95" y="53" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="53" width="10" height="5" fill="#B07C46"/><rect x="110" y="53" width="5" height="5" fill="#2A1D10"/><rect x="15" y="58" width="5" height="5" fill="#2A1D10"/><rect x="20" y="58" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="58" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="58" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="58" width="5" height="5" fill="#E8B33C"/><rect x="60" y="58" width="10" height="5" fill="#1E150D"/><rect x="70" y="58" width="5" height="5" fill="#E8B33C"/><rect x="75" y="58" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="58" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="58" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="58" width="5" height="5" fill="#2A1D10"/><rect x="15" y="63" width="5" height="5" fill="#2A1D10"/><rect x="20" y="63" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="63" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="63" width="5" height="5" fill="#6B5844"/><rect x="40" y="63" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="63" width="5" height="5" fill="#E8B33C"/><rect x="60" y="63" width="5" height="5" fill="#C4922A"/><rect x="65" y="63" width="5" height="5" fill="#1E150D"/><rect x="70" y="63" width="5" height="5" fill="#E8B33C"/><rect x="75" y="63" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="63" width="5" height="5" fill="#6B5844"/><rect x="95" y="63" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="63" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="63" width="5" height="5" fill="#2A1D10"/><rect x="15" y="68" width="5" height="5" fill="#2A1D10"/><rect x="20" y="68" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="68" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="68" width="20" height="5" fill="#8B5A2B"/><rect x="60" y="68" width="10" height="5" fill="#E8B33C"/><rect x="70" y="68" width="20" height="5" fill="#8B5A2B"/><rect x="90" y="68" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="68" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="68" width="5" height="5" fill="#2A1D10"/><rect x="15" y="73" width="5" height="5" fill="#2A1D10"/><rect x="20" y="73" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="73" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="73" width="5" height="5" fill="#6B5844"/><rect x="40" y="73" width="50" height="5" fill="#8B5A2B"/><rect x="90" y="73" width="5" height="5" fill="#6B5844"/><rect x="95" y="73" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="73" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="73" width="5" height="5" fill="#2A1D10"/><rect x="15" y="78" width="5" height="5" fill="#2A1D10"/><rect x="20" y="78" width="10" height="5" fill="#5C3A1E"/><rect x="30" y="78" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="78" width="50" height="5" fill="#8B5A2B"/><rect x="90" y="78" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="78" width="10" height="5" fill="#5C3A1E"/><rect x="110" y="78" width="5" height="5" fill="#2A1D10"/><rect x="15" y="83" width="5" height="5" fill="#2A1D10"/><rect x="20" y="83" width="10" height="5" fill="#5C3A1E"/><rect x="30" y="83" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="83" width="5" height="5" fill="#6B5844"/><rect x="40" y="83" width="50" height="5" fill="#5C3A1E"/><rect x="90" y="83" width="5" height="5" fill="#6B5844"/><rect x="95" y="83" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="83" width="10" height="5" fill="#5C3A1E"/><rect x="110" y="83" width="5" height="5" fill="#2A1D10"/><rect x="15" y="88" width="10" height="5" fill="#2A1D10"/><rect x="25" y="88" width="80" height="5" fill="#5C3A1E"/><rect x="105" y="88" width="10" height="5" fill="#2A1D10"/><rect x="20" y="93" width="90" height="5" fill="#2A1D10"/></g></g></svg>
+    <span class="hb-caption"><span class="hb-soon">coming soon</span><span class="hb-series">series 3</span></span>
+  </button>
+</div>
+<!-- the note that drops out of the bottle, beneath the row -->
+<div class="note-drop" id="noteDrop">
+
+    <div class="note-drop-clip">
+      <div class="note-sheet">
+        <p class="note-eyebrow">series 3 &mdash; sunken treasure</p>
+        <div class="note-q" aria-hidden="true"><span id="noteTyped"></span><span class="note-cursor" id="noteCursor"></span></div>
+        <span class="sr">what's next? sky, sea&hellip;</span>
+        <button class="vote-btn" id="voteBtn"><span>Vote</span></button>
+        <div class="notify-wrap note-notify" data-interest="series3">
+          <div class="notify-row">
+            <input class="notify-input" type="email" maxlength="254" placeholder="your@email.com" autocomplete="email" inputmode="email" aria-label="Email for series 3 news"/>
+            <button class="notify-btn" onclick="notifySignup(this.closest('.notify-wrap'))">first dibs</button>
+          </div>
+          <span class="notify-done">&#10003; you&rsquo;ll be first to know</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
 <section class="zone zone-story">
 <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img" style="background-image:url('story-bg.jpg')"></span></div></div>
 <div class="story-row">
@@ -1046,56 +1147,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 
 </section>
 
-<section class="zone zone-series" id="series">
-  <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg.jpg')"></span></div></div>
-  <header class="shop-head r">
-    <div class="shop-head-text">
-      <p class="sec-eyebrow">earlspade &mdash; collections</p>
-      <h2 class="sec-title">The Series</h2>
-    </div>
-  </header>
-
-<main id="shop"></main>
-
-<!-- ARCHIVE — closed series end up here. There is deliberately no product
-     grid below the banner: archived pieces are sold and gone, so there is
-     nothing left to show. -->
-<section class="archive">
-  <button class="archive-strip r" id="archiveBox" aria-haspopup="dialog" aria-controls="archiveOverlay" onclick="openArchive()">
-    <svg class="archive-mark-ghost" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="#fff"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#15130F"/></svg>
-    <span class="archive-strip-left">
-      <svg class="archive-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="#fff"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#15130F"/></svg>
-      <span class="archive-strip-text">
-        <h2 class="archive-strip-title">The Archive</h2>
-      </span>
-    </span>
-    <span class="drop-tag">Closed</span>
-  </button>
-</section>
-
-<!-- SERIES 3 — the bottle moored below the archive; the note unfolds
-     beneath it. Fills the quiet water at the bottom of the zone. -->
-<div class="series3-moor r">
-  <button class="thing chest-btn" id="chestBtn" aria-expanded="false" aria-controls="noteDrop" aria-label="Series 3 — open the chest" onclick="openChest()">
-    <svg class="chest-art" viewBox="0 0 130 110" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true"><ellipse cx="65" cy="103" rx="46" ry="6" fill="url(#gShadow)"/><g class="chest-idle"><g class="chest-closed-g"><rect x="40" y="8" width="50" height="5" fill="#2A1D10"/><rect x="30" y="13" width="10" height="5" fill="#2A1D10"/><rect x="40" y="13" width="50" height="5" fill="#B07C46"/><rect x="90" y="13" width="10" height="5" fill="#2A1D10"/><rect x="25" y="18" width="5" height="5" fill="#2A1D10"/><rect x="30" y="18" width="5" height="5" fill="#B07C46"/><rect x="35" y="18" width="60" height="5" fill="#C98F52"/><rect x="95" y="18" width="5" height="5" fill="#B07C46"/><rect x="100" y="18" width="5" height="5" fill="#2A1D10"/><rect x="20" y="23" width="5" height="5" fill="#2A1D10"/><rect x="25" y="23" width="5" height="5" fill="#B07C46"/><rect x="30" y="23" width="10" height="5" fill="#C98F52"/><rect x="40" y="23" width="10" height="5" fill="#4A3B2A"/><rect x="50" y="23" width="30" height="5" fill="#C98F52"/><rect x="80" y="23" width="10" height="5" fill="#4A3B2A"/><rect x="90" y="23" width="10" height="5" fill="#C98F52"/><rect x="100" y="23" width="5" height="5" fill="#B07C46"/><rect x="105" y="23" width="5" height="5" fill="#2A1D10"/><rect x="15" y="28" width="5" height="5" fill="#2A1D10"/><rect x="20" y="28" width="5" height="5" fill="#B07C46"/><rect x="25" y="28" width="15" height="5" fill="#C98F52"/><rect x="40" y="28" width="5" height="5" fill="#4A3B2A"/><rect x="45" y="28" width="5" height="5" fill="#6B5844"/><rect x="50" y="28" width="30" height="5" fill="#C98F52"/><rect x="80" y="28" width="5" height="5" fill="#6B5844"/><rect x="85" y="28" width="5" height="5" fill="#4A3B2A"/><rect x="90" y="28" width="15" height="5" fill="#C98F52"/><rect x="105" y="28" width="5" height="5" fill="#B07C46"/><rect x="110" y="28" width="5" height="5" fill="#2A1D10"/><rect x="15" y="33" width="5" height="5" fill="#2A1D10"/><rect x="20" y="33" width="5" height="5" fill="#B07C46"/><rect x="25" y="33" width="10" height="5" fill="#C98F52"/><rect x="35" y="33" width="10" height="5" fill="#4A3B2A"/><rect x="45" y="33" width="40" height="5" fill="#C98F52"/><rect x="85" y="33" width="10" height="5" fill="#4A3B2A"/><rect x="95" y="33" width="10" height="5" fill="#C98F52"/><rect x="105" y="33" width="5" height="5" fill="#B07C46"/><rect x="110" y="33" width="5" height="5" fill="#2A1D10"/><rect x="15" y="38" width="5" height="5" fill="#2A1D10"/><rect x="20" y="38" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="38" width="5" height="5" fill="#C98F52"/><rect x="35" y="38" width="5" height="5" fill="#4A3B2A"/><rect x="40" y="38" width="5" height="5" fill="#6B5844"/><rect x="45" y="38" width="40" height="5" fill="#8B5A2B"/><rect x="85" y="38" width="5" height="5" fill="#6B5844"/><rect x="90" y="38" width="5" height="5" fill="#4A3B2A"/><rect x="95" y="38" width="5" height="5" fill="#C98F52"/><rect x="100" y="38" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="38" width="5" height="5" fill="#2A1D10"/><rect x="15" y="43" width="5" height="5" fill="#2A1D10"/><rect x="20" y="43" width="15" height="5" fill="#8B5A2B"/><rect x="35" y="43" width="10" height="5" fill="#4A3B2A"/><rect x="45" y="43" width="40" height="5" fill="#8B5A2B"/><rect x="85" y="43" width="10" height="5" fill="#4A3B2A"/><rect x="95" y="43" width="15" height="5" fill="#8B5A2B"/><rect x="110" y="43" width="5" height="5" fill="#2A1D10"/><rect x="15" y="48" width="100" height="5" fill="#2A1D10"/><rect x="15" y="53" width="5" height="5" fill="#2A1D10"/><rect x="20" y="53" width="10" height="5" fill="#B07C46"/><rect x="30" y="53" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="53" width="20" height="5" fill="#8B5A2B"/><rect x="60" y="53" width="10" height="5" fill="#E8B33C"/><rect x="70" y="53" width="20" height="5" fill="#8B5A2B"/><rect x="90" y="53" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="53" width="10" height="5" fill="#B07C46"/><rect x="110" y="53" width="5" height="5" fill="#2A1D10"/><rect x="15" y="58" width="5" height="5" fill="#2A1D10"/><rect x="20" y="58" width="10" height="5" fill="#B07C46"/><rect x="30" y="58" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="58" width="5" height="5" fill="#6B5844"/><rect x="40" y="58" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="58" width="20" height="5" fill="#E8B33C"/><rect x="75" y="58" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="58" width="5" height="5" fill="#6B5844"/><rect x="95" y="58" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="58" width="10" height="5" fill="#B07C46"/><rect x="110" y="58" width="5" height="5" fill="#2A1D10"/><rect x="15" y="63" width="5" height="5" fill="#2A1D10"/><rect x="20" y="63" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="63" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="63" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="63" width="5" height="5" fill="#E8B33C"/><rect x="60" y="63" width="10" height="5" fill="#1E150D"/><rect x="70" y="63" width="5" height="5" fill="#E8B33C"/><rect x="75" y="63" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="63" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="63" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="63" width="5" height="5" fill="#2A1D10"/><rect x="15" y="68" width="5" height="5" fill="#2A1D10"/><rect x="20" y="68" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="68" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="68" width="5" height="5" fill="#6B5844"/><rect x="40" y="68" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="68" width="5" height="5" fill="#E8B33C"/><rect x="60" y="68" width="5" height="5" fill="#C4922A"/><rect x="65" y="68" width="5" height="5" fill="#1E150D"/><rect x="70" y="68" width="5" height="5" fill="#E8B33C"/><rect x="75" y="68" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="68" width="5" height="5" fill="#6B5844"/><rect x="95" y="68" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="68" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="68" width="5" height="5" fill="#2A1D10"/><rect x="15" y="73" width="5" height="5" fill="#2A1D10"/><rect x="20" y="73" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="73" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="73" width="20" height="5" fill="#8B5A2B"/><rect x="60" y="73" width="10" height="5" fill="#E8B33C"/><rect x="70" y="73" width="20" height="5" fill="#8B5A2B"/><rect x="90" y="73" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="73" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="73" width="5" height="5" fill="#2A1D10"/><rect x="15" y="78" width="5" height="5" fill="#2A1D10"/><rect x="20" y="78" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="78" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="78" width="5" height="5" fill="#6B5844"/><rect x="40" y="78" width="50" height="5" fill="#8B5A2B"/><rect x="90" y="78" width="5" height="5" fill="#6B5844"/><rect x="95" y="78" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="78" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="78" width="5" height="5" fill="#2A1D10"/><rect x="15" y="83" width="5" height="5" fill="#2A1D10"/><rect x="20" y="83" width="10" height="5" fill="#5C3A1E"/><rect x="30" y="83" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="83" width="50" height="5" fill="#8B5A2B"/><rect x="90" y="83" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="83" width="10" height="5" fill="#5C3A1E"/><rect x="110" y="83" width="5" height="5" fill="#2A1D10"/><rect x="15" y="88" width="5" height="5" fill="#2A1D10"/><rect x="20" y="88" width="10" height="5" fill="#5C3A1E"/><rect x="30" y="88" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="88" width="5" height="5" fill="#6B5844"/><rect x="40" y="88" width="50" height="5" fill="#5C3A1E"/><rect x="90" y="88" width="5" height="5" fill="#6B5844"/><rect x="95" y="88" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="88" width="10" height="5" fill="#5C3A1E"/><rect x="110" y="88" width="5" height="5" fill="#2A1D10"/><rect x="15" y="93" width="10" height="5" fill="#2A1D10"/><rect x="25" y="93" width="80" height="5" fill="#5C3A1E"/><rect x="105" y="93" width="10" height="5" fill="#2A1D10"/><rect x="20" y="98" width="90" height="5" fill="#2A1D10"/></g><g class="chest-open-g"><rect x="20" y="3" width="90" height="5" fill="#2A1D10"/><rect x="15" y="8" width="5" height="5" fill="#2A1D10"/><rect x="20" y="8" width="90" height="5" fill="#5C3A1E"/><rect x="110" y="8" width="5" height="5" fill="#2A1D10"/><rect x="15" y="13" width="5" height="5" fill="#2A1D10"/><rect x="20" y="13" width="5" height="5" fill="#5C3A1E"/><rect x="25" y="13" width="80" height="5" fill="#1E150D"/><rect x="105" y="13" width="5" height="5" fill="#5C3A1E"/><rect x="110" y="13" width="5" height="5" fill="#2A1D10"/><rect x="15" y="18" width="5" height="5" fill="#2A1D10"/><rect x="20" y="18" width="5" height="5" fill="#5C3A1E"/><rect x="25" y="18" width="80" height="5" fill="#1E150D"/><rect x="105" y="18" width="5" height="5" fill="#5C3A1E"/><rect x="110" y="18" width="5" height="5" fill="#2A1D10"/><rect x="15" y="23" width="100" height="5" fill="#2A1D10"/><rect x="20" y="28" width="5" height="5" fill="#2A1D10"/><rect x="25" y="28" width="10" height="5" fill="#E8B33C"/><rect class="px-spark" style="animation-delay:0.00s" x="40" y="28" width="5" height="5" fill="#FFF3D6"/><rect x="45" y="28" width="10" height="5" fill="#E8B33C"/><rect x="55" y="28" width="5" height="5" fill="#D70000"/><rect x="60" y="28" width="10" height="5" fill="#E8B33C"/><rect x="75" y="28" width="10" height="5" fill="#E8B33C"/><rect class="px-spark" style="animation-delay:0.45s" x="85" y="28" width="5" height="5" fill="#FFF3D6"/><rect x="90" y="28" width="5" height="5" fill="#E8B33C"/><rect x="95" y="28" width="5" height="5" fill="#F6EFE2"/><rect x="15" y="33" width="5" height="5" fill="#2A1D10"/><rect x="20" y="33" width="25" height="5" fill="#E8B33C"/><rect x="45" y="33" width="15" height="5" fill="#D70000"/><rect x="60" y="33" width="45" height="5" fill="#E8B33C"/><rect x="105" y="33" width="5" height="5" fill="#2A1D10"/><rect x="15" y="38" width="5" height="5" fill="#2A1D10"/><rect x="20" y="38" width="5" height="5" fill="#E8B33C"/><rect x="25" y="38" width="5" height="5" fill="#C4922A"/><rect x="30" y="38" width="20" height="5" fill="#E8B33C"/><rect x="50" y="38" width="5" height="5" fill="#D70000"/><rect x="55" y="38" width="20" height="5" fill="#E8B33C"/><rect class="px-spark" style="animation-delay:0.90s" x="75" y="38" width="5" height="5" fill="#FFF3D6"/><rect x="80" y="38" width="20" height="5" fill="#E8B33C"/><rect x="100" y="38" width="5" height="5" fill="#C4922A"/><rect x="105" y="38" width="5" height="5" fill="#2A1D10"/><rect x="15" y="43" width="100" height="5" fill="#2A1D10"/><rect x="15" y="48" width="5" height="5" fill="#2A1D10"/><rect x="20" y="48" width="10" height="5" fill="#B07C46"/><rect x="30" y="48" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="48" width="20" height="5" fill="#8B5A2B"/><rect x="60" y="48" width="10" height="5" fill="#E8B33C"/><rect x="70" y="48" width="20" height="5" fill="#8B5A2B"/><rect x="90" y="48" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="48" width="10" height="5" fill="#B07C46"/><rect x="110" y="48" width="5" height="5" fill="#2A1D10"/><rect x="15" y="53" width="5" height="5" fill="#2A1D10"/><rect x="20" y="53" width="10" height="5" fill="#B07C46"/><rect x="30" y="53" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="53" width="5" height="5" fill="#6B5844"/><rect x="40" y="53" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="53" width="20" height="5" fill="#E8B33C"/><rect x="75" y="53" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="53" width="5" height="5" fill="#6B5844"/><rect x="95" y="53" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="53" width="10" height="5" fill="#B07C46"/><rect x="110" y="53" width="5" height="5" fill="#2A1D10"/><rect x="15" y="58" width="5" height="5" fill="#2A1D10"/><rect x="20" y="58" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="58" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="58" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="58" width="5" height="5" fill="#E8B33C"/><rect x="60" y="58" width="10" height="5" fill="#1E150D"/><rect x="70" y="58" width="5" height="5" fill="#E8B33C"/><rect x="75" y="58" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="58" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="58" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="58" width="5" height="5" fill="#2A1D10"/><rect x="15" y="63" width="5" height="5" fill="#2A1D10"/><rect x="20" y="63" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="63" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="63" width="5" height="5" fill="#6B5844"/><rect x="40" y="63" width="15" height="5" fill="#8B5A2B"/><rect x="55" y="63" width="5" height="5" fill="#E8B33C"/><rect x="60" y="63" width="5" height="5" fill="#C4922A"/><rect x="65" y="63" width="5" height="5" fill="#1E150D"/><rect x="70" y="63" width="5" height="5" fill="#E8B33C"/><rect x="75" y="63" width="15" height="5" fill="#8B5A2B"/><rect x="90" y="63" width="5" height="5" fill="#6B5844"/><rect x="95" y="63" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="63" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="63" width="5" height="5" fill="#2A1D10"/><rect x="15" y="68" width="5" height="5" fill="#2A1D10"/><rect x="20" y="68" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="68" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="68" width="20" height="5" fill="#8B5A2B"/><rect x="60" y="68" width="10" height="5" fill="#E8B33C"/><rect x="70" y="68" width="20" height="5" fill="#8B5A2B"/><rect x="90" y="68" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="68" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="68" width="5" height="5" fill="#2A1D10"/><rect x="15" y="73" width="5" height="5" fill="#2A1D10"/><rect x="20" y="73" width="10" height="5" fill="#8B5A2B"/><rect x="30" y="73" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="73" width="5" height="5" fill="#6B5844"/><rect x="40" y="73" width="50" height="5" fill="#8B5A2B"/><rect x="90" y="73" width="5" height="5" fill="#6B5844"/><rect x="95" y="73" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="73" width="10" height="5" fill="#8B5A2B"/><rect x="110" y="73" width="5" height="5" fill="#2A1D10"/><rect x="15" y="78" width="5" height="5" fill="#2A1D10"/><rect x="20" y="78" width="10" height="5" fill="#5C3A1E"/><rect x="30" y="78" width="10" height="5" fill="#4A3B2A"/><rect x="40" y="78" width="50" height="5" fill="#8B5A2B"/><rect x="90" y="78" width="10" height="5" fill="#4A3B2A"/><rect x="100" y="78" width="10" height="5" fill="#5C3A1E"/><rect x="110" y="78" width="5" height="5" fill="#2A1D10"/><rect x="15" y="83" width="5" height="5" fill="#2A1D10"/><rect x="20" y="83" width="10" height="5" fill="#5C3A1E"/><rect x="30" y="83" width="5" height="5" fill="#4A3B2A"/><rect x="35" y="83" width="5" height="5" fill="#6B5844"/><rect x="40" y="83" width="50" height="5" fill="#5C3A1E"/><rect x="90" y="83" width="5" height="5" fill="#6B5844"/><rect x="95" y="83" width="5" height="5" fill="#4A3B2A"/><rect x="100" y="83" width="10" height="5" fill="#5C3A1E"/><rect x="110" y="83" width="5" height="5" fill="#2A1D10"/><rect x="15" y="88" width="10" height="5" fill="#2A1D10"/><rect x="25" y="88" width="80" height="5" fill="#5C3A1E"/><rect x="105" y="88" width="10" height="5" fill="#2A1D10"/><rect x="20" y="93" width="90" height="5" fill="#2A1D10"/></g></g></svg>
-    <span class="hb-caption"><span class="hb-soon">coming soon</span><span class="hb-series">series 3</span></span>
-  </button>
-</div>
-<!-- the note that drops out of the bottle, beneath the row -->
-<div class="note-drop" id="noteDrop">
-
-    <div class="note-drop-clip">
-      <div class="note-sheet">
-        <p class="note-eyebrow">series 3 &mdash; sunken treasure</p>
-        <div class="note-q" aria-hidden="true"><span id="noteTyped"></span><span class="note-cursor" id="noteCursor"></span></div>
-        <span class="sr">what's next? sky, sea&hellip;</span>
-        <button class="vote-btn" id="voteBtn"><span>Vote</span></button>
-      </div>
-    </div>
-  </div>
-
-</section>
-
 <!-- ARCHIVE OVERLAY — clicking the banner fades the whole screen to black
      with the story centered on it. Clicking anywhere closes it. -->
 <div class="archive-overlay" id="archiveOverlay" role="dialog" aria-modal="true" aria-label="The Archive" aria-hidden="true" onclick="closeArchive()">
@@ -1140,12 +1191,22 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
         <p class="modal-desc" id="mDesc"></p>
       </div>
       <div class="modal-foot">
-        <div class="modal-soldout" id="mSoldout" style="display:none">
+        <div class="modal-soldout notify-wrap" id="mSoldout" data-interest="restock" style="display:none">
           <span class="sold-flag">Sold Out</span>
+          <p class="modal-soldout-note">gone for good &mdash; the next run reaches this list first.</p>
+          <div class="notify-row">
+            <input class="notify-input" type="email" maxlength="254" placeholder="your@email.com" autocomplete="email" inputmode="email"/>
+            <button class="notify-btn" onclick="notifySignup(this.closest('.notify-wrap'))">notify me</button>
+          </div>
+          <span class="notify-done">&#10003; you&rsquo;re on the list</span>
         </div>
         <div class="modal-actions" id="mActions">
           <button class="btn-buy" id="mBuy">Buy Now</button>
           <button class="btn-cart" id="mCart">Add to Cart</button>
+        </div>
+        <div class="trust-rows" id="mTrust">
+          <span><i aria-hidden="true"></i>tarnish free &middot; water friendly</span>
+          <span><i aria-hidden="true"></i>apple pay + google pay at checkout</span>
         </div>
       </div>
     </div>
@@ -1163,6 +1224,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   <div class="cart-body" id="cartBody"></div>
   <div class="cart-foot" id="cartFoot" style="display:none">
     <div class="cart-subtotal"><span class="label">Subtotal</span><i class="leader" aria-hidden="true"></i><span class="amt" id="cartSubtotal">$0</span></div>
+    <p class="cart-trust">apple pay + google pay at checkout</p>
     <button class="checkout-btn" id="checkoutBtn" onclick="goToCheckout()"><span>Checkout</span></button>
     <p class="cart-legal">By placing your order you agree to our <a href="legal/terms.html">Terms</a>, <a href="legal/privacy.html">Privacy Policy</a> &amp; <a href="legal/shipping.html">Shipping &amp; Returns</a>.</p>
   </div>
@@ -1171,6 +1233,14 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 <footer class="foot">
   <div class="foot-top"><p class="foot-tag">made by the sea &mdash; malibu, california</p></div>
   <div class="foot-brand r"><img loading="lazy" decoding="async" class="no-vs" src="logo.png" alt=""/>earlspade</div>
+  <div class="foot-letter notify-wrap" data-interest="letter">
+    <span class="foot-tag">the tide letter &mdash; one email per season</span>
+    <div class="notify-row">
+      <input class="notify-input" type="email" maxlength="254" placeholder="your@email.com" autocomplete="email" inputmode="email" aria-label="Email for the seasonal letter"/>
+      <button class="notify-btn" onclick="notifySignup(this.closest('.notify-wrap'))">join</button>
+    </div>
+    <span class="notify-done">&#10003; on the list</span>
+  </div>
   <div class="foot-row">
     <nav class="foot-links">
       <a href="https://instagram.com/earlspade" target="_blank" rel="noopener">Instagram</a>
@@ -1371,7 +1441,9 @@ function renderDrops(){
       const delay = (i%4)*0.07;
       // Sold-out items are inert: no href, no click handler — the tile
       // overlay says everything, and there's nothing to buy.
-      const open = it.soldout ? '' : ` href="javascript:void(0)" onclick="try{openProduct(${di},${i});}catch(e){console.error(e);} return false;"`;
+      /* sold pieces open the modal too — it's where the next-run
+         waitlist lives now, so "sold out" is a signup, not a dead end */
+      const open = ` href="javascript:void(0)" onclick="try{openProduct(${di},${i});}catch(e){console.error(e);} return false;"`;
       // A product can carry a `colors` list (each with its own photo). The
       // first colour is the default; a second one is layered on top and
       // cross-fades in on hover. Falls back to a single `img`, then the logo.
@@ -1445,11 +1517,14 @@ function openProduct(di,i){
   price.style.display = '';
   desc.style.display = '';
 
+  const trust = document.getElementById('mTrust');
   if(it.soldout){
     actions.style.display = 'none';
+    if(trust) trust.style.display = 'none';   /* buying furniture goes with the buttons */
     soldout.style.display = 'block';
   } else {
     actions.style.display = 'flex';
+    if(trust) trust.style.display = '';
     soldout.style.display = 'none';
     const buy = document.getElementById('mBuy');
     buy.onclick = () => {
@@ -1535,10 +1610,35 @@ document.addEventListener('keydown', e=>{
   });
 })();
 
+/* one tiny fetch for every waitlist row (sold-out, series 3, the letter) */
+function notifySignup(wrap){
+  if(!wrap || wrap.classList.contains('sent')) return;
+  const input=wrap.querySelector('.notify-input');
+  const btn=wrap.querySelector('.notify-btn');
+  const email=(input.value||'').trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ input.classList.add('bad'); input.focus(); return; }
+  input.classList.remove('bad');
+  btn.disabled=true;
+  fetch('/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email,interest:wrap.dataset.interest})})
+    .then(r=>{
+      if(r.ok){ wrap.classList.add('sent'); }
+      else{ btn.disabled=false; input.classList.add('bad'); }
+    })
+    .catch(()=>{ btn.disabled=false; });
+}
+
 function scrollToLatest(){
-  /* ENTER lands on the three doors — they share the landing view with
-     the series banner right below, equal citizens of the shop */
-  const el=document.querySelector('.story-row')||document.querySelector('.shop-head')||document.getElementById('latest');
+  /* ENTER goes straight to the shop — and unfolds the live drop so the
+     jewelry is one tap from landing (same recipe as the /#series deep
+     link). Scrollers who wander down keep the TAP TO OPEN theatre. */
+  const di=DROPS.findIndex(d=>d.live);
+  const section=di>=0?document.querySelectorAll('.drop')[di]:null;
+  if(section&&!section.classList.contains('open')){
+    toggleDrop(di);   /* glides to the products itself */
+    return;
+  }
+  const el=document.querySelector('.shop-head')||document.getElementById('latest');
   if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
