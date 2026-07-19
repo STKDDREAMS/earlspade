@@ -243,15 +243,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* HERO — quiet paper page: the embroidered flower sits perfectly still
    at the center, ink type below it. Exactly one frozen viewport tall,
    so the flat page begins right at the fold. */
-/* ===== TIDE TICKER — a slow pixel marquee of the facts that matter,
-   running the full width above the hero. Ink water, paper type, gold
-   pixel buoys between phrases. Two identical halves loop seamlessly. */
-.tide-ticker{position:relative;z-index:5;background:var(--ink);overflow:hidden}
-.tt-track{display:flex;width:max-content;animation:ttRoll 30s linear infinite}
-.tt-half{display:inline-flex;align-items:center;gap:1rem;padding:.55rem .5rem .5rem;flex:none}
-.tt-half b{font-family:var(--px);font-weight:400;font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;color:var(--paper);white-space:nowrap}
-.tt-half b.hot{color:var(--gold)}
-.tt-half i{width:6px;height:6px;background:var(--gold);flex:none}
+/* ===== TIDE TICKER — a whisper of a marquee above the hero: the run's
+   facts drifting by like something stitched into the selvage. Paper on
+   paper, quiet type, the smallest possible buoys. Slow. */
+.tide-ticker{position:relative;z-index:5;background:var(--paper);border-bottom:1.5px solid var(--line);overflow:hidden}
+.tt-track{display:flex;width:max-content;animation:ttRoll 46s linear infinite}
+.tt-half{display:inline-flex;align-items:center;gap:1.15rem;padding:.5rem .58rem .45rem;flex:none}
+.tt-half b{font-family:var(--px);font-weight:400;font-size:.36rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);white-space:nowrap}
+.tt-half i{width:4px;height:4px;background:var(--line);flex:none}
 @keyframes ttRoll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* ===== TIDE HEM — the stepped pixel waterline that separates each
@@ -310,14 +309,13 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   filter:drop-shadow(0 1px 1px rgba(46,36,26,.32)) drop-shadow(0 8px 13px rgba(46,36,26,.16));
   opacity:0;transform:translateY(26px);animation:rise .7s .15s var(--ease) forwards}
 .hero-meta{font-family:var(--px);font-size:.5rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin-top:1.4rem;opacity:0;animation:rise .8s .55s var(--ease) forwards}
-/* live-drop chip above the ENTER key: the one signal that there is
-   something to buy right now (words borrowed from the banner's tag) */
-.hero-live{display:inline-flex;align-items:center;gap:.45rem;margin-top:2.4rem;
-  font-family:var(--px);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;
-  background:var(--pop);color:#fff;border:2px solid var(--ink);padding:.42rem .6rem;
-  box-shadow:2px 2px 0 0 var(--sh);
+/* live line above the ENTER key: no box, no shout — a small red buoy
+   and a quiet word that there is something to buy right now */
+.hero-live{display:inline-flex;align-items:center;gap:.5rem;margin-top:2.3rem;
+  font-family:var(--px);font-size:.38rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);
   opacity:0;animation:rise .8s .5s var(--ease) forwards}
-.hero-live i{width:6px;height:6px;background:#fff;flex:none;animation:liveDot 1.2s steps(1,end) infinite}
+.hero-live i{width:5px;height:5px;background:var(--pop);flex:none}
 /* the ENTER key: a chunky pixel button in the game's .px-btn language —
    ink slab, hard offset shadow, press pushes it into the paper. The
    steps() arrow nudge is the "tap me" cue now. */
@@ -477,14 +475,14 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   padding:.55rem .7rem;cursor:pointer;box-shadow:2px 2px 0 0 var(--sh)}
 .notify-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 var(--sh)}
 .notify-btn:disabled{opacity:.55;cursor:default}
-.notify-done{display:none;font-family:var(--px);font-size:.44rem;color:var(--ink);background:var(--gold);border:2px solid var(--ink);
-  padding:.5rem .6rem;margin-top:.8rem;box-shadow:2px 2px 0 0 var(--sh)}
+.notify-done{display:none;font-family:var(--px);font-size:.42rem;color:var(--ink-soft);background:var(--paper-2);border:1.5px solid var(--line);
+  padding:.5rem .6rem;margin-top:.8rem}
 .notify-wrap.sent .notify-row{display:none}
 .notify-wrap.sent .notify-done{display:inline-block}
 /* trust furniture at the money buttons */
 .trust-rows{margin-top:.9rem;display:flex;flex-direction:column;gap:.5rem}
-.trust-rows span{font-family:var(--px);font-size:.38rem;letter-spacing:.04em;color:var(--ink-soft);display:flex;align-items:center;gap:.5rem}
-.trust-rows i{width:6px;height:6px;background:var(--gold);border:1px solid var(--ink);flex:none}
+.trust-rows span{font-family:var(--px);font-size:.36rem;letter-spacing:.04em;color:var(--ink-soft);display:flex;align-items:center;gap:.5rem}
+.trust-rows i{width:4px;height:4px;background:var(--line);flex:none}
 .cart-trust{font-family:var(--px);font-size:.38rem;letter-spacing:.04em;color:var(--ink-soft);text-align:center;margin-bottom:.7rem}
 .foot-letter{display:flex;flex-direction:column;gap:.4rem;max-width:360px;margin-top:.6rem}
 .note-notify{width:100%;max-width:300px;margin-inline:auto;text-align:left}
@@ -745,12 +743,11 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   width:calc(100% - 2*var(--pad));max-width:calc(1320px - 2*var(--pad));
   margin:0 auto;padding-bottom:1.1rem;border-bottom:2px solid var(--ink);
   scroll-margin-top:4.6rem} /* lands Enter below the fixed corner mark, with the .r reveal lift accounted for */
-.sec-eyebrow{font-family:var(--px);font-size:.44rem;letter-spacing:.12em;text-transform:uppercase;color:#C4922A}
+.sec-eyebrow{font-family:var(--px);font-size:.44rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
 .sec-title{font-family:var(--px);font-weight:400;font-size:clamp(1.05rem,4.5vw,1.9rem);letter-spacing:.02em;line-height:1.2;margin-top:.6rem}
-/* the engraved-plate rule from the game's dialogs: a short gold pixel
-   bar under the shop's title ties the storefront to the luxe system */
-.sec-title::after{content:"";display:block;width:30px;height:4px;margin-top:.6rem;
-  background:var(--gold);box-shadow:2px 2px 0 0 rgba(22,20,18,.3)}
+/* a slim gold thread under the shop's title — noticed, never loud */
+.sec-title::after{content:"";display:block;width:22px;height:3px;margin-top:.6rem;
+  background:var(--gold);opacity:.85}
 
 /* Products stay tucked behind the banner until it's pressed: grid-rows
    0fr -> 1fr animates the unfold smoothly without measuring heights. */
@@ -1030,7 +1027,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 <!-- the tide ticker: real facts about the run, drifting past like the tide -->
 <div class="tide-ticker" aria-hidden="true">
   <div class="tt-track">
-    <span class="tt-half"><b class="hot">sea series &mdash; live</b><i></i><b>numbered by hand</b><i></i><b>one run only</b><i></i><b>tarnish free</b><i></i><b>water friendly</b><i></i><b>made in malibu</b><i></i></span><span class="tt-half"><b class="hot">sea series &mdash; live</b><i></i><b>numbered by hand</b><i></i><b>one run only</b><i></i><b>tarnish free</b><i></i><b>water friendly</b><i></i><b>made in malibu</b><i></i></span>
+    <span class="tt-half"><b>sea series &mdash; live</b><i></i><b>numbered by hand</b><i></i><b>one run only</b><i></i><b>tarnish free</b><i></i><b>water friendly</b><i></i><b>made in malibu</b><i></i></span><span class="tt-half"><b>sea series &mdash; live</b><i></i><b>numbered by hand</b><i></i><b>one run only</b><i></i><b>tarnish free</b><i></i><b>water friendly</b><i></i><b>made in malibu</b><i></i></span>
   </div>
 </div>
 
