@@ -68,7 +68,6 @@
 <link rel="prefetch" href="hero-manta.webp">
 <link rel="prefetch" href="hero-turtle.webp">
 <link rel="prefetch" href="series-bg.jpg">
-<link rel="prefetch" href="our-story.jpg">
 <link rel="preconnect" href="https://checkout.stripe.com" crossorigin>
 <link rel="dns-prefetch" href="https://checkout.stripe.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -215,10 +214,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .qty-stepper button:active{background:var(--paper-2)}
 @media(hover:hover){.qty-stepper button:hover{background:var(--paper-2)}}
 .qty-stepper span{min-width:26px;text-align:center;font-family:var(--px);font-size:.58rem;font-weight:400}
-.cart-remove{font-family:var(--px);font-size:.44rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
-  background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:.5rem 0;margin:-.5rem 0;display:inline-block;transition:color .2s ease}
-.cart-remove:active{color:var(--pop)}
-@media(hover:hover){.cart-remove:hover{color:var(--pop)}}
 .cart-line .linetotal{font-family:var(--px);font-size:.58rem;font-weight:400}
 
 .cart-foot{border-top:1.5px solid var(--ink);padding:1.2rem var(--pad) calc(1.3rem + env(safe-area-inset-bottom));background:var(--paper)}
@@ -662,25 +657,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   display:flex;align-items:center;justify-content:center;transition:transform .2s ease,background .2s ease}
 .archive-close:hover{transform:rotate(90deg);background:rgba(233,230,223,.22)}
 
-/* ===== GALLERY — full-screen lightbox over the page (same fade
-   conventions as the archive overlay). */
-.gallery-overlay{position:fixed;inset:0;z-index:220;display:flex;flex-direction:column;align-items:center;gap:1rem;
-  background:rgba(11,10,8,.95);
-  padding:calc(2.6rem + env(safe-area-inset-top)) 1rem calc(1.6rem + env(safe-area-inset-bottom));
-  opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s}
-.gallery-overlay.open{opacity:1;visibility:visible;transition:opacity .45s ease}
-.gal-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;width:100%;cursor:pointer}
-.gal-img{max-width:min(92vw,1080px);max-height:100%;object-fit:contain;border-radius:10px;box-shadow:0 24px 60px rgba(0,0,0,.5);cursor:default}
-.gal-nav{display:flex;align-items:center;gap:1.2rem}
-.gal-arrow{width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(233,230,223,.4);background:transparent;color:var(--paper);
-  font-size:1.05rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:background .2s ease,transform .2s ease;-webkit-tap-highlight-color:transparent}
-.gal-arrow:active{transform:scale(.94)}
-@media(hover:hover){.gal-arrow:hover{background:rgba(233,230,223,.14)}}
-.gal-count{font-family:var(--px);font-size:.48rem;font-weight:400;letter-spacing:.16em;color:rgba(233,230,223,.6);min-width:4.2em;text-align:center}
-
 /* ===== ZONES — user-placeable section backdrops =================
-   story-bg.jpg backs the Our Story row (always, if the file exists).
    series-bg.jpg backs the series section ONLY while a series is open
    — the zone is plain paper when closed and the photo fades in/out
    with the products. Raw images, cover, centered, no overlays.
@@ -795,7 +772,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 .item.sold:active .item-tile,.item.sold:hover .item-tile{background:var(--paper-2);transform:none;box-shadow:4px 4px 0 0 var(--sh)}
 .item.sold:active .item-tile .ph,.item.sold:hover .item-tile .ph{opacity:.4;transform:none}
 .sold-flag{font-family:var(--px);font-size:.5rem;letter-spacing:.04em;color:var(--pop)}
-.sold-badge{position:absolute;top:.6rem;right:.6rem;z-index:2;font-family:var(--px);font-size:.38rem;font-weight:400;letter-spacing:.04em;text-transform:uppercase;color:var(--pop);background:rgba(233,230,223,.92);border:2px solid var(--pop);padding:.3rem .4rem;border-radius:0}
 /* Sold-out tile: the photo greys out under a paper veil and the flower
    mark sits centered with a tiny lowercase word under it — a quiet
    maker's stamp, nothing more. Gone is gone. */
@@ -1038,8 +1014,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 <div class="tide-hem" aria-hidden="true"></div>
 
 <!-- ZONES: each zone can carry a user-placeable backdrop photo — drop
-     story-bg.jpg / series-bg.jpg (and series-bg-open.jpg for the open
-     state) into the repo root and they render raw as the background. -->
+     series-bg.jpg into the repo root and it renders raw as the background. -->
 <section class="zone zone-series" id="series">
   <div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img zone-bg-img-open" style="background-image:url('series-bg.jpg')"></span></div></div>
   <header class="shop-head r">
@@ -1073,7 +1048,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 
 
 <section class="zone zone-story">
-<div class="zone-bg" aria-hidden="true"><div class="zone-bg-frame"><span class="zone-bg-img" style="background-image:url('story-bg.jpg')"></span></div></div>
 <div class="story-row">
   <!-- THREE THINGS — postcard (our story), bottle (series 3), photo
        stack (gallery): each a hand-drawn object with a caption. -->
@@ -1176,18 +1150,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   </div>
 </div>
 
-<!-- GALLERY OVERLAY — lightbox for the photo gallery button -->
-<div class="gallery-overlay" id="galleryOverlay" role="dialog" aria-modal="true" aria-label="Photo gallery" aria-hidden="true">
-  <button class="archive-close" aria-label="Close gallery" onclick="closeGallery()">&times;</button>
-  <div class="gal-stage" id="galStage">
-    <img loading="lazy" decoding="async" class="gal-img no-vs" id="galImg" alt="earlspade photo"/>
-  </div>
-  <div class="gal-nav">
-    <button class="gal-arrow" aria-label="Previous photo" onclick="galStep(-1)">&larr;</button>
-    <span class="gal-count" id="galCount">1 / 1</span>
-    <button class="gal-arrow" aria-label="Next photo" onclick="galStep(1)">&rarr;</button>
-  </div>
-</div>
 
 <!-- Frosted info bubbles that rise up the screen after a series opens -->
 <div id="infoBubbles" aria-hidden="true"></div>
@@ -1576,11 +1538,7 @@ function closeModal(){
 }
 
 document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){ closeModal(); closeCart(); closeArchive(); closeGallery(); hideFaunaCard(); }
-  if(document.getElementById('galleryOverlay').classList.contains('open')){
-    if(e.key==='ArrowLeft') galStep(-1);
-    if(e.key==='ArrowRight') galStep(1);
-  }
+  if(e.key==='Escape'){ closeModal(); closeCart(); closeArchive(); hideFaunaCard(); }
 });
 
 /* Swipe the product sheet down to close (drag starts on the photo or the
@@ -1802,9 +1760,8 @@ function onScroll(){
     ticking=true;
   }
 }
-let _vh=window.innerHeight;
 const _divecue=document.getElementById('divecue');
-function updateMark(){
+function updateScrollCues(){
   if(_divecue&&window.scrollY>40) _divecue.classList.add('off');
 }
 
@@ -1820,8 +1777,8 @@ function updateMark(){
     else{ setTimeout(()=>cur.classList.add('off'),1400); }
   },1100);
 })();
-window.addEventListener('scroll',()=>{onScroll();updateMark();},{passive:true});
-window.addEventListener('resize',()=>{_vh=window.innerHeight;onScroll();updateMark();},{passive:true});
+window.addEventListener('scroll',()=>{onScroll();updateScrollCues();},{passive:true});
+window.addEventListener('resize',()=>{onScroll();updateScrollCues();},{passive:true});
 
 /* ===== CART ====================================================
    State shape: { "<item-id>": <quantity>, ... }
@@ -2245,44 +2202,6 @@ function cancelInfoBubbles(){ bubbleRun++; }
    ocean audio if it's running), the drawing recedes, and the note
    unrolls with the hint typing itself out before the vote rises. */
 let chestOpened=false;
-/* ===== GALLERY ===================================================
-   A small lightbox over the page: arrows, keyboard, swipe. Images are
-   the photos already in the repo. */
-const GALLERY = ['our-story.jpg','sea-series.jpg','series-bg.jpg','STAR2.jpg','Hedc8638ac9c34db5b21dcb08d44fe562z.jpg','TAN.jpg'];
-let galI = 0;
-function galShow(i){
-  galI = (i + GALLERY.length) % GALLERY.length;
-  document.getElementById('galImg').src = GALLERY[galI];
-  document.getElementById('galCount').textContent = (galI+1) + ' / ' + GALLERY.length;
-  const pre = new Image(); pre.src = GALLERY[(galI+1) % GALLERY.length];
-}
-function galStep(d){ galShow(galI + d); }
-function openGallery(){
-  const o = document.getElementById('galleryOverlay');
-  o.classList.add('open'); o.setAttribute('aria-hidden','false');
-  document.body.classList.add('noscroll');
-  galShow(galI);
-  o.querySelector('.archive-close').focus();
-}
-function closeGallery(){
-  const o = document.getElementById('galleryOverlay');
-  if(!o.classList.contains('open')) return;
-  o.classList.remove('open'); o.setAttribute('aria-hidden','true');
-  document.body.classList.remove('noscroll');
-}
-/* backdrop (not the photo or arrows) closes; horizontal swipe steps */
-(function(){
-  const stage = document.getElementById('galStage');
-  stage.addEventListener('click', e => { if(e.target === stage) closeGallery(); });
-  let tx = null, ty = null;
-  stage.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
-  stage.addEventListener('touchend', e => {
-    if(tx === null) return;
-    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
-    tx = ty = null;
-    if(Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy)*1.4) galStep(dx < 0 ? 1 : -1);
-  }, {passive:true});
-})();
 
 function openChest(){
   if(chestOpened) return;
@@ -2449,7 +2368,7 @@ let seriesWarmed = false;
 function warmSeriesImages(){
   if(seriesWarmed) return;
   seriesWarmed = true;
-  var urls = ['series-bg.jpg'].concat(GALLERY);
+  var urls = ['series-bg.jpg'];
   DROPS.forEach(function(d){ d.items.forEach(function(it){
     if(it.img) urls.push(it.img);
     (it.colors||[]).forEach(function(col){ if(col.img) urls.push(col.img); });
