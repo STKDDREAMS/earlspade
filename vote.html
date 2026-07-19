@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="description" content="earlspade — help pick where series 3 goes."/>
+<meta name="robots" content="noindex,follow"/>
+<title>earlspade — vote on series 3</title>
+<link rel="icon" href="logo.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet"></noscript>
+<style>
+:root{
+  --paper:#E9E6DF; --paper-2:#E1DDD4; --ink:#161412; --ink-soft:#6B6862;
+  --line:#CFC9BD; --pop:#D70000; --gold:#E8B33C; --sh:rgba(22,20,18,.28);
+  --mono:'Space Mono',monospace; --px:'Press Start 2P',var(--mono);
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--paper)}
+body{background:var(--paper);color:var(--ink);font-family:var(--px);
+  min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:2rem 1.2rem calc(2.4rem + env(safe-area-inset-bottom));text-align:center;
+  -webkit-font-smoothing:antialiased}
+body::after{content:"";position:fixed;inset:0;z-index:30;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.flower{width:44px;height:48px;image-rendering:pixelated;margin-bottom:1.4rem}
+.eyebrow{font-size:.42rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.8rem}
+h1{font-size:clamp(.8rem,4vw,1.1rem);font-weight:400;letter-spacing:.02em;line-height:1.5;margin-bottom:.7rem}
+.sub{font-size:.44rem;color:var(--ink-soft);letter-spacing:.06em;line-height:2;margin-bottom:2rem}
+
+.opts{display:flex;flex-direction:column;gap:.8rem;width:min(340px,100%)}
+.opt{display:flex;align-items:center;gap:.8rem;width:100%;
+  font-family:var(--px);font-size:.56rem;letter-spacing:.05em;text-transform:uppercase;text-align:left;
+  background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:0;
+  padding:.95rem 1rem;cursor:pointer;box-shadow:3px 3px 0 0 var(--sh);
+  transition:transform .12s steps(2,end),box-shadow .12s steps(2,end)}
+.opt i{width:8px;height:8px;background:var(--paper);border:2px solid var(--ink);flex:none}
+@media(hover:hover){.opt:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 0 var(--sh)}
+  .opt:hover i{background:var(--gold)}}
+.opt:active{transform:translate(2px,2px);box-shadow:1px 1px 0 0 var(--sh)}
+.opt:disabled{opacity:.55;cursor:default}
+.opt.picked{background:var(--ink);color:var(--paper)}
+.opt.picked i{background:var(--gold)}
+
+.done{display:none;flex-direction:column;align-items:center;gap:1rem}
+.done .check{font-size:.6rem;color:var(--ink);background:var(--paper-2);border:1.5px solid var(--line);padding:.7rem .9rem}
+.done .note{font-size:.42rem;color:var(--ink-soft);letter-spacing:.06em;line-height:2}
+.voted .opts,.voted .sub{display:none}
+.voted .done{display:flex}
+
+.home{margin-top:2.4rem;display:inline-flex;align-items:center;gap:.55rem;
+  font-family:var(--px);font-size:.46rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);
+  text-decoration:none;border:2px solid var(--ink);background:var(--paper);padding:.6rem .8rem;
+  box-shadow:2px 2px 0 0 var(--sh)}
+.home:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 var(--sh)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--pop);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<img class="flower" src="logo.png" alt="" width="44" height="48"/>
+<p class="eyebrow">series 3 &mdash; you pick the water</p>
+<h1>where should the next series go?</h1>
+<p class="sub">one run, one season &mdash; same as always.<br/>the tide goes where you point it.</p>
+
+<div class="opts" id="opts">
+  <button class="opt" data-choice="sky"><i aria-hidden="true"></i>the sky &mdash; birds &amp; clouds</button>
+  <button class="opt" data-choice="deep"><i aria-hidden="true"></i>the deep &mdash; below the reef</button>
+  <button class="opt" data-choice="garden"><i aria-hidden="true"></i>the garden &mdash; bloom &amp; vine</button>
+  <button class="opt" data-choice="desert"><i aria-hidden="true"></i>the desert &mdash; dunes &amp; suns</button>
+</div>
+
+<div class="done" id="done">
+  <span class="check">&#10003; vote counted</span>
+  <span class="note">series 3 follows the tide.<br/>watch the chest.</span>
+</div>
+
+<a class="home" href="/">&larr; back to the shop</a>
+
+<script>
+(function(){
+  var KEY='earlspade_s3_vote_v1';
+  var opts=document.getElementById('opts');
+  var prior=null;
+  try{ prior=localStorage.getItem(KEY); }catch(e){}
+  if(prior){ document.body.classList.add('voted'); return; }
+  opts.addEventListener('click',function(ev){
+    var btn=ev.target.closest('.opt');
+    if(!btn||btn.disabled) return;
+    var choice=btn.dataset.choice;
+    [].forEach.call(opts.querySelectorAll('.opt'),function(b){ b.disabled=true; });
+    btn.classList.add('picked');
+    fetch('/api/vote',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({choice:choice})})
+      .catch(function(){})
+      .finally(function(){
+        try{ localStorage.setItem(KEY,choice); }catch(e){}
+        setTimeout(function(){ document.body.classList.add('voted'); },420);
+      });
+  });
+})();
+</script>
+</body>
+</html>
