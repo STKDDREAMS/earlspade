@@ -915,13 +915,10 @@ const SUN_X = SCENE_W - 92, SUN_Y = 98;
 
 /* the beach follows the player's clock — dawn, day, golden hour,
    night. Every palette stays whisper-muted; the vessel never changes. */
-let hourOverride = null;
 function beachPeriod(){
-  const h = hourOverride !== null ? hourOverride : new Date().getHours();
-  if(h >= 5 && h < 8)  return 'dawn';
-  if(h >= 8 && h < 17) return 'day';
-  if(h >= 17 && h < 20) return 'gold';
-  return 'night';
+  /* the cove lives in permanent daylight now — one bright, readable
+     scene no matter when you play (other palettes kept for reference) */
+  return 'day';
 }
 /* v13: paradise. The cove finally gets its colors — turquoise water,
    real sky, golden sand, lush palms. Readability holds because the
@@ -2771,7 +2768,7 @@ if(location.search.includes('debug=1')){
     drop(x){ aimX = x; lastDrop = 0; canDrop = true; drop(); },
     forceAim(x){ aimX = x; },
     box(){ return { top: BOX_TOP, bottom: BOX_BOTTOM, inL: IN_L, inR: IN_R, sceneW: SCENE_W, sceneH: SCENE_H }; },
-    hour(h){ hourOverride = h; },
+    hour(){ /* kept for old test scripts — the cove is day-locked now */ },
     combo(){ return combo; },
     runBest(){ return runBestTier; },
     yeet(tier, x, y, vy){ const b = fruitBody(tier, x, y); Body.setVelocity(b, { x: 0, y: vy }); Composite.add(world, b); bodies.push(b); return b.id; },
