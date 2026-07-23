@@ -480,6 +480,20 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .trust-rows i{width:4px;height:4px;background:var(--line);flex:none}
 .cart-trust{font-family:var(--px);font-size:.38rem;letter-spacing:.04em;color:var(--ink-soft);text-align:center;margin-bottom:.7rem}
 .foot-letter{display:flex;flex-direction:column;gap:.4rem;max-width:360px;margin-top:.6rem}
+/* ===== THANK YOU — the quiet card that closes the loop after Stripe */
+.thanks{position:fixed;inset:0;z-index:230;display:flex;align-items:center;justify-content:center;
+  background:rgba(15,13,11,.46);padding:1.2rem}
+.thanks[hidden]{display:none}
+.thanks-card{background:var(--paper);border:2px solid var(--ink);box-shadow:5px 5px 0 0 var(--sh);
+  padding:1.7rem 1.5rem;max-width:340px;width:100%;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:1.1rem}
+.thanks-check{font-family:var(--px);font-size:.5rem;color:var(--ink);
+  background:var(--paper-2);border:1.5px solid var(--line);padding:.6rem .75rem}
+.thanks-note{font-family:var(--px);font-size:.44rem;color:var(--ink-soft);line-height:2.1}
+.thanks-btn{font-family:var(--px);font-size:.5rem;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:0;
+  padding:.85rem 1.15rem;cursor:pointer;box-shadow:3px 3px 0 0 var(--sh)}
+.thanks-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 var(--sh)}
 
 /* keyboard users get the brand outline */
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D70000;outline-offset:2px}
@@ -756,7 +770,9 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
 .leader{flex:1;min-width:16px;border-bottom:2px dotted var(--line);transform:translateY(-.22em);transition:border-color .5s ease}
 .item.sold .leader{opacity:.4}
 .zone-series.has-bg.bg-open .leader{border-color:rgba(233,230,223,.5)}
-.item-name{font-family:var(--px);font-weight:400;font-size:.42rem;letter-spacing:.04em;text-transform:uppercase;line-height:1.7;color:var(--ink);background:linear-gradient(currentColor,currentColor) 0 100%/0% 2px no-repeat;transition:background-size .45s var(--ease)}
+.item-name{font-family:var(--px);font-weight:400;font-size:.42rem;letter-spacing:.04em;text-transform:uppercase;line-height:1.7;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;
+  background:linear-gradient(currentColor,currentColor) 0 100%/0% 2px no-repeat;transition:background-size .45s var(--ease)}
 .item-price{font-family:var(--px);font-size:.4rem;letter-spacing:.02em;color:var(--ink-soft);white-space:nowrap}
 .item:active .item-tile{background:var(--tile-ink);transform:translate(2px,2px);box-shadow:1px 1px 0 0 var(--sh)}
 .item:active .item-tile .ph{opacity:.9;transform:scale(1.08)}
@@ -1183,6 +1199,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
           <button class="btn-buy" id="mBuy">Buy Now</button>
           <button class="btn-cart" id="mCart">Add to Cart</button>
         </div>
+        <p class="cart-trust" id="mNote" hidden>checkout hiccuped &mdash; try again in a moment</p>
         <div class="trust-rows" id="mTrust">
           <span><i aria-hidden="true"></i>tarnish free &middot; water friendly</span>
           <span><i aria-hidden="true"></i>apple pay + google pay at checkout</span>
@@ -1200,14 +1217,26 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
     <div><h2>Your Cart</h2><span class="count" id="cartCount"></span></div>
     <button class="cart-close" aria-label="Close cart" onclick="closeCart()">&times;</button>
   </div>
+  <p class="cart-trust" id="cartNote" hidden>checkout cancelled &mdash; your things are safe</p>
   <div class="cart-body" id="cartBody"></div>
   <div class="cart-foot" id="cartFoot" style="display:none">
     <div class="cart-subtotal"><span class="label">Subtotal</span><i class="leader" aria-hidden="true"></i><span class="amt" id="cartSubtotal">$0</span></div>
     <p class="cart-trust">apple pay + google pay at checkout</p>
+    <p class="cart-trust" id="coNote" hidden>checkout hiccuped &mdash; try again in a moment</p>
     <button class="checkout-btn" id="checkoutBtn" onclick="goToCheckout()"><span>Checkout</span></button>
     <p class="cart-legal">By placing your order you agree to our <a href="legal/terms.html">Terms</a>, <a href="legal/privacy.html">Privacy Policy</a> &amp; <a href="legal/shipping.html">Shipping &amp; Returns</a>.</p>
   </div>
 </aside>
+
+
+<!-- THE THANK YOU — shown once when Stripe sends a buyer back -->
+<div class="thanks" id="thanks" role="dialog" aria-modal="true" aria-label="Order received" hidden>
+  <div class="thanks-card">
+    <span class="thanks-check">&#10003; order received</span>
+    <p class="thanks-note">numbered by hand, packed in malibu.<br/>see you at the mailbox.</p>
+    <button class="thanks-btn" onclick="closeThanks()">back to the sea</button>
+  </div>
+</div>
 
 <div class="tide-hem" aria-hidden="true"></div>
 <footer class="foot">
@@ -1507,9 +1536,10 @@ function openProduct(di,i){
     if(trust) trust.style.display = '';
     soldout.style.display = 'none';
     const buy = document.getElementById('mBuy');
+    buy.disabled = false; buy.innerHTML = 'Buy Now';
     buy.onclick = () => {
-      playCheckoutCelebration(buy);
-      if(it.href && it.href !== '#') window.open(it.href,'_blank','noopener');
+      /* express lane: a one-item checkout session, same tab */
+      startCheckout({ [it.id]: 1 }, buy, 'Buy Now', 'mNote');
     };
     const cart = document.getElementById('mCart');
     cart.textContent='Add to Cart'; cart.disabled=false;
@@ -1761,8 +1791,10 @@ function onScroll(){
   }
 }
 const _divecue=document.getElementById('divecue');
+let _cueDone=false;
 function updateScrollCues(){
-  if(_divecue&&window.scrollY>40) _divecue.classList.add('off');
+  /* one-shot: after the cue fades there is nothing left to do per scroll */
+  if(!_cueDone&&_divecue&&window.scrollY>40){ _cueDone=true; _divecue.classList.add('off'); }
 }
 
 /* the hero's location line types itself out, then the cursor rests */
@@ -1923,6 +1955,8 @@ function closeCart(){
   document.getElementById('cartDrawer').classList.remove('open');
   document.getElementById('cartDrawer').setAttribute('aria-hidden','true');
   document.body.classList.remove('noscroll');
+  const note = document.getElementById('cartNote');
+  if(note) note.hidden = true;   /* the cancelled reassurance shows once */
 }
 
 /* A small, satisfying flourish when Checkout is tapped — a soft squish,
@@ -2026,31 +2060,44 @@ document.addEventListener('touchstart', e=>{
   if(t && (t.id === 'checkoutBtn' || (t.closest && t.closest('#checkoutBtn')))) warmCheckout();
 }, {passive:true, capture:true});
 
-async function goToCheckout(){
-  if(cartCount() === 0) return;
-  const btn = document.getElementById('checkoutBtn');
+/* ONE road to Stripe for both Buy Now and the cart: post the items,
+   morph the button while the session spins up, hand the SAME tab to
+   Stripe's hosted page. Failures show a quiet inline note (never an
+   alert), and a 12s timeout means the button can never hang forever. */
+async function startCheckout(cartObj, btn, restoreHTML, noteId){
+  if(!cartObj || Object.keys(cartObj).length === 0) return;
+  if(btn.disabled) return;                       // double-taps post once
   playCheckoutCelebration(btn);
   btn.disabled = true;
-  btn.innerHTML = '<span>Redirecting&hellip;</span>';
+  const prev = restoreHTML || btn.innerHTML;
+  btn.innerHTML = '<span>taking you to checkout&hellip;</span>';
+  const note = noteId && document.getElementById(noteId);
+  if(note) note.hidden = true;
+  const ctrl = window.AbortController ? new AbortController() : null;
+  const timer = ctrl && setTimeout(() => ctrl.abort(), 12000);
   try{
     const res = await fetch('/api/create-checkout-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cart: CART }),
+      body: JSON.stringify({ cart: cartObj }),
+      signal: ctrl ? ctrl.signal : undefined,
     });
-    if(!res.ok){ throw new Error('Checkout request failed'); }
+    if(timer) clearTimeout(timer);
+    if(!res.ok) throw new Error('checkout ' + res.status);
     const data = await res.json();
-    if(data.url){
-      window.location.href = data.url; // hand off to Stripe's hosted page
-    } else {
-      throw new Error('No checkout URL returned');
-    }
+    if(!data.url) throw new Error('no checkout url');
+    window.location.href = data.url; // hand off to Stripe's hosted page
   } catch(err){
+    if(timer) clearTimeout(timer);
     console.error(err);
     btn.disabled = false;
-    btn.innerHTML = '<span>Checkout</span>';
-    alert('Something went wrong starting checkout. Please try again.');
+    btn.innerHTML = prev;
+    if(note){ note.hidden = false; setTimeout(() => { note.hidden = true; }, 4500); }
   }
+}
+function goToCheckout(){
+  if(cartCount() === 0) return;
+  startCheckout(CART, document.getElementById('checkoutBtn'), '<span>Checkout</span>', 'coNote');
 }
 
 /* If someone hits the browser back button from Stripe's checkout page,
@@ -2065,12 +2112,33 @@ window.addEventListener('pageshow', (event) => {
   if(event.persisted){
     const btn = document.getElementById('checkoutBtn');
     if(btn){ btn.disabled = false; btn.innerHTML = '<span>Checkout</span>'; }
+    const buy = document.getElementById('mBuy');
+    if(buy){ buy.disabled = false; buy.innerHTML = 'Buy Now'; }
     renderCartBadge(false);
     renderCartBody();
   }
 });
 
 loadCart();
+
+/* ===== RETURNING FROM STRIPE ===================================
+   success: the order is real — empty the bucket, clean the URL, and
+   say thank you properly. cancelled: reopen the cart exactly as it
+   was, with one quiet reassurance. */
+function closeThanks(){ document.getElementById('thanks').hidden = true; }
+(function(){
+  const state = new URLSearchParams(location.search).get('checkout');
+  if(!state) return;
+  history.replaceState(null, '', location.pathname + location.hash);
+  if(state === 'success'){
+    for(const k of Object.keys(CART)) delete CART[k];
+    saveCart(); renderCartBadge(false); renderCartBody();
+    document.getElementById('thanks').hidden = false;
+  }else if(state === 'cancelled' && cartCount() > 0){
+    document.getElementById('cartNote').hidden = false;
+    openCart();
+  }
+})();
 renderCartBadge(false);
 
 

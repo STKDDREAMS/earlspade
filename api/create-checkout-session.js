@@ -17,32 +17,24 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // NOTE: Test mode and Live mode have DIFFERENT price IDs. Use your test-mode
 // ids while testing, then swap to the live-mode ids when you go live.
 //
-// The site ids below must match the `id:` you gave each item in the DROPS
-// array in earlspade.html. Paste your real price_... values over REPLACE_ME.
-// Leave an item as REPLACE_ME and it will simply be skipped at checkout.
+// The site ids below must match the `id:` of each item in the DROPS array
+// in index.html — an id missing here is silently skipped at checkout, so
+// keep this list in lockstep with the live series.
 // ---------------------------------------------------------------------------
 // Your two Stripe products (each a $20 price).
 // If I've got these flipped, just swap the two ids below — nothing else changes.
-const STAR = 'price_1TmUc57yMgtYJR2SFeimvdgl'; // "star" product -> Celestial Series (cel-*)
-const SEA  = 'price_1TmUbf7yMgtYJR2SOGyhEWgq'; // "sea"  product -> Sea Series (sea-*)
+const STAR = 'price_1TmUc57yMgtYJR2SFeimvdgl'; // "star" product — the archived Celestial Series (no live items)
+const SEA  = 'price_1TmUbf7yMgtYJR2SOGyhEWgq'; // "sea"  product — the live Sea Series
 
 const PRICES = {
-  'sea-tidal-crewneck':      SEA,
-  'sea-current-pocket-tee':  SEA,
-  'sea-deep-pleated-trouser':SEA,
-  'sea-harbor-beanie':       SEA,
-  'sea-coral-knit-polo':     SEA,
-  'sea-drift-chore-coat':    SEA,
-  'sea-saltwash-tote':       SEA,
-  'sea-anchor-card-holder':  SEA,
-  'cel-nebula-hoodie':       STAR,
-  'cel-orbit-box-tee':       STAR,
-  'cel-eclipse-cargo-pant':  STAR,
-  'cel-star-chart-cap':      STAR,
-  'cel-lunar-knit-crew':     STAR,
-  'cel-meteor-work-jacket':  STAR,
-  'cel-astral-long-sleeve':  STAR,
-  'cel-cosmos-socks':        STAR,
+  'sea-starfish-ring':  SEA,
+  'sea-coral-ring':     SEA,
+  'sea-dolphin-ring':   SEA,
+  'sea-turtle-ring':    SEA,
+  'sea-palm-bracelet':  SEA,
+  'sea-sun-bracelet':   SEA,
+  'sea-beach-bracelet': SEA,
+  'sea-tan-bracelet':   SEA,
 };
 
 async function readBody(req) {
