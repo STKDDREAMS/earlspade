@@ -499,6 +499,66 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   .hb-text{padding:.45rem .5rem .5rem}
   .things-row{gap:.9rem}
 }
+/* ===== THE LIVING BEACH ==========================================
+   Nothing loud: the sun glitters on the water, smoke curls from the
+   island hut, a dolphin leaps once in a long while, the surf breathes,
+   a crab patrols its stretch of sand — and every signpost answers when
+   you reach for it, like the whole shore is one small game.
+   Transform/opacity only, all in pixel steps. */
+.bs-glints{inset:0}
+.bs-glints i{position:absolute;width:6px;height:3px;background:#F2F8F1;opacity:0;
+  animation:bsGlint 4.8s steps(1,end) infinite}
+.bs-glints i:nth-child(1){right:11%;top:58%}
+.bs-glints i:nth-child(2){right:13%;top:66%;animation-delay:1.6s}
+.bs-glints i:nth-child(3){right:9%;top:76%;animation-delay:3.1s}
+.bs-glints i:nth-child(4){left:22%;top:62%;animation-delay:.8s}
+.bs-glints i:nth-child(5){left:47%;top:70%;animation-delay:2.3s}
+.bs-glints i:nth-child(6){left:64%;top:56%;animation-delay:3.9s}
+@keyframes bsGlint{0%,74%{opacity:0}78%,90%{opacity:.9}94%,100%{opacity:0}}
+/* the far hut keeps a small fire going */
+.bs-smoke{left:calc(5% + 56px);top:calc(46% - 30px);width:8px;height:18px}
+.bs-smoke i{position:absolute;left:0;bottom:0;width:4px;height:4px;background:#E2DCCD;opacity:0;
+  animation:bsPuff 5.2s steps(3,end) infinite}
+.bs-smoke i:nth-child(2){left:3px;animation-delay:2.6s}
+@keyframes bsPuff{0%{opacity:0;transform:translateY(0)}18%{opacity:.9;transform:translateY(-4px)}
+  70%{opacity:.35;transform:translateY(-12px)}100%{opacity:0;transform:translateY(-14px)}}
+/* once in a long while, a dolphin */
+.bs-dolphin{left:calc(5% + 128px);top:calc(46% + 6px);opacity:0;
+  animation:bsLeap 21s steps(2,end) 4s infinite}
+@keyframes bsLeap{
+  0%,87%{opacity:0;transform:translate(0,12px)}
+  88.5%{opacity:1;transform:translate(8px,-2px) rotate(-16deg)}
+  90%{opacity:1;transform:translate(16px,-9px) rotate(0deg)}
+  91.5%{opacity:1;transform:translate(24px,-2px) rotate(16deg)}
+  93%{opacity:1;transform:translate(32px,12px) rotate(24deg)}
+  93.5%,100%{opacity:0;transform:translate(32px,12px)}}
+/* a second boat far out + higher birds: the distance has layers */
+.bs-boat2{left:34%;top:calc(46% - 12px);animation:bsBob 7s steps(2,end) 1.2s infinite}
+.bs-birds2{top:8%;left:56%;opacity:.75}
+/* the surf breathes */
+.beach-foam{animation:bsSurf 7s steps(2,end) infinite}
+@keyframes bsSurf{0%,100%{transform:translateY(0)}55%{transform:translateY(3px)}}
+/* a crab patrols between the shell and the chest */
+.bs-crab{right:20%;bottom:17%;animation:bsScuttle 17s steps(5,end) infinite}
+@keyframes bsScuttle{0%,36%{transform:translateX(0)}44%,78%{transform:translateX(-52px)}
+  86%,100%{transform:translateX(0)}}
+/* reach for a signpost and the shore answers */
+@media(hover:hover){
+  .things-row .door:nth-child(1):hover .thing-art{transform-origin:55% 88%;animation:palmSway .7s steps(3,end)}
+  .things-row .door:nth-child(2):hover .thing-art{animation:ballHop .6s steps(4,end)}
+  .things-row .door:nth-child(3):hover .thing-art{animation:polSnap .5s steps(2,end)}
+  .door:hover .hb-text{transform-origin:50% calc(100% + 14px);animation:signSwing .55s steps(3,end)}
+  .chest-btn:hover .chest-art{animation:chestRattle .5s steps(2,end)}
+}
+@keyframes palmSway{0%{transform:rotate(0)}30%{transform:rotate(-2.5deg)}65%{transform:rotate(2deg)}100%{transform:rotate(0)}}
+@keyframes ballHop{0%{transform:translateY(0)}30%{transform:translateY(-12px)}60%{transform:translateY(0)}80%{transform:translateY(-5px)}100%{transform:translateY(0)}}
+@keyframes polSnap{0%{filter:none}30%{filter:brightness(1.75)}100%{filter:none}}
+@keyframes signSwing{0%{transform:rotate(0)}33%{transform:rotate(-2deg)}66%{transform:rotate(1.4deg)}100%{transform:rotate(0)}}
+@keyframes chestRattle{0%{transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}100%{transform:translateX(0)}}
+@media(max-width:600px){
+  .bs-boat2{display:none}
+  .bs-crab{right:6%;bottom:14%}
+}
 /* postcard: slow drift, straightens a touch on the swell */
 .pc-float{transform-box:fill-box;transform-origin:center;animation:pcFloat 6s ease-in-out infinite}
 @keyframes pcFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
@@ -1133,6 +1193,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
     <svg class="bs bs-island" width="120" height="34" viewBox="0 0 60 17" shape-rendering="crispEdges"><g fill="#4F8C73"><rect x="8" y="9" width="44" height="5"/><rect x="16" y="6" width="28" height="3"/><rect x="24" y="4" width="12" height="2"/></g><g fill="#3B6C58"><rect x="8" y="13" width="44" height="1"/><rect x="24" y="4" width="4" height="2"/></g><g fill="#3E6B4C"><rect x="20" y="1" width="8" height="2"/><rect x="23" y="3" width="2" height="3"/><rect x="34" y="2" width="7" height="2"/><rect x="36" y="4" width="2" height="2"/></g><rect x="29" y="8" width="4" height="2" fill="#F4DCB4"/></svg>
     <!-- the sailboat -->
     <svg class="bs bs-boat" width="84" height="78" viewBox="0 0 28 26" shape-rendering="crispEdges"><rect x="12" y="2" width="1" height="16" fill="#6E4A2A"/><g fill="#F6F1E6"><rect x="14" y="3" width="3" height="3"/><rect x="14" y="6" width="6" height="3"/><rect x="14" y="9" width="9" height="3"/><rect x="14" y="12" width="12" height="3"/><rect x="14" y="15" width="13" height="2"/></g><g fill="#E8E0CE"><rect x="10" y="7" width="2" height="2"/><rect x="8" y="9" width="4" height="2"/><rect x="6" y="11" width="6" height="2"/><rect x="5" y="13" width="7" height="2"/></g><g fill="#B03A30"><rect x="3" y="18" width="22" height="3"/><rect x="5" y="21" width="18" height="2"/></g><rect x="3" y="18" width="22" height="1" fill="#8E2C24"/><rect x="24" y="16" width="3" height="2" fill="#B03A30"/></svg>
+    <!-- a smaller boat much further out, and birds riding higher air -->
+    <svg class="bs bs-boat2" width="20" height="14" viewBox="0 0 10 7" shape-rendering="crispEdges" aria-hidden="true"><rect x="4" y="0" width="1" height="4" fill="#6E4A2A"/><g fill="#F6F1E6"><rect x="5" y="1" width="2" height="1"/><rect x="5" y="2" width="3" height="2"/></g><rect x="2" y="4" width="7" height="2" fill="#B03A30"/></svg>
+    <svg class="bs bs-birds2" width="36" height="12" viewBox="0 0 18 6" shape-rendering="crispEdges" aria-hidden="true"><g fill="#6B837B"><rect x="2" y="2" width="2" height="1"/><rect x="5" y="1" width="2" height="1"/><rect x="12" y="3" width="2" height="1"/><rect x="15" y="2" width="2" height="1"/></g></svg>
+    <!-- the sun glitters on the water -->
+    <div class="bs bs-glints" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <!-- smoke from the island hut -->
+    <div class="bs bs-smoke" aria-hidden="true"><i></i><i></i></div>
+    <!-- the dolphin (blink and you miss it) -->
+    <svg class="bs bs-dolphin" width="28" height="16" viewBox="0 0 14 8" shape-rendering="crispEdges" aria-hidden="true"><g fill="#5E8F94"><rect x="0" y="3" width="2" height="1"/><rect x="1" y="4" width="2" height="2"/><rect x="2" y="3" width="10" height="2"/><rect x="4" y="2" width="6" height="1"/><rect x="6" y="1" width="2" height="1"/><rect x="11" y="4" width="2" height="1"/></g><rect x="4" y="4" width="7" height="1" fill="#9DC4C4"/></svg>
     <!-- the surf where the sea gives up -->
     <div class="beach-foam"></div>
   </div>
@@ -1145,6 +1214,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #D700
   <svg class="bs bs-star" width="30" height="30" viewBox="0 0 13 13" shape-rendering="crispEdges" aria-hidden="true"><rect x="5" y="2" width="3" height="3" fill="#E8A08A"/><rect x="2" y="5" width="9" height="3" fill="#E8A08A"/><rect x="5" y="8" width="3" height="3" fill="#E8A08A"/><rect x="5" y="5" width="3" height="3" fill="#D9836C"/></svg>
   <svg class="bs bs-shell" width="26" height="22" viewBox="0 0 11 9" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="1" width="7" height="2" fill="#D9D0BC"/><rect x="1" y="3" width="9" height="3" fill="#CFC4AC"/><rect x="3" y="6" width="5" height="2" fill="#C2B69A"/><rect x="4" y="3" width="2" height="3" fill="#E4DCC8"/></svg>
   <svg class="bs bs-parasol" width="52" height="60" viewBox="0 0 26 30" shape-rendering="crispEdges" aria-hidden="true"><g fill="#B03A30"><rect x="6" y="4" width="14" height="3"/><rect x="3" y="7" width="8" height="2"/><rect x="15" y="7" width="8" height="2"/></g><g fill="#F6EFE2"><rect x="10" y="2" width="6" height="2"/><rect x="11" y="7" width="4" height="2"/></g><rect x="12" y="9" width="2" height="17" fill="#6E4A2A"/><rect x="9" y="26" width="8" height="2" fill="#CBB183"/></svg>
+  <!-- the crab that owns this stretch of sand -->
+  <svg class="bs bs-crab" width="36" height="22" viewBox="0 0 18 11" shape-rendering="crispEdges" aria-hidden="true"><g fill="#C75B4A"><rect x="5" y="4" width="8" height="4"/><rect x="4" y="5" width="10" height="2"/><rect x="4" y="1" width="1" height="2"/><rect x="13" y="1" width="1" height="2"/><rect x="3" y="2" width="2" height="2"/><rect x="13" y="2" width="2" height="2"/></g><g fill="#9E4234"><rect x="3" y="8" width="2" height="2"/><rect x="6" y="9" width="2" height="1"/><rect x="10" y="9" width="2" height="1"/><rect x="13" y="8" width="2" height="2"/><rect x="2" y="6" width="2" height="1"/><rect x="14" y="6" width="2" height="1"/></g><rect x="7" y="3" width="1" height="2" fill="#2A1D10"/><rect x="10" y="3" width="1" height="2" fill="#2A1D10"/><rect x="7" y="3" width="1" height="1" fill="#F6EFE2"/><rect x="10" y="3" width="1" height="1" fill="#F6EFE2"/></svg>
 
 <section class="zone zone-story">
 <div class="story-row">
