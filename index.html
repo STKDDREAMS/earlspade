@@ -447,14 +447,8 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .wf-nail{position:absolute;width:6px;height:6px;background:#7A5A38;box-shadow:inset 1px 1px 0 rgba(255,240,214,.4)}
 .wf-nail.n1{top:14px;left:14px}.wf-nail.n2{top:14px;right:14px}
 .wf-nail.n3{bottom:14px;left:14px}.wf-nail.n4{bottom:14px;right:14px}
-/* the flip: squeeze to a sliver, swap faces at the midpoint, expand */
-@keyframes signFlip{0%{transform:scaleX(1)}50%{transform:scaleX(.06)}100%{transform:scaleX(1)}}
-@keyframes faceIn{0%,49%{opacity:0}50%,100%{opacity:1}}
-@keyframes faceOut{0%,49%{opacity:1}50%,100%{opacity:0}}
-.drop.open .drop-photo{animation:signFlip .52s steps(8,end)}
-.drop-photo.flipping{animation:signFlip .52s steps(8,end)}
-.drop.open .drop-woodface{opacity:1;animation:faceIn .52s steps(1,end)}
-.drop:not(.open) .drop-photo.flipping .drop-woodface{animation:faceOut .52s steps(1,end)}
+/* opening swaps the faces in one clean pixel beat — no theatrics */
+.drop.open .drop-woodface{opacity:1}
 /* the posts that hold the billboard up out of the sand — siblings of
    the button (its overflow:hidden would clip them), sharing its box */
 .drop-posts{position:relative;display:block;height:46px;width:calc(100% - 2*var(--pad) - 16px);max-width:calc(1320px - 2*var(--pad));margin-inline:auto;pointer-events:none}
@@ -1675,11 +1669,7 @@ function toggleDrop(di){
   const open = !section.classList.contains('open');
   section.classList.toggle('open', open);
   const btn = section.querySelector('.drop-photo');
-  if(btn){
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    btn.classList.add('flipping');
-    setTimeout(()=>btn.classList.remove('flipping'), 540);
-  }
+  if(btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   if(open){
     try{ localStorage.setItem(OPENED_KEY,'1'); }catch(e){}
     document.getElementById('shop').classList.add('hint-off');
