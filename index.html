@@ -1679,25 +1679,27 @@ function renderDrops(){
 }
 
 
-/* ===== THE SEA FILM ==============================================
-   The whole water is ONE hand-animated pixel film: a 12fps canvas
-   drawing every frame of a 22-second reel — calm sea, a set standing
-   up, the surfer shredding it (snaps off the lip, spray fans), the
-   wave throwing into a perfect barrel he ducks under, the exit, and
-   the closeout washing into the sand. Deterministic: render(t) is a
-   pure function of loop time, so any frame can be frozen. Pauses
-   off-screen and honors reduced motion with a single still frame. */
-const SEAF = {"pal":{"H":"#C9885B","h":"#A96F42","Y":"#EAD27E","R":"#DC1015","c":"#F6EFE2","b":"#DC1015","r":"#9E0B0F","F":"#F2F8F1","W":"#FFFFFF"},"poses":{"paddle":["....................","....................","....YY..............","....HH..............",".....HH.............",".......HHHHHHHhh....","...bccccHccccccb....","....rrrHrrrrrr......","......F.F...........","...................."],"popup":["....................","....................","....................","....................","....................","....................",".....YY.............",".....HHY............",".....HH.............","......HHHH..........",".....H.RRRRRh.......",".....H.hh.hhh.......",".....H.H...H........","...bcccccccccb......","....rrrrrrrrr.......","...................."],"snap":["......................",".........YY...........",".........HHY..........","......H..HH..H........",".......H.HH.H.........","........RRR...........",".........Rh...........","........h.H.b.........","........H.ccr.........","........ccrr..........","......ccrr............","..F.bcrr..............","...Wrr................",".....F................"],"tube":["................","................","................","......YY........","......HH........","......HH........","......HHHh......",".....HRRRR......","......hhhh......","......H..H......","...bccccccccb...","....rrrrrrrr....","................"],"crouch":["....................","....................","....................","....................",".....YY.............",".....HHY............",".....HHY............","......HH............","......HHhh..........",".....H.RR.h.........","....H.RRRR..........","......hh.hh.........",".W....H...H.........",".Fb...H...H.........","F..bcccccccccb......","....rrrrrrrrr.......","..WFFWFFWFFWFFW....."],"armup":["....................","....................","....................","....................","....H..YY...........","....H..HHY..........",".....H.HH..H........","......hHHhh.........",".......HH...........",".......RRR..........","......RRRRR.........","......H...H.........",".W....H...H.........",".Fb...H...H.........","F..bcccccccccb......","....rrrrrrrrr.......","..FFWFFWFFWFFWF....."],"loose":["....................","....................","....................","....................","........YY..........","........HHY.........","........HH..H.......",".....H..HHhh........","......HhHH..........",".......RR...........","......RRRRR.........","......h...h.........",".W....H...H.........",".Fb...H...H.........","F..bcccccccccb......","....rrrrrrrrr.......","..FWFFWFFWFFWFF....."]}};
+/* ===== THE SEA FILM v2 ===========================================
+   One hand-animated pixel reel, 12fps, 22s loop, every frame drawn
+   fresh. The barrel IS the feature: seven seconds of peeling tube
+   with a lit almond eye, thick curling lip, dripping curtain and a
+   boiling foam ball — and the surfer rides INSIDE it. He carves with
+   steez: banked bottom turns with a hand skim, coiled drives, a
+   three-frame 3D top-turn rotation that flashes the board's
+   underside at the viewer, a back-view line race, a pigdog tube
+   stance with a wall drag, and a soul-arch claim — all trailed by a
+   carving wake. render(t) is pure; any frame freezes (__sea). */
+const SEAF = {"pal":{"H":"#C9885B","h":"#A96F42","Y":"#EAD27E","R":"#DC1015","c":"#F6EFE2","b":"#DC1015","r":"#9E0B0F","F":"#F2F8F1","W":"#FFFFFF"},"poses":{"paddle":["....................","....................","....YY..............","....HH..............",".....HH.............",".......HHHHHHHhh....","...bccccHccccccb....","....rrrHrrrrrr......","......F.F...........","...................."],"popup":["....................","....................","....................","....................","....................","....................",".....YY.............",".....HHY............",".....HH.............","......HHHH..........",".....H.RRRRRh.......",".....H.hh.hhh.......",".....H.H...H........","...bcccccccccb......","....rrrrrrrrr.......","...................."],"bottom":["....................","....................","....................","....................","....................","....................",".....HHYY...........",".....HHY............","......H.............",".....HHR.hh.........","....H.RRRh..........","...H.h...H..b.......","...F.H..cccc........","...bccccrrrr........","....rrrr............"],"drive":["....................","....................","....................","....................","....................","......YY............","......HHY...........","......HH............","......HH............",".....HHHhh..........","....h.RRRh..........",".....hh..H..b.......",".....H..cccc........","...bccccrrrr........","....rrrr............"],"snap":["......................","......................",".....YY...............",".....HHY..............",".....HH.hh............",".....HHH...b..........","....H.....bb..........","...H.....bbb..........",".......bbcb...........","......bccb............",".....bcbb.............","..F.bbb...............",".F..bb................","..Wrb.................","....r.................","...F.................."],"snapA":["......................","........YY............","........HHY...........","........HH.H..........","........H.h...........","......H.H.............",".....H.RRh............",".......R.H............","......h..cb...........","......Hccr............",".....ccrr.............","....brr...............","..FW..................","......................","......................"],"snapC":["......................","......................",".......YY.............",".......HHY............",".......HH.............",".....H.HH.............","....H..RR.h...........","......h.R..H..........","....bcH..h............",".....rcc.H............","......rrcc..F.........","........rrcb.W........","..........r.F.........","......................","......................"],"back":["..............","..............","..............","..............",".....YYY......","....YYYY......",".....HHH......","...HHHHHHH....","..h.HHHHH.h...","....RRRRR.....","....h...h.....","....H...H.....","....brrrrb....","......rr......",".............."],"arch":["....................","....................","....................","....................","..........Y.........",".........HHY........",".........HHY........",".........H..........","......h.HH.h........",".....hRRRR..h.......","......h...h.........","......H...H.........","......H...H.........","...bcccccccccb......","....rrrrrrrrr.......","...................."],"tube":["..................","..................","..................","......YY..........","......HH..........","......HH..........","....HH............","...F..hHH.........","......RRRR........","......hhhhh.......","......H..H.H......","...bcccccccccb....","....rrrrrrrrr.....",".................."]}};
 let seaInited = false;
 function initSeaFilm(){
   if(seaInited) return; seaInited = true;
   const cv = document.getElementById('seaCanvas'); if(!cv) return;
   const FPS = 12, LOOP = 22;
   const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  /* him, seen through the falling curtain */
   const DIM = {H:'#7E5638',h:'#654227',Y:'#9C8752',R:'#8E1216',r:'#5E0B0E',c:'#AFA898',b:'#8E1216',F:'#9DBFB4',W:'#B9D2C8'};
-  /* board waterline row + width of each pose grid */
-  const ANCH = {paddle:[7,20],popup:[14,20],crouch:[15,20],armup:[15,20],loose:[15,20],snap:[12,22],tube:[11,16]};
+  /* [waterline row, width] of every pose grid */
+  const ANCH = {paddle:[8,20],popup:[15,20],bottom:[15,20],drive:[15,20],
+                snap:[15,22],snapA:[13,22],snapC:[13,22],back:[14,14],arch:[15,20],tube:[13,18]};
   let ctx, W = 0, H = 0, raf = 0, playing = false, rz = 0, t0 = performance.now(), lastTick = -1;
   function sizes(){
     const r = cv.getBoundingClientRect();
@@ -1722,16 +1724,38 @@ function initSeaFilm(){
         ctx.fillRect(x0+i, y0+j, 1, 1);
       }}
   }
-  /* deterministic spray burst: ballistic particles from one seed */
   function burst(t,t0b,x0,y0,n,seed,spread){
-    const age = t-t0b; if(age<0||age>0.85) return;
+    const age = t-t0b; if(age<0||age>0.9) return;
     for(let i=0;i<n;i++){ const s=hsh(i,seed,17);
-      const vx=((s%29)-14)*(spread||1)*0.9, vy=-(7+(s>>>8)%15);
+      const vx=((s%29)-14)*(spread||1)*0.9, vy=-(7+(s>>>8)%16);
       const x=x0+vx*age, y=y0+vy*age+26*age*age;
       if(y<y0+3){ ctx.fillStyle=(s>>>4)%3?'#F2F8F1':'#FFFFFF'; ctx.fillRect(x|0,y|0,1,1); }
     }
   }
-  const XSURF = [[0,.66],[3,.66],[4,.63],[13,.37],[14.5,.34],[16.5,.33],[17.2,.24],[18.5,.20],[19.3,.185]];
+  /* the whole ride, scripted — one pure function so the wake can
+     look back in time and every beat can be frozen */
+  const XSURF = [[0,.66],[2.5,.66],[3.2,.63],[11,.38],[12.5,.35],[16.5,.33],[17.2,.27],[18.4,.22],[19.3,.19]];
+  const YBK = [[0,.15],[2.5,.2],[6,.46],[11,.56],[16.5,.6],[18,.64],[19.5,.72],[20.5,.9],[22,1.08]];
+  const AMPK = [[0,2],[2.5,4.5],[6,14],[11,18],[16.5,19],[18,16],[19.5,12],[20.5,5],[22,0]];
+  function surfState(t, yb, amp, xc, tick){
+    if(t>=19.3) return null;
+    const x = W*keyed(t,XSURF);
+    const aS = amp*Math.max(.22,1-Math.abs(x-xc)/(W*.62));
+    let pose,yB,dim=false;
+    if(t<2.5){ pose='paddle'; yB=yb-aS+((tick%6<3)?0:1); }
+    else if(t<3.2){ pose='popup'; yB=yb-2; }
+    else if(t<11){
+      const ph=((t-3.2)%1.9)/1.9, tri=1-Math.abs(2*ph-1);
+      yB=lerp(yb-1, yb-aS-2, tri);
+      pose = ph<.38?'drive' : ph<.46?'snapA' : ph<.56?'snap' : ph<.64?'snapC' : 'bottom';
+    }
+    else if(t<12.5){ pose='back'; yB=yb-3; }           /* racing the peel, seen from behind */
+    else if(t<16.5){ pose='tube'; yB=yb-2; dim=true; } /* pigdog, deep in it */
+    else if(t<17.2){ pose='drive'; yB=yb-3; }          /* blasting out */
+    else if(t<18.4){ pose='arch'; yB=yb-2; }           /* the claim */
+    else { pose='arch'; yB=yb-aS-(t-18.4)*11; }        /* kicking out over the back */
+    return {x:x, yB:yB, pose:pose, dim:dim};
+  }
   function render(t){
     const tick = Math.floor(t*FPS);
     /* 1 — layered water */
@@ -1743,9 +1767,8 @@ function initSeaFilm(){
       for(let i=0;i<n;i++){ const s=hsh(i,L,7);
         const y=2+(s%(H-6));
         const x=(((s>>>8)%W)+t*sp)%W|0;
-        const len=3+(s>>>16)%5;
         ctx.fillStyle = y<H*0.45?'#A6DACB':'#63B8A2';
-        ctx.fillRect(x,y,Math.min(len,W-x),1);
+        ctx.fillRect(x,y,Math.min(3+(s>>>16)%5,W-x),1);
       }
     }
     /* 3 — glints near the horizon */
@@ -1756,97 +1779,138 @@ function initSeaFilm(){
     ctx.fillStyle='#C7E5D8';
     for(let x=0;x<W;x+=7){ const s=hsh(x,3,5); if(s%5<2) ctx.fillRect(x,fy+(s%2),3+(s>>>4)%3,1); }
     /* 5 — THE WAVE */
-    const yb = keyed(t,[[0,.15],[3,.21],[6,.46],[13,.56],[17,.62],[18.5,.68],[20,.86],[22,1.06]])*H;
-    const amp = keyed(t,[[0,2],[3,4.5],[6,13],[13,17],[17,18],[18.5,15],[20,5],[22,0]])*Math.min(1,H/52);
+    const yb = keyed(t,YBK)*H;
+    const amp = keyed(t,AMPK)*Math.min(1,H/52);
     const xs = W*0.33;
-    const pf = keyed(t,[[12.99,W+40],[13,W*0.92],[14.6,xs+14],[16.5,xs-2],[18.5,W*0.12],[19.5,-30],[22,-30]]);
-    const barrel = t>=13 && t<19.5;
-    const closing = t>=18.5 && t<21.2;
+    const PFK = [[10.99,W+60],[11,W*0.95],[12.8,xs+2],[16.5,xs-12],[18,W*0.14],[19.5,-40],[22,-40]];
+    const pf = keyed(t,PFK);
+    const barrel = t>=11 && t<19.5;
+    const closing = t>=18 && t<20.8;
     const xc = W*(0.62-0.008*t);
     for(let x=0;x<W;x++){
       const a = amp*Math.max(.22,1-Math.abs(x-xc)/(W*.62));
       if(a<1.2) continue;
-      const crest = yb-a, base = Math.min(H-1, yb+2), ci = crest|0;
-      const broken = (barrel && x>pf+12) || closing;
+      const jit = a>6 ? hsh(x,5,0)%2 : 0;                     /* crest isn't a ruler */
+      const crest = yb-a+jit, base = Math.min(H-1, yb+2), ci = crest|0;
+      const broken = (barrel && x>pf+14) || closing;
       if(broken){
-        const hgt = Math.max(2, a*0.85);
-        for(let y=(yb-hgt)|0; y<=base; y++){
-          const n = hsh(x,y,tick>>1)%9;
-          if(n<8){ ctx.fillStyle = n<3?'#FFFFFF':n<7?'#F2F8F1':'#B4D8CF'; ctx.fillRect(x,y,1,1); }
-        }
-      } else {
-        for(let y=ci;y<=base;y++){
-          const rel=(y-crest)/Math.max(1,base-crest);
-          ctx.fillStyle = rel<.16?'#CFE9DD':rel<.42?'#7FC6B2':rel<.7?'#3E9682':'#2A7A68';
+        /* whitewater: solid rounded mounds with chunky texture */
+        const s1=hsh((x>>3),21,0)%6, s2=hsh((x>>3)+1,21,0)%6, fr=(x&7)/8;
+        const hgt=Math.max(3, a*(0.6+0.06*(s1*(1-fr)+s2*fr)));
+        const top=(yb-hgt)|0;
+        for(let y=top;y<=base;y++){
+          ctx.fillStyle = y===top?'#FFFFFF':(y>=base-1?'#B4D8CF':'#F2F8F1');
           ctx.fillRect(x,y,1,1);
         }
-        if(a>7 && base+1<H){ ctx.fillStyle='#256B5C'; ctx.fillRect(x,base+1,1,1); }
+        if(hsh(x>>1,3,tick>>2)%6===0){ ctx.fillStyle='#DDEDE7'; ctx.fillRect(x,top+2+(hsh(x,3,1)%4),1,2); }
+        if(hsh(x>>1,7,tick>>2)%8===0){ ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,top+1,1,1); }
+        if(hsh(x,11,tick>>1)%5<2 && base+1<H){ ctx.fillStyle='#F2F8F1'; ctx.fillRect(x,base+1,1,1); }
+      } else {
+        /* the pocket darkens as it throat-ens near the peel */
+        const pocket = barrel && x>pf-20 && x<=pf+14;
+        for(let y=ci;y<=base;y++){
+          const rel=(y-crest)/Math.max(1,base-crest);
+          ctx.fillStyle = pocket
+            ? (rel<.16?'#B9DECE':rel<.42?'#5FB09A':rel<.7?'#2F8571':'#1F6656')
+            : (rel<.16?'#CFE9DD':rel<.42?'#7FC6B2':rel<.7?'#3E9682':'#2A7A68');
+          ctx.fillRect(x,y,1,1);
+        }
         if(a>5){
+          /* feathering lip with a curl shadow tucked beneath it */
           if(hsh(x,1,tick>>1)%4<2){ ctx.fillStyle=hsh(x,2,tick)%3?'#F2F8F1':'#FFFFFF'; ctx.fillRect(x,ci,1,1);
             if(hsh(x,3,tick)%5<1) ctx.fillRect(x,ci-1,1,1); }
-          if(hsh(x,7,0)%19===0){ ctx.fillStyle='#9BD4C4'; ctx.fillRect(x,ci+2,1,Math.max(1,((base-ci)*0.4)|0)); }
+          if(a>9 && hsh(x,4,0)%4<2){ ctx.fillStyle='#2E7F6E'; ctx.fillRect(x,ci+2,1,1); }
+          if(hsh(x,9,0)%17<1){ ctx.fillStyle='#9BD4C4'; ctx.fillRect(x,(ci+((base-ci)>>1))|0,1,2); }
+          if(base+1<H){ ctx.fillStyle='#256B5C'; ctx.fillRect(x,base+1,1,1); }
+          if(hsh(x,13,tick>>2)%7<2 && base+2<H){ ctx.fillStyle='#EFF7F1'; ctx.fillRect(x,base+2,1,1); } /* trough wash */
         }
       }
     }
-    /* 6 — the surfer (drawn before the curtain, so the barrel swallows him) */
-    if(t<19.3){
-      const x = W*keyed(t,XSURF);
-      const aS = amp*Math.max(.22,1-Math.abs(x-xc)/(W*.62));
-      let pose,yB,dim=false;
-      if(t<3){ pose='paddle'; yB=yb-aS+((tick%6<3)?0:1); }
-      else if(t<4){ pose='popup'; yB=yb-2; }
-      else if(t<13){
-        const ph=((t-4)%1.8)/1.8, tri=1-Math.abs(2*ph-1);
-        yB=lerp(yb-1, yb-aS-2, tri);
-        pose = tri>.8?'snap':(ph<.5?'crouch':'armup');
-      }
-      else if(t<14.5){ pose='crouch'; yB=yb-3; }
-      else if(t<16.5){ pose='tube'; yB=yb-2; dim=true; }
-      else if(t<17.2){ pose='armup'; yB=yb-3; }
-      else if(t<18.5){ pose='loose'; yB=yb-2; }
-      else { pose='loose'; yB=yb-aS-(t-18.5)*11; }
-      const an=ANCH[pose];
-      stamp(pose, x-an[1]/2, yB-an[0], dim);
-    }
-    /* 7 — the barrel mouth: hollow, lip arc, curtain, foam ball, fountain */
-    if(barrel && pf>-20 && pf<W+20){
-      const r = amp*0.78, cxB = pf+5, cy = yb-amp*0.46;
-      for(let y=Math.max(0,(cy-r)|0); y<=Math.min(H-1,yb+1); y++)
+    /* 6 — the barrel interior (behind him): hollow + the lit almond eye */
+    const r = amp*0.92, cxB = pf+7, cy = yb-amp*0.5;
+    if(barrel && pf>-30 && pf<W+30){
+      for(let y=Math.max(0,(cy-r)|0); y<=Math.min(H-1,(yb+1)|0); y++)
         for(let x=Math.max(0,(cxB-r)|0); x<=Math.min(W-1,(cxB+r+3)|0); x++){
           const rr=Math.hypot(x-cxB,y-cy);
-          if(rr<r-1.8 && x>=pf-2){ ctx.fillStyle = y<cy?'#1F5A4C':'#2A7A68'; ctx.fillRect(x,y,1,1); }
+          if(rr<r-2.2 && x>=pf-2){ ctx.fillStyle = y<cy?'#1F5A4C':'#2A7A68'; ctx.fillRect(x,y,1,1); }
         }
-      for(let ang=-30;ang<=236;ang+=4){
-        const rd=ang*Math.PI/180;
-        ctx.fillStyle='#F2F8F1'; ctx.fillRect((cxB+r*Math.cos(rd))|0,(cy-r*Math.sin(rd))|0,1,1);
-        ctx.fillStyle='#B4D8CF'; ctx.fillRect((cxB+(r-1.2)*Math.cos(rd))|0,(cy-(r-1.2)*Math.sin(rd))|0,1,1);
+      /* light at the end of the tunnel */
+      const ex=cxB+r*0.35, ey=cy+1;
+      for(let y=(ey-r*0.3)|0;y<=(ey+r*0.3)|0;y++)
+        for(let x=(ex-r*0.42)|0;x<=(ex+r*0.42)|0;x++){
+          const d=Math.hypot((x-ex)/(r*0.42),(y-ey)/(r*0.3));
+          if(d<=1 && x<=Math.min(W-1,cxB+r)){ ctx.fillStyle=d<.55?'#9AD6C2':'#6FBFA8'; ctx.fillRect(x,y,1,1); }
+        }
+    }
+    /* 7 — the carving wake: where he just was */
+    if((t>3.4 && t<11) || (t>16.6 && t<18.4)){
+      for(let k=1;k<10;k++){
+        const tp=t-k*0.085; if(tp<=3.3) break;
+        const s=surfState(tp, keyed(tp,YBK)*H, keyed(tp,AMPK)*Math.min(1,H/52), W*(0.62-0.008*tp), tick);
+        if(!s) continue;
+        ctx.fillStyle = k<4?'#FFFFFF':k<7?'#F2F8F1':'#B4D8CF';
+        ctx.fillRect((s.x+6)|0,(s.yB+1)|0,2,1);
       }
-      /* the falling curtain across the mouth — he ducks under this */
-      for(let x=Math.max(0,(pf-1)|0); x<=Math.min(W-1,(pf+13)|0); x++)
-        for(let y=Math.max(0,(cy-r+1)|0); y<=Math.min(H-1,yb+1); y++)
-          if(hsh(x,y,tick)%9<2){ ctx.fillStyle=hsh(x+1,y,tick)%3?'#B4D8CF':'#F2F8F1'; ctx.fillRect(x,y,1,1); }
-      /* boiling foam ball at the base */
-      for(let x=Math.max(0,(cxB-3)|0); x<=Math.min(W-1,(cxB+r+4)|0); x++)
-        for(let y=Math.max(0,(yb-2)|0); y<=Math.min(H-1,(yb+2)|0); y++){
-          const n=hsh(x,y,tick)%9;
-          if(n<5){ ctx.fillStyle=n<2?'#FFFFFF':'#F2F8F1'; ctx.fillRect(x,y,1,1); }
+    }
+    /* 8 — the surfer */
+    const sf = surfState(t, yb, amp, xc, tick);
+    if(sf){ const an=ANCH[sf.pose]; stamp(sf.pose, sf.x-an[1]/2, sf.yB-an[0], sf.dim); }
+    /* 9 — the barrel front: thick curling lip, curtain, foam ball, plume */
+    if(barrel && pf>-30 && pf<W+30){
+      for(let ang=28;ang<=208;ang+=2){
+        const rd=ang*Math.PI/180, ca=Math.cos(rd), sa=Math.sin(rd);
+        ctx.fillStyle='#FFFFFF'; ctx.fillRect((cxB+r*ca)|0,(cy-r*sa)|0,1,1);
+        ctx.fillStyle='#F2F8F1'; ctx.fillRect((cxB+(r-1)*ca)|0,(cy-(r-1)*sa)|0,1,1);
+        ctx.fillStyle='#F2F8F1'; ctx.fillRect((cxB+(r-2)*ca)|0,(cy-(r-2)*sa)|0,1,1);
+        ctx.fillStyle='#B4D8CF'; ctx.fillRect((cxB+(r-3)*ca)|0,(cy-(r-3)*sa)|0,1,1);
+      }
+      /* the thrown lip: a solid tongue curling down off the arc's end */
+      for(let i=0;i<5;i++){
+        const tx=(cxB-r*0.92+i*0.6)|0, ty=(cy+r*0.28+i*1.4)|0;
+        ctx.fillStyle=i<2?'#F2F8F1':'#FFFFFF';
+        ctx.fillRect(tx,ty,2,2);
+      }
+      /* a few solid curtain streaks — the veil he ducks under */
+      for(let k=0;k<4;k++){
+        const xd=(pf+2+k*(r*0.28))|0;
+        if(xd<0||xd>=W-1) continue;
+        const s=hsh(k,5,tick>>2);
+        const top=(cy-r*0.4)|0, len=(3+(s%3)+r*0.4)|0;
+        ctx.fillStyle=k%2?'#B4D8CF':'#DDEDE7';
+        ctx.fillRect(xd,top,1,Math.min(len,H-top-1));
+        if(k%2===0){ ctx.fillStyle='#F2F8F1'; ctx.fillRect(xd+1,top+2,1,Math.min(len-3,H-top-4)); }
+      }
+      /* foam ball: one solid boiling mound at the base of the curl */
+      {
+        const fx0=Math.max(0,(cxB-r*0.9)|0), fx1=Math.min(W-1,(cxB+2)|0);
+        for(let x=fx0;x<=fx1;x++){
+          const u=(x-fx0)/Math.max(1,fx1-fx0);
+          const fh=(3+4*Math.sin(Math.PI*u))|0;
+          const top=Math.max(0,(yb-fh)|0);
+          for(let y=top;y<=Math.min(H-1,(yb+2)|0);y++){
+            ctx.fillStyle = y===top?'#FFFFFF':'#F2F8F1';
+            ctx.fillRect(x,y,1,1);
+          }
+          if(hsh(x>>1,9,tick>>1)%4===0){ ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,top-1,1,1); }
         }
-      /* spray fountain streaming off the lip */
-      for(let k=0;k<8;k++){
+      }
+      /* spray plume ripping back off the lip */
+      for(let k=0;k<9;k++){
         const tb=(Math.floor(t*FPS)-k)/FPS;
-        if(tb<13) continue;
-        const pfb=keyed(tb,[[12.99,W+40],[13,W*0.92],[14.6,xs+14],[16.5,xs-2],[18.5,W*0.12],[19.5,-30],[22,-30]]);
-        burst(t,tb,pfb+6,yb-amp-1,3,(tb*97)|0,1.4);
+        if(tb<11) continue;
+        const pfb=keyed(tb,PFK);
+        burst(t,tb,pfb+7,yb-amp-1,3,(tb*97)|0,1.5);
       }
     }
-    /* 8 — spray: snap fans, tube exit blast, kick-out splash */
-    for(const ta of [4.9,6.7,8.5,10.3,12.1]){
-      const xa=W*keyed(ta,XSURF), aA=keyed(ta,[[0,2],[3,4.5],[6,13],[13,17]])*Math.min(1,H/52);
-      burst(t,ta,xa,yb-aA-3,13,(ta*10)|0,1.6);
+    /* 10 — spray: skitters off bottom turns, fans off the top, blasts */
+    for(const ta of [4.15,6.05,7.95,9.85]){
+      const xa=W*keyed(ta,XSURF), aA=keyed(ta,AMPK)*Math.min(1,H/52);
+      burst(t,ta,xa,yb-aA-3,18,(ta*10)|0,2.0);
     }
-    burst(t,16.5,W*0.30,yb-6,16,777,2.2);
-    burst(t,19.3,W*0.185,yb-2,12,555,1.8);
-    /* 9 — the wash lapping at the sand, meeting the foam edge */
+    for(const tb2 of [5.1,7.0,8.9]) burst(t,tb2,W*keyed(tb2,XSURF),yb,6,(tb2*10)|0,1.1);
+    burst(t,16.55,W*0.31,yb-6,20,777,2.4);
+    burst(t,19.25,W*0.19,yb-2,12,555,1.8);
+    /* 11 — the wash lapping at the sand */
     for(let x=0;x<W;x++){
       if(hsh(x,H-1,tick>>2)%7<2){ ctx.fillStyle='#F2F8F1'; ctx.fillRect(x,H-1,1,1); }
       if(hsh(x,H-2,tick>>2)%11<2){ ctx.fillStyle='#DDEDE7'; ctx.fillRect(x,H-2,1,1); }
