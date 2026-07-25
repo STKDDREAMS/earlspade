@@ -419,88 +419,47 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* ===== TIDE removed: the water photo is now baked into the hero composite. */
 @keyframes cue{0%,100%{transform:scaleY(.4);opacity:.4}50%{transform:scaleY(1);opacity:1}}
 
-/* DROP — the way in is a BILLBOARD: the embroidered campaign photo
-   mounted in a pixel wood frame on two posts planted in the sand,
-   standing just past the surf like the door signposts' big sibling. */
+/* DROP — the way in stands FREE on the sand: no board, no frame, no
+   box. The silver ring floats over big ink type, a gold thread draws
+   itself under the name when you reach for it, and a small ink key
+   invites the tap — an object made of type and light, not a billboard. */
 .drop{padding-top:2.6rem}
-.drop-photo{position:relative;width:calc(100% - 2*var(--pad) - 24px);max-width:880px;margin-inline:auto;aspect-ratio:2/1;overflow:hidden;border-radius:0;background:#3D8E7C;
-  border:2px solid var(--ink);padding:0;display:block;cursor:pointer;text-align:left;font-family:inherit;color:inherit;
-  box-shadow:0 0 0 9px #D2A96B,0 0 0 12px var(--ink),8px 8px 0 12px var(--sh);
-  transition:transform .18s steps(3,end),box-shadow .18s steps(3,end)}
+.drop-photo{position:relative;display:flex;flex-direction:column;align-items:center;gap:.85rem;width:max-content;max-width:calc(100% - 2*var(--pad));margin-inline:auto;padding:.6rem 1rem;background:transparent;border:none;border-radius:0;cursor:pointer;text-align:center;font-family:inherit;color:inherit;-webkit-tap-highlight-color:transparent;transition:transform .3s var(--ease)}
 @media(hover:hover){
-  .drop-photo:hover{transform:translate(-2px,-2px);box-shadow:0 0 0 9px #D2A96B,0 0 0 12px var(--ink),11px 11px 0 12px var(--sh)}
+  .drop-photo:hover{transform:translateY(-5px)}
+  .drop-photo:hover .pf-title{background-size:100% 3px}
 }
-.drop-photo:active,.drop-photo.tap-active{transform:translate(2px,2px);box-shadow:0 0 0 9px #D2A96B,0 0 0 12px var(--ink),3px 3px 0 12px var(--sh);transition:transform .1s steps(2,end),box-shadow .1s steps(2,end)}
-/* the OTHER face of the billboard: a carved beach-bar sign. Pressing
-   the billboard spins it on its posts (a chunky scaleX pixel flip) and
-   this wooden face lands, SEA SERIES carved deep with a buoy above. */
-.drop-woodface{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;
-  background:linear-gradient(to bottom,#D2A96B 0%,#C89D5F 55%,#B98E52 100%);
-  box-shadow:inset 0 3px 0 rgba(255,240,214,.20),inset 0 -7px 0 rgba(90,58,30,.32);
-  pointer-events:none}
-.drop-woodface::before{content:"";position:absolute;inset:10px;border:2px solid rgba(90,58,30,.28);pointer-events:none}
-.drop-woodface::after{content:"";position:absolute;left:12px;right:12px;top:34%;height:2px;background:rgba(90,58,30,.14)}
-.wf-buoy{image-rendering:pixelated;animation:wfBuoySway 3.4s steps(3,end) infinite;transform-origin:50% 0}
-@keyframes wfBuoySway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
-.wf-title{font-family:var(--px);font-size:clamp(1.15rem,5vw,2.7rem);letter-spacing:.06em;color:#4A3121;
-  text-shadow:0 2px 0 rgba(255,240,214,.32),2px 2px 0 rgba(58,36,18,.28)}
-.wf-sub{font-family:var(--px);font-size:clamp(.34rem,1.4vw,.5rem);letter-spacing:.2em;text-transform:uppercase;color:rgba(74,49,33,.78)}
-.wf-nail{position:absolute;width:6px;height:6px;background:#7A5A38;box-shadow:inset 1px 1px 0 rgba(255,240,214,.4)}
-.wf-nail.n1{top:14px;left:14px}.wf-nail.n2{top:14px;right:14px}
-.wf-nail.n3{bottom:14px;left:14px}.wf-nail.n4{bottom:14px;right:14px}
-/* CLOSED FACE — a painted poster on the lagoon: teal painted planks,
-   a silver ring crowned with a starfish, the series name in cream */
-.face-a{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.55rem;
-  background:linear-gradient(to bottom,#47A18C 0%,#3D8E7C 55%,#357E6E 100%);
-  box-shadow:inset 0 3px 0 rgba(246,239,226,.14),inset 0 -7px 0 rgba(20,60,52,.30)}
-.face-a::before{content:"";position:absolute;inset:10px;border:2px solid rgba(246,239,226,.30);pointer-events:none}
-.face-a::after{content:"";position:absolute;left:12px;right:12px;top:34%;height:2px;background:rgba(20,60,52,.16)}
-.pf-ring{width:clamp(44px,7vw,84px);height:auto;image-rendering:pixelated;
-  filter:drop-shadow(3px 3px 0 rgba(20,60,52,.35));animation:pfRingFloat 4.8s ease-in-out infinite}
-@keyframes pfRingFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.pf-title{font-family:var(--px);font-weight:400;font-size:clamp(1.05rem,4.6vw,2.5rem);letter-spacing:.06em;color:#F6EFE2;
-  text-shadow:.05em .05em 0 rgba(20,60,52,.55)}
-.pf-sub{font-family:var(--px);font-size:clamp(.34rem,1.4vw,.48rem);letter-spacing:.2em;text-transform:uppercase;color:rgba(246,239,226,.75)}
-/* OPENING — the board turns over in six chunky bands, top to bottom,
-   with a bright glint riding the turning edge */
-.drop-woodface{clip-path:inset(0 0 100% 0)}
-.drop.open .drop-woodface{opacity:1;clip-path:inset(0 0 0 0);animation:boardWipe .55s steps(6,end)}
-@keyframes boardWipe{0%{clip-path:inset(0 0 100% 0)}100%{clip-path:inset(0 0 0 0)}}
-.board-scan{position:absolute;left:0;right:0;top:0;height:17%;z-index:6;background:rgba(255,243,214,.4);opacity:0;pointer-events:none}
-.drop.open .board-scan{animation:scanFall .55s steps(6,end)}
-@keyframes scanFall{0%{opacity:1;transform:translateY(0)}99%{opacity:1;transform:translateY(500%)}100%{opacity:0;transform:translateY(500%)}}
-/* the posts that hold the billboard up out of the sand — siblings of
-   the button (its overflow:hidden would clip them), sharing its box */
-.drop-posts{position:relative;display:block;height:56px;width:calc(100% - 2*var(--pad) - 24px);max-width:880px;margin-inline:auto;pointer-events:none}
-.drop-posts i{position:absolute;top:12px;width:18px;height:42px;background:#97683C;border:2px solid var(--ink);border-top:none;box-shadow:3px 3px 0 0 var(--sh)}
-.drop-posts i:first-child{left:16%}
-.drop-posts i:last-child{right:16%}
-/* the shingled roof that crowns the sign — a beach hut's gable */
-.sign-roof{display:block;width:calc(100% - 2*var(--pad) + 20px);max-width:928px;height:auto;
-  margin:0 auto 14px;image-rendering:pixelated;pointer-events:none}
-/* the little plank that swings on chains beneath the board */
-.sign-shingle{position:relative;display:block;width:max-content;max-width:80%;margin:-44px auto 12px;
-  padding:.55rem .85rem;background:#C89D5F;border:2px solid var(--ink);
-  box-shadow:3px 3px 0 0 var(--sh),inset 0 -3px 0 rgba(90,58,30,.25);
-  font-family:var(--px);font-size:clamp(.36rem,1.5vw,.5rem);letter-spacing:.18em;text-transform:uppercase;
-  color:#4A3121;text-align:center;
-  transform-origin:50% -24px;animation:shingleSway 4.4s steps(3,end) infinite}
-.sign-shingle::before,.sign-shingle::after{content:"";position:absolute;top:-24px;width:2px;height:24px;background:var(--ink)}
-.sign-shingle::before{left:18%}
-.sign-shingle::after{right:18%}
-@keyframes shingleSway{0%,100%{transform:rotate(-2.4deg)}50%{transform:rotate(2.4deg)}}
-.drop-photo .top{position:absolute;top:var(--pad);left:var(--pad);right:var(--pad);z-index:2;display:flex;justify-content:flex-end}
+.drop-photo:active,.drop-photo.tap-active{transform:scale(.97)}
+/* the pieces of the free-standing entrance: the floating silver ring,
+   the big ink name with its gold thread, the pieces line, the LIVE
+   chip riding the name's shoulder */
+.pf-ring{width:clamp(64px,10vw,116px);height:auto;image-rendering:pixelated;
+  filter:drop-shadow(6px 7px 0 rgba(22,20,18,.12));animation:pfRingFloat 4.8s ease-in-out infinite}
+@keyframes pfRingFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.pf-row{display:flex;align-items:flex-start;gap:.7rem}
+.pf-row .drop-tag{margin-top:.2rem}
+/* phones: the chip rides centered between ring and name, not on the
+   shoulder, so the wrapped title stays balanced */
+@media(max-width:540px){
+  .pf-row{flex-direction:column;align-items:center;gap:.6rem}
+  .pf-row .drop-tag{order:-1;margin-top:0}
+}
+.pf-title{font-family:var(--px);font-weight:400;color:var(--ink);font-size:clamp(1.5rem,6.6vw,3.6rem);letter-spacing:.05em;line-height:1.15;
+  text-shadow:.045em .045em 0 rgba(22,20,18,.14);padding-bottom:8px;
+  background:linear-gradient(var(--gold),var(--gold)) 50% 100%/0% 3px no-repeat;transition:background-size .45s var(--ease)}
+.drop.open .pf-title{background-size:100% 3px}
+.pf-sub{font-family:var(--px);font-size:clamp(.36rem,1.5vw,.5rem);letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin:0}
 .drop-tag{font-family:var(--px);font-size:.42rem;font-weight:400;letter-spacing:.06em;text-transform:uppercase;padding:.45rem .6rem;border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:0;
-  box-shadow:2px 2px 0 0 rgba(16,14,12,.45)}
+  box-shadow:3px 3px 0 0 var(--sh)}
 .drop-tag.live{background:var(--pop);color:#fff;display:inline-flex;align-items:center;gap:.45rem}
 .drop-tag.live::before{content:"";width:6px;height:6px;background:#fff;flex:none;animation:liveDot 1.2s steps(1,end) infinite}
-/* First-visit cue that the banner opens: bottom-right, gently pulsing.
+/* First-visit cue that the name opens: a small ink key under the type.
    Gone while open, and suppressed for good (hint-off, via localStorage)
    once the customer has ever opened a series. */
-.drop-hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:2;
-  font-family:var(--px);font-size:.38rem;font-weight:400;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--paper);padding:.45rem .6rem;border:2px solid var(--paper);border-radius:0;
-  background:rgba(16,14,12,.78);box-shadow:2px 2px 0 0 rgba(20,60,52,.4);animation:hintPulse 1.6s steps(2,end) infinite}
+.drop-hint{display:inline-flex;align-items:center;margin-top:.2rem;
+  font-family:var(--px);font-size:.4rem;font-weight:400;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--paper);padding:.55rem .8rem;border:2px solid var(--ink);border-radius:0;
+  background:var(--ink);box-shadow:3px 3px 0 0 var(--sh);animation:hintPulse 1.6s steps(2,end) infinite}
 .drop-hint::after{content:"\2192";display:inline-block;margin-left:.5em;animation:enterArrow 1.6s steps(2,end) infinite}
 @keyframes hintPulse{0%,100%{opacity:.55}50%{opacity:1}}
 .drop.open .drop-hint,.hint-off .drop-hint{display:none}
@@ -718,8 +677,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='3'%3E%3Cg fill='%23DECDAC'%3E%3Crect x='0' y='1' width='34' height='1'/%3E%3Crect x='44' y='0' width='22' height='1'/%3E%3Crect x='72' y='2' width='14' height='1'/%3E%3C/g%3E%3C/svg%3E") repeat-x}
 .tideline.t1{top:calc(clamp(230px,34vw,320px) + 58px)}
 .tideline.t2{top:calc(clamp(230px,34vw,320px) + 148px)}
-/* carved grain groove in the billboard's wood frame */
-.drop-photo::before{content:"";position:absolute;inset:-5px;z-index:4;pointer-events:none;border:1px solid rgba(90,58,30,.22)}
 /* the prints are laid on the sand by hand, not by a machine */
 .items .item:nth-child(odd) .item-tile{transform:rotate(.4deg)}
 .items .item:nth-child(even) .item-tile{transform:rotate(-.4deg)}
@@ -1132,16 +1089,12 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #DC10
 @media(min-width:541px) and (max-width:759px){
   :root{--pad:1.6rem}
   .items{grid-template-columns:repeat(3,1fr);gap:1.6rem 1.1rem}
-  .drop-photo{aspect-ratio:2/1;max-height:calc(var(--vh100,100lvh)*.62)}
 }
 
 /* DESKTOP */
 @media(min-width:760px){
   :root{--pad:2.4rem}
   .items{grid-template-columns:repeat(4,1fr);gap:1.9rem 1.5rem;max-width:1320px;margin:0 auto;padding-top:2.2rem}
-  .drop-photo{aspect-ratio:5/2;max-height:calc(var(--vh100,100lvh)*.55)}
-  .drop-photo-inner.ph img{width:13%}
-  .drop-title{font-size:clamp(1.5rem,3vw,2.5rem)}
   .hero-logo{margin-bottom:1.9rem}
   .modal{align-items:center;padding:2rem}
   .modal-card{flex-direction:row;border-radius:0;border:2px solid var(--ink);max-width:920px;max-height:86vh;transform:translateY(22px) scale(.97);opacity:0;transition:transform .42s var(--ease),opacity .35s ease;box-shadow:8px 8px 0 0 var(--sh)}
@@ -1162,8 +1115,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #DC10
   .modal-img::after{transition:none}
   .shop-btn .arr{transform:none!important}
   .r{opacity:1;transform:none}
-  .drop-photo-inner{inset:0!important;transform:none!important;opacity:1!important}
-  .drop-title{transform:none!important}
   .modal-card{transform:none!important;opacity:1!important}
   .archive-overlay,.archive-copy{transition:none;transform:none!important}
   .drop-items{transition:none}
@@ -1647,8 +1598,8 @@ function priceToNumber(str){
 }
 
 function photoHTML(d,di){
-  const top = d.tag ? `<div class="top"><span class="drop-tag${d.live?' live':''}">${d.tag}</span></div>` : '';
-  return `<svg class="sign-roof" viewBox="0 0 84 10" shape-rendering="crispEdges" aria-hidden="true"><rect x="37" y="0" width="10" height="1" fill="#161412"/><rect x="32" y="1" width="2" height="1" fill="#161412"/><rect x="34" y="1" width="5" height="1" fill="#B98E52"/><rect x="39" y="1" width="1" height="1" fill="#97683C"/><rect x="40" y="1" width="6" height="1" fill="#B98E52"/><rect x="46" y="1" width="1" height="1" fill="#97683C"/><rect x="47" y="1" width="3" height="1" fill="#B98E52"/><rect x="50" y="1" width="2" height="1" fill="#161412"/><rect x="27" y="2" width="2" height="1" fill="#161412"/><rect x="29" y="2" width="1" height="1" fill="#97683C"/><rect x="30" y="2" width="6" height="1" fill="#C89D5F"/><rect x="36" y="2" width="1" height="1" fill="#97683C"/><rect x="37" y="2" width="6" height="1" fill="#C89D5F"/><rect x="43" y="2" width="1" height="1" fill="#97683C"/><rect x="44" y="2" width="6" height="1" fill="#C89D5F"/><rect x="50" y="2" width="1" height="1" fill="#97683C"/><rect x="51" y="2" width="4" height="1" fill="#C89D5F"/><rect x="55" y="2" width="2" height="1" fill="#161412"/><rect x="22" y="3" width="2" height="1" fill="#161412"/><rect x="24" y="3" width="2" height="1" fill="#B98E52"/><rect x="26" y="3" width="1" height="1" fill="#97683C"/><rect x="27" y="3" width="6" height="1" fill="#B98E52"/><rect x="33" y="3" width="1" height="1" fill="#97683C"/><rect x="34" y="3" width="6" height="1" fill="#B98E52"/><rect x="40" y="3" width="1" height="1" fill="#97683C"/><rect x="41" y="3" width="6" height="1" fill="#B98E52"/><rect x="47" y="3" width="1" height="1" fill="#97683C"/><rect x="48" y="3" width="6" height="1" fill="#B98E52"/><rect x="54" y="3" width="1" height="1" fill="#97683C"/><rect x="55" y="3" width="5" height="1" fill="#B98E52"/><rect x="60" y="3" width="2" height="1" fill="#161412"/><rect x="17" y="4" width="2" height="1" fill="#161412"/><rect x="19" y="4" width="4" height="1" fill="#C89D5F"/><rect x="23" y="4" width="1" height="1" fill="#97683C"/><rect x="24" y="4" width="6" height="1" fill="#C89D5F"/><rect x="30" y="4" width="1" height="1" fill="#97683C"/><rect x="31" y="4" width="6" height="1" fill="#C89D5F"/><rect x="37" y="4" width="1" height="1" fill="#97683C"/><rect x="38" y="4" width="6" height="1" fill="#C89D5F"/><rect x="44" y="4" width="1" height="1" fill="#97683C"/><rect x="45" y="4" width="6" height="1" fill="#C89D5F"/><rect x="51" y="4" width="1" height="1" fill="#97683C"/><rect x="52" y="4" width="6" height="1" fill="#C89D5F"/><rect x="58" y="4" width="1" height="1" fill="#97683C"/><rect x="59" y="4" width="6" height="1" fill="#C89D5F"/><rect x="65" y="4" width="2" height="1" fill="#161412"/><rect x="12" y="5" width="2" height="1" fill="#161412"/><rect x="14" y="5" width="6" height="1" fill="#B98E52"/><rect x="20" y="5" width="1" height="1" fill="#97683C"/><rect x="21" y="5" width="6" height="1" fill="#B98E52"/><rect x="27" y="5" width="1" height="1" fill="#97683C"/><rect x="28" y="5" width="6" height="1" fill="#B98E52"/><rect x="34" y="5" width="1" height="1" fill="#97683C"/><rect x="35" y="5" width="6" height="1" fill="#B98E52"/><rect x="41" y="5" width="1" height="1" fill="#97683C"/><rect x="42" y="5" width="6" height="1" fill="#B98E52"/><rect x="48" y="5" width="1" height="1" fill="#97683C"/><rect x="49" y="5" width="6" height="1" fill="#B98E52"/><rect x="55" y="5" width="1" height="1" fill="#97683C"/><rect x="56" y="5" width="6" height="1" fill="#B98E52"/><rect x="62" y="5" width="1" height="1" fill="#97683C"/><rect x="63" y="5" width="6" height="1" fill="#B98E52"/><rect x="69" y="5" width="1" height="1" fill="#97683C"/><rect x="70" y="5" width="2" height="1" fill="#161412"/><rect x="7" y="6" width="2" height="1" fill="#161412"/><rect x="9" y="6" width="1" height="1" fill="#C89D5F"/><rect x="10" y="6" width="1" height="1" fill="#97683C"/><rect x="11" y="6" width="6" height="1" fill="#C89D5F"/><rect x="17" y="6" width="1" height="1" fill="#97683C"/><rect x="18" y="6" width="6" height="1" fill="#C89D5F"/><rect x="24" y="6" width="1" height="1" fill="#97683C"/><rect x="25" y="6" width="6" height="1" fill="#C89D5F"/><rect x="31" y="6" width="1" height="1" fill="#97683C"/><rect x="32" y="6" width="6" height="1" fill="#C89D5F"/><rect x="38" y="6" width="1" height="1" fill="#97683C"/><rect x="39" y="6" width="6" height="1" fill="#C89D5F"/><rect x="45" y="6" width="1" height="1" fill="#97683C"/><rect x="46" y="6" width="6" height="1" fill="#C89D5F"/><rect x="52" y="6" width="1" height="1" fill="#97683C"/><rect x="53" y="6" width="6" height="1" fill="#C89D5F"/><rect x="59" y="6" width="1" height="1" fill="#97683C"/><rect x="60" y="6" width="6" height="1" fill="#C89D5F"/><rect x="66" y="6" width="1" height="1" fill="#97683C"/><rect x="67" y="6" width="6" height="1" fill="#C89D5F"/><rect x="73" y="6" width="1" height="1" fill="#97683C"/><rect x="74" y="6" width="1" height="1" fill="#C89D5F"/><rect x="75" y="6" width="2" height="1" fill="#161412"/><rect x="2" y="7" width="2" height="1" fill="#161412"/><rect x="4" y="7" width="3" height="1" fill="#B98E52"/><rect x="7" y="7" width="1" height="1" fill="#97683C"/><rect x="8" y="7" width="6" height="1" fill="#B98E52"/><rect x="14" y="7" width="1" height="1" fill="#97683C"/><rect x="15" y="7" width="6" height="1" fill="#B98E52"/><rect x="21" y="7" width="1" height="1" fill="#97683C"/><rect x="22" y="7" width="6" height="1" fill="#B98E52"/><rect x="28" y="7" width="1" height="1" fill="#97683C"/><rect x="29" y="7" width="6" height="1" fill="#B98E52"/><rect x="35" y="7" width="1" height="1" fill="#97683C"/><rect x="36" y="7" width="6" height="1" fill="#B98E52"/><rect x="42" y="7" width="1" height="1" fill="#97683C"/><rect x="43" y="7" width="6" height="1" fill="#B98E52"/><rect x="49" y="7" width="1" height="1" fill="#97683C"/><rect x="50" y="7" width="6" height="1" fill="#B98E52"/><rect x="56" y="7" width="1" height="1" fill="#97683C"/><rect x="57" y="7" width="6" height="1" fill="#B98E52"/><rect x="63" y="7" width="1" height="1" fill="#97683C"/><rect x="64" y="7" width="6" height="1" fill="#B98E52"/><rect x="70" y="7" width="1" height="1" fill="#97683C"/><rect x="71" y="7" width="6" height="1" fill="#B98E52"/><rect x="77" y="7" width="1" height="1" fill="#97683C"/><rect x="78" y="7" width="2" height="1" fill="#B98E52"/><rect x="80" y="7" width="2" height="1" fill="#161412"/><rect x="0" y="8" width="84" height="1" fill="#161412"/><rect x="6" y="9" width="3" height="1" fill="#97683C"/><rect x="12" y="9" width="3" height="1" fill="#97683C"/><rect x="18" y="9" width="3" height="1" fill="#97683C"/><rect x="24" y="9" width="3" height="1" fill="#97683C"/><rect x="30" y="9" width="3" height="1" fill="#97683C"/><rect x="36" y="9" width="3" height="1" fill="#97683C"/><rect x="42" y="9" width="3" height="1" fill="#97683C"/><rect x="48" y="9" width="3" height="1" fill="#97683C"/><rect x="54" y="9" width="3" height="1" fill="#97683C"/><rect x="60" y="9" width="3" height="1" fill="#97683C"/><rect x="66" y="9" width="3" height="1" fill="#97683C"/><rect x="72" y="9" width="3" height="1" fill="#97683C"/><rect x="78" y="9" width="3" height="1" fill="#97683C"/></svg><button class="drop-photo" onclick="toggleDrop(${di})" aria-expanded="false" aria-label="Open ${d.title}"><span class="face-a" aria-hidden="false"><svg class="pf-ring" viewBox="0 0 16 14" shape-rendering="crispEdges" aria-hidden="true"><rect x="7" y="0" width="2" height="1" fill="#E58F7E"/><rect x="3" y="1" width="1" height="1" fill="#E58F7E"/><rect x="7" y="1" width="2" height="1" fill="#E58F7E"/><rect x="12" y="1" width="1" height="1" fill="#E58F7E"/><rect x="4" y="2" width="1" height="1" fill="#E58F7E"/><rect x="5" y="2" width="6" height="1" fill="#D0705F"/><rect x="11" y="2" width="1" height="1" fill="#E58F7E"/><rect x="5" y="3" width="6" height="1" fill="#E58F7E"/><rect x="4" y="4" width="1" height="1" fill="#D0705F"/><rect x="5" y="4" width="2" height="1" fill="#E58F7E"/><rect x="7" y="4" width="2" height="1" fill="#D0705F"/><rect x="9" y="4" width="2" height="1" fill="#E58F7E"/><rect x="11" y="4" width="1" height="1" fill="#D0705F"/><rect x="5" y="5" width="1" height="1" fill="#D0705F"/><rect x="6" y="5" width="4" height="1" fill="#E58F7E"/><rect x="10" y="5" width="1" height="1" fill="#D0705F"/><rect x="3" y="6" width="2" height="1" fill="#D7DBD4"/><rect x="6" y="6" width="4" height="1" fill="#D0705F"/><rect x="11" y="6" width="2" height="1" fill="#D7DBD4"/><rect x="2" y="7" width="1" height="1" fill="#D7DBD4"/><rect x="3" y="7" width="1" height="1" fill="#F2F4F0"/><rect x="10" y="7" width="2" height="1" fill="#D7DBD4"/><rect x="1" y="8" width="1" height="1" fill="#D7DBD4"/><rect x="2" y="8" width="1" height="1" fill="#F2F4F0"/><rect x="13" y="8" width="1" height="1" fill="#D7DBD4"/><rect x="1" y="9" width="2" height="1" fill="#D7DBD4"/><rect x="13" y="9" width="1" height="1" fill="#D7DBD4"/><rect x="1" y="10" width="2" height="1" fill="#D7DBD4"/><rect x="13" y="10" width="1" height="1" fill="#A9B1AA"/><rect x="2" y="11" width="1" height="1" fill="#D7DBD4"/><rect x="13" y="11" width="1" height="1" fill="#A9B1AA"/><rect x="3" y="12" width="2" height="1" fill="#D7DBD4"/><rect x="11" y="12" width="2" height="1" fill="#A9B1AA"/><rect x="5" y="13" width="4" height="1" fill="#D7DBD4"/><rect x="9" y="13" width="2" height="1" fill="#A9B1AA"/></svg><h2 class="pf-title">${d.title}</h2></span>${top}<span class="drop-hint" aria-hidden="true">tap to open</span><span class="drop-woodface" aria-hidden="true"><svg class="wf-buoy" width="36" height="45" viewBox="0 0 12 15" shape-rendering="crispEdges" aria-hidden="true"><rect x="5" y="0" width="2" height="2" fill="#2A1D10"/><rect x="4" y="2" width="4" height="2" fill="#2A1D10"/><rect x="3" y="4" width="6" height="3" fill="#DC1015"/><rect x="2" y="7" width="8" height="3" fill="#F6EFE2"/><rect x="2" y="10" width="8" height="3" fill="#DC1015"/><rect x="3" y="13" width="6" height="2" fill="#9E0B0F"/></svg><span class="wf-title">sea series</span><span class="wf-sub">est. malibu &mdash; one run only</span><i class="wf-nail n1"></i><i class="wf-nail n2"></i><i class="wf-nail n3"></i><i class="wf-nail n4"></i></span><i class="board-scan" aria-hidden="true"></i></button><span class="drop-posts" aria-hidden="true"><i></i><i></i></span><span class="sign-shingle" aria-hidden="true">${d.items.length} pieces &mdash; numbered by hand</span>`;
+  const tag = d.tag ? `<span class="drop-tag${d.live?' live':''}">${d.tag}</span>` : '';
+  return `<button class="drop-photo" onclick="toggleDrop(${di})" aria-expanded="false" aria-label="Open ${d.title}"><svg class="pf-ring" viewBox="0 0 16 14" shape-rendering="crispEdges" aria-hidden="true"><rect x="7" y="0" width="2" height="1" fill="#E58F7E"/><rect x="3" y="1" width="1" height="1" fill="#E58F7E"/><rect x="7" y="1" width="2" height="1" fill="#E58F7E"/><rect x="12" y="1" width="1" height="1" fill="#E58F7E"/><rect x="4" y="2" width="1" height="1" fill="#E58F7E"/><rect x="5" y="2" width="6" height="1" fill="#D0705F"/><rect x="11" y="2" width="1" height="1" fill="#E58F7E"/><rect x="5" y="3" width="6" height="1" fill="#E58F7E"/><rect x="4" y="4" width="1" height="1" fill="#D0705F"/><rect x="5" y="4" width="2" height="1" fill="#E58F7E"/><rect x="7" y="4" width="2" height="1" fill="#D0705F"/><rect x="9" y="4" width="2" height="1" fill="#E58F7E"/><rect x="11" y="4" width="1" height="1" fill="#D0705F"/><rect x="5" y="5" width="1" height="1" fill="#D0705F"/><rect x="6" y="5" width="4" height="1" fill="#E58F7E"/><rect x="10" y="5" width="1" height="1" fill="#D0705F"/><rect x="3" y="6" width="2" height="1" fill="#D7DBD4"/><rect x="6" y="6" width="4" height="1" fill="#D0705F"/><rect x="11" y="6" width="2" height="1" fill="#D7DBD4"/><rect x="2" y="7" width="1" height="1" fill="#D7DBD4"/><rect x="3" y="7" width="1" height="1" fill="#F2F4F0"/><rect x="10" y="7" width="2" height="1" fill="#D7DBD4"/><rect x="1" y="8" width="1" height="1" fill="#D7DBD4"/><rect x="2" y="8" width="1" height="1" fill="#F2F4F0"/><rect x="13" y="8" width="1" height="1" fill="#D7DBD4"/><rect x="1" y="9" width="2" height="1" fill="#D7DBD4"/><rect x="13" y="9" width="1" height="1" fill="#D7DBD4"/><rect x="1" y="10" width="2" height="1" fill="#D7DBD4"/><rect x="13" y="10" width="1" height="1" fill="#A9B1AA"/><rect x="2" y="11" width="1" height="1" fill="#D7DBD4"/><rect x="13" y="11" width="1" height="1" fill="#A9B1AA"/><rect x="3" y="12" width="2" height="1" fill="#D7DBD4"/><rect x="11" y="12" width="2" height="1" fill="#A9B1AA"/><rect x="5" y="13" width="4" height="1" fill="#D7DBD4"/><rect x="9" y="13" width="2" height="1" fill="#A9B1AA"/></svg><span class="pf-row"><h2 class="pf-title">${d.title}</h2>${tag}</span><p class="pf-sub">${d.items.length} pieces &mdash; numbered by hand</p><span class="drop-hint" aria-hidden="true">tap to open</span></button>`;
 }
 
 /* Glide the page with the same clock and ease as the grid unfold, so
@@ -2040,29 +1991,20 @@ function onShop(){
 function initReveal(){
   const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
   document.querySelectorAll('.r').forEach(el=>io.observe(el));
-  const io2=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('seen');io2.unobserve(e.target);}});},{threshold:.2});
-  document.querySelectorAll('.drop-photo').forEach(el=>io2.observe(el));
 }
 
-let pxEls=[],farEl=null,farHost=null,ticking=false;
+let farEl=null,farHost=null,ticking=false;
 /* Parallax recomputes layout on every scroll frame, which is the main cause
    of janky first-scrolls on phones. Only run it on devices with a precise
    pointer (desktop); touch devices get a clean, transform-free scroll. */
 const PARALLAX = window.matchMedia('(hover:hover) and (pointer:fine)').matches
               && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-function initParallax(){ if(!PARALLAX) return; pxEls=[...document.querySelectorAll('.drop-photo')]; farEl=document.querySelector('.bs-far'); farHost=document.querySelector('.beach-horizon'); onScroll(); }
+function initParallax(){ if(!PARALLAX) return; farEl=document.querySelector('.bs-far'); farHost=document.querySelector('.beach-horizon'); onScroll(); }
 function onScroll(){
   if(!PARALLAX) return;
   if(!ticking){
     requestAnimationFrame(()=>{
       const vh=window.innerHeight;
-      pxEls.forEach(p=>{
-        const r=p.getBoundingClientRect();
-        if(r.bottom<0||r.top>vh) return;
-        const prog=(r.top+r.height/2-vh/2)/vh;
-        const inner=p.querySelector('.drop-photo-inner');
-        if(inner && p.classList.contains('seen')) inner.style.transform=`translateY(${prog*-9}%) scale(1.06)`;
-      });
       /* the far horizon recedes slower than the surf: as the horizon
          crosses the viewport, the sky/island/headland drift down a
          touch, so the scene has depth you can feel */
