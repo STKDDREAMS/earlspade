@@ -1778,23 +1778,31 @@ function initSeaFilm(){
     const fy=(2+((t*0.85)%9))|0;
     ctx.fillStyle='#C7E5D8';
     for(let x=0;x<W;x+=7){ const s=hsh(x,3,5); if(s%5<2) ctx.fillRect(x,fy+(s%2),3+(s>>>4)%3,1); }
-    /* 5 — THE WAVE */
+    /* 5 — THE WAVE, with a curl FIELD: q(x,t) says how far each
+       column has curled. Midway through the ride the field sweeps
+       over the section around the surfer — the crest visibly
+       pitches, hollows, and closes into a tube OVER him, while
+       everything behind the curl crumbles to whitewater. */
     const yb = keyed(t,YBK)*H;
     const amp = keyed(t,AMPK)*Math.min(1,H/52);
     const xs = W*0.33;
-    const PFK = [[10.99,W+60],[11,W*0.95],[12.8,xs+2],[16.5,xs-12],[18,W*0.14],[19.5,-40],[22,-40]];
-    const pf = keyed(t,PFK);
-    const barrel = t>=11 && t<19.5;
+    const xB = W*keyed(t,[[11,.38],[13.5,.365],[16.5,.35],[18.5,.34]]);   /* where it throws */
+    const ramp = keyed(t,[[10.99,0],[11,0.02],[13.5,1],[17.5,1],[18.6,1.7],[22,1.7]]);
     const closing = t>=18 && t<20.8;
     const xc = W*(0.62-0.008*t);
+    const curlQ = (x)=>{
+      if(ramp<=0) return 0;
+      const env = x<=xB ? Math.max(0,1-(xB-x)/(W*0.055)) : 1+(x-xB)/(W*0.075);
+      return env*ramp;
+    };
     for(let x=0;x<W;x++){
       const a = amp*Math.max(.22,1-Math.abs(x-xc)/(W*.62));
       if(a<1.2) continue;
-      const jit = a>6 ? hsh(x,5,0)%2 : 0;                     /* crest isn't a ruler */
+      const jit = a>6 ? hsh(x,5,0)%2 : 0;
       const crest = yb-a+jit, base = Math.min(H-1, yb+2), ci = crest|0;
-      const broken = (barrel && x>pf+14) || closing;
-      if(broken){
-        /* whitewater: solid rounded mounds with chunky texture */
+      const q = curlQ(x);
+      if(q>1.25 || closing){
+        /* broken: solid rounded whitewater mounds */
         const s1=hsh((x>>3),21,0)%6, s2=hsh((x>>3)+1,21,0)%6, fr=(x&7)/8;
         const hgt=Math.max(3, a*(0.6+0.06*(s1*(1-fr)+s2*fr)));
         const top=(yb-hgt)|0;
@@ -1805,44 +1813,68 @@ function initSeaFilm(){
         if(hsh(x>>1,3,tick>>2)%6===0){ ctx.fillStyle='#DDEDE7'; ctx.fillRect(x,top+2+(hsh(x,3,1)%4),1,2); }
         if(hsh(x>>1,7,tick>>2)%8===0){ ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,top+1,1,1); }
         if(hsh(x,11,tick>>1)%5<2 && base+1<H){ ctx.fillStyle='#F2F8F1'; ctx.fillRect(x,base+1,1,1); }
+      } else if(q>=1){
+        /* fully thrown: tube cross-section — lip crown over a hollow,
+           crumbling deeper the closer it is to the broken train */
+        const crumble = Math.max(0,(q-1.05)/0.2);
+        const crH = (crumble*(base-ci)*0.55)|0;
+        ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,ci,1,1);
+        ctx.fillStyle='#F2F8F1'; ctx.fillRect(x,ci+1,1,2+crH);
+        if(crH>1 && hsh(x,17,tick>>1)%3){ ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,ci+2+(hsh(x,19,tick)%Math.max(1,crH)),1,1); }
+        const mid=(ci+3+(base-ci)*0.5)|0;
+        for(let y=ci+3+crH;y<=base-1;y++){
+          ctx.fillStyle = y<mid?'#1F5A4C':'#2A7A68';
+          ctx.fillRect(x,y,1,1);
+        }
+        ctx.fillStyle='#F2F8F1'; ctx.fillRect(x,base,1,1);
+        if(base+1<H){ ctx.fillStyle='#256B5C'; ctx.fillRect(x,base+1,1,1); }
+      } else if(q>0.12){
+        /* pitching: the crown swells and a cavity grows beneath it */
+        const lipH = 1+((q*4)|0);
+        for(let y=ci;y<ci+lipH && y<=base;y++){
+          ctx.fillStyle = y===ci?'#FFFFFF':'#F2F8F1';
+          ctx.fillRect(x,y,1,1);
+        }
+        const hol = (q*a*0.55)|0;
+        for(let y=ci+lipH;y<=base;y++){
+          const inHol = y < ci+lipH+hol;
+          const rel=(y-crest)/Math.max(1,base-crest);
+          ctx.fillStyle = inHol ? (q>0.6?'#1F5A4C':'#2E7F6E')
+            : (rel<.42?'#5FB09A':rel<.7?'#2F8571':'#1F6656');
+          ctx.fillRect(x,y,1,1);
+        }
+        if(base+1<H){ ctx.fillStyle='#256B5C'; ctx.fillRect(x,base+1,1,1); }
       } else {
-        /* the pocket darkens as it throat-ens near the peel */
-        const pocket = barrel && x>pf-20 && x<=pf+14;
+        /* clean face */
         for(let y=ci;y<=base;y++){
           const rel=(y-crest)/Math.max(1,base-crest);
-          ctx.fillStyle = pocket
-            ? (rel<.16?'#B9DECE':rel<.42?'#5FB09A':rel<.7?'#2F8571':'#1F6656')
-            : (rel<.16?'#CFE9DD':rel<.42?'#7FC6B2':rel<.7?'#3E9682':'#2A7A68');
+          ctx.fillStyle = rel<.16?'#CFE9DD':rel<.42?'#7FC6B2':rel<.7?'#3E9682':'#2A7A68';
           ctx.fillRect(x,y,1,1);
         }
         if(a>5){
-          /* feathering lip with a curl shadow tucked beneath it */
           if(hsh(x,1,tick>>1)%4<2){ ctx.fillStyle=hsh(x,2,tick)%3?'#F2F8F1':'#FFFFFF'; ctx.fillRect(x,ci,1,1);
             if(hsh(x,3,tick)%5<1) ctx.fillRect(x,ci-1,1,1); }
           if(a>9 && hsh(x,4,0)%4<2){ ctx.fillStyle='#2E7F6E'; ctx.fillRect(x,ci+2,1,1); }
           if(hsh(x,9,0)%17<1){ ctx.fillStyle='#9BD4C4'; ctx.fillRect(x,(ci+((base-ci)>>1))|0,1,2); }
           if(base+1<H){ ctx.fillStyle='#256B5C'; ctx.fillRect(x,base+1,1,1); }
-          if(hsh(x,13,tick>>2)%7<2 && base+2<H){ ctx.fillStyle='#EFF7F1'; ctx.fillRect(x,base+2,1,1); } /* trough wash */
+          if(hsh(x,13,tick>>2)%7<2 && base+2<H){ ctx.fillStyle='#EFF7F1'; ctx.fillRect(x,base+2,1,1); }
         }
       }
     }
-    /* 6 — the barrel interior (behind him): hollow + the lit almond eye */
-    const r = amp*0.92, cxB = pf+7, cy = yb-amp*0.5;
-    if(barrel && pf>-30 && pf<W+30){
-      for(let y=Math.max(0,(cy-r)|0); y<=Math.min(H-1,(yb+1)|0); y++)
-        for(let x=Math.max(0,(cxB-r)|0); x<=Math.min(W-1,(cxB+r+3)|0); x++){
-          const rr=Math.hypot(x-cxB,y-cy);
-          if(rr<r-2.2 && x>=pf-2){ ctx.fillStyle = y<cy?'#1F5A4C':'#2A7A68'; ctx.fillRect(x,y,1,1); }
-        }
-      /* light at the end of the tunnel */
-      const ex=cxB+r*0.35, ey=cy+1;
-      for(let y=(ey-r*0.3)|0;y<=(ey+r*0.3)|0;y++)
-        for(let x=(ex-r*0.42)|0;x<=(ex+r*0.42)|0;x++){
-          const d=Math.hypot((x-ex)/(r*0.42),(y-ey)/(r*0.3));
-          if(d<=1 && x<=Math.min(W-1,cxB+r)){ ctx.fillStyle=d<.55?'#9AD6C2':'#6FBFA8'; ctx.fillRect(x,y,1,1); }
+    /* 6 — the eye of the tube: light at the end of the tunnel,
+       glowing in the hollow just behind the surfer */
+    const g = Math.min(1, ramp*1.15);
+    const barrel = ramp>0.3 && t<18.6;
+    if(barrel){
+      const ex=xB+W*0.012, ey=yb-amp*0.42, rx=amp*0.4*g, ry=amp*0.26*g;
+      for(let y=(ey-ry)|0;y<=(ey+ry)|0;y++)
+        for(let x=(ex-rx)|0;x<=(ex+rx)|0;x++){
+          if(x<0||x>=W||y<0||y>=H) continue;
+          const d=Math.hypot((x-ex)/Math.max(1,rx),(y-ey)/Math.max(1,ry));
+          if(d<=1 && curlQ(x)>=1){ ctx.fillStyle=d<.55?'#9AD6C2':'#6FBFA8'; ctx.fillRect(x,y,1,1); }
         }
     }
-    /* 7 — the carving wake: where he just was */
+    /* 7 — the carving wake */
     if((t>3.4 && t<11) || (t>16.6 && t<18.4)){
       for(let k=1;k<10;k++){
         const tp=t-k*0.085; if(tp<=3.3) break;
@@ -1855,37 +1887,29 @@ function initSeaFilm(){
     /* 8 — the surfer */
     const sf = surfState(t, yb, amp, xc, tick);
     if(sf){ const an=ANCH[sf.pose]; stamp(sf.pose, sf.x-an[1]/2, sf.yB-an[0], sf.dim); }
-    /* 9 — the barrel front: thick curling lip, curtain, foam ball, plume */
-    if(barrel && pf>-30 && pf<W+30){
-      for(let ang=28;ang<=208;ang+=2){
-        const rd=ang*Math.PI/180, ca=Math.cos(rd), sa=Math.sin(rd);
-        ctx.fillStyle='#FFFFFF'; ctx.fillRect((cxB+r*ca)|0,(cy-r*sa)|0,1,1);
-        ctx.fillStyle='#F2F8F1'; ctx.fillRect((cxB+(r-1)*ca)|0,(cy-(r-1)*sa)|0,1,1);
-        ctx.fillStyle='#F2F8F1'; ctx.fillRect((cxB+(r-2)*ca)|0,(cy-(r-2)*sa)|0,1,1);
-        ctx.fillStyle='#B4D8CF'; ctx.fillRect((cxB+(r-3)*ca)|0,(cy-(r-3)*sa)|0,1,1);
+    /* 9 — the throwing lip: a parabola of water pitching off the
+       crest at the mouth, landing on a boiling mound — it GROWS as
+       the wave turns into the barrel, and the veil falls once the
+       tube is closed */
+    if(barrel){
+      const xM = xB - W*0.014;                     /* the mouth's left edge */
+      const arcR = amp*1.05*g;
+      let lx=0, ly=0;
+      for(let u=0;u<=1.0001;u+=0.07){
+        const px=(xM - u*u*arcR*0.72)|0;
+        const py=((yb-amp) + u*(amp+2)*0.97)|0;
+        if(px<0||px>=W||py<0||py>=H) continue;
+        ctx.fillStyle = u<0.3?'#FFFFFF':'#F2F8F1';
+        ctx.fillRect(px,py,2,2);
+        if(u>0.25&&u<0.8){ ctx.fillStyle='#B4D8CF'; ctx.fillRect(px+2,py,1,2); }
+        lx=px; ly=py;
       }
-      /* the thrown lip: a solid tongue curling down off the arc's end */
-      for(let i=0;i<5;i++){
-        const tx=(cxB-r*0.92+i*0.6)|0, ty=(cy+r*0.28+i*1.4)|0;
-        ctx.fillStyle=i<2?'#F2F8F1':'#FFFFFF';
-        ctx.fillRect(tx,ty,2,2);
-      }
-      /* a few solid curtain streaks — the veil he ducks under */
-      for(let k=0;k<4;k++){
-        const xd=(pf+2+k*(r*0.28))|0;
-        if(xd<0||xd>=W-1) continue;
-        const s=hsh(k,5,tick>>2);
-        const top=(cy-r*0.4)|0, len=(3+(s%3)+r*0.4)|0;
-        ctx.fillStyle=k%2?'#B4D8CF':'#DDEDE7';
-        ctx.fillRect(xd,top,1,Math.min(len,H-top-1));
-        if(k%2===0){ ctx.fillStyle='#F2F8F1'; ctx.fillRect(xd+1,top+2,1,Math.min(len-3,H-top-4)); }
-      }
-      /* foam ball: one solid boiling mound at the base of the curl */
-      {
-        const fx0=Math.max(0,(cxB-r*0.9)|0), fx1=Math.min(W-1,(cxB+2)|0);
+      /* the mound where the lip lands */
+      if(g>0.5){
+        const fx0=Math.max(0,lx-5), fx1=Math.min(W-1,lx+7);
         for(let x=fx0;x<=fx1;x++){
           const u=(x-fx0)/Math.max(1,fx1-fx0);
-          const fh=(3+4*Math.sin(Math.PI*u))|0;
+          const fh=(2+4*Math.sin(Math.PI*u)*g)|0;
           const top=Math.max(0,(yb-fh)|0);
           for(let y=top;y<=Math.min(H-1,(yb+2)|0);y++){
             ctx.fillStyle = y===top?'#FFFFFF':'#F2F8F1';
@@ -1894,12 +1918,22 @@ function initSeaFilm(){
           if(hsh(x>>1,9,tick>>1)%4===0){ ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,top-1,1,1); }
         }
       }
-      /* spray plume ripping back off the lip */
+      /* falling veil over the mouth once the tube is closed */
+      if(g>0.8){
+        for(let k=0;k<3;k++){
+          const xd=(xM+2+k*amp*0.28)|0;
+          if(xd<0||xd>=W-1) continue;
+          const top=(yb-amp*0.72)|0, len=(amp*0.5+(hsh(k,5,tick>>2)%3))|0;
+          ctx.fillStyle=k%2?'#B4D8CF':'#DDEDE7';
+          ctx.fillRect(xd,Math.max(0,top),1,Math.min(len,H-top-1));
+        }
+      }
+      /* spray ripping back off the pitching crown */
       for(let k=0;k<9;k++){
         const tb=(Math.floor(t*FPS)-k)/FPS;
         if(tb<11) continue;
-        const pfb=keyed(tb,PFK);
-        burst(t,tb,pfb+7,yb-amp-1,3,(tb*97)|0,1.5);
+        const xBb = W*keyed(tb,[[11,.38],[13.5,.365],[16.5,.35],[18.5,.34]]);
+        burst(t,tb,xBb+3,yb-amp-1,3,(tb*97)|0,1.5);
       }
     }
     /* 10 — spray: skitters off bottom turns, fans off the top, blasts */
