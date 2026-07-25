@@ -66,7 +66,7 @@ const PAL = {
   K:INK, E:'#FFFFFF', W:'#F6F1E6', w:'#E2DCCC',
   B:'#2E5E8C', b:'#24496E', L:'#7FB2D9', A:'#A9CBE4',
   R:'#DC1015', r:'#9E0000', P:'#E8849C', p:'#F2B8C6',
-  G:'#DCA72E', g:'#C4922A', O:'#E88A2E', o:'#C46E1E',
+  G:'#D5A43C', g:'#C4922A', O:'#E88A2E', o:'#C46E1E',
   N:'#3E7C4F', n:'#2E5E3F', m:'#8FBF7A',
   H:'#5FA052', h:'#3F7A38',
   C:'#A5744A', c:'#6B4226', U:'#7A5230', u:'#4E2F16',
@@ -932,8 +932,8 @@ const BEACH_PAL = {
            palm:'#55AC64', palmDk:'#3B854D', palmLt:'#83CC8D',
            trunk:'#AB7E50', trunkDk:'#7F5B35', shimmer:'rgba(255,247,214,.55)',
            hull:'#C9463B', sail:'#F6F1E6', coral:'#F2707A', bird:'#4A6670',
-           isle:'#4F8C73', isleDk:'#3B6C58', bloom:'#E84A5F', bloomC:'#DCA72E',
-           umbA:'#DC1015', umbB:'#F6F1E6', towel:'#5FA9D0', board:'#DCA72E',
+           isle:'#4F8C73', isleDk:'#3B6C58', bloom:'#E84A5F', bloomC:'#D5A43C',
+           umbA:'#DC1015', umbB:'#F6F1E6', towel:'#5FA9D0', board:'#D5A43C',
            dolA:'#6FA8C8', dolB:'#9CC6DC', crab:'#E8734A', tide:'#F6FBF6' },
   dawn:  { skyTop:'#C6B3DE', skyMid:'#E3B9D2', skyLow:'#F6CDB8', sea:'#7FB9C6', foam:'#F8ECE8',
            seaDeep:'#5E9AAE', waveA:'#9BCFD4', waveB:'#C6E4E1', sand:'#EEDCBB', speckle:'#D6BD92',
@@ -942,7 +942,7 @@ const BEACH_PAL = {
            palm:'#6FA878', palmDk:'#4F8259', palmLt:'#97C494',
            trunk:'#AA815D', trunkDk:'#7F5D3F', shimmer:'rgba(255,203,173,.5)',
            hull:'#B45A50', sail:'#F8EFE4', coral:'#EE8C90', bird:'#7A6E80',
-           isle:'#5E7F89', isleDk:'#48626D', bloom:'#E86A78', bloomC:'#DCA72E',
+           isle:'#5E7F89', isleDk:'#48626D', bloom:'#E86A78', bloomC:'#D5A43C',
            umbA:'#C9463B', umbB:'#F6EFE2', towel:'#C48CB0', board:'#D9A45E',
            dolA:'#8CA8C4', dolB:'#B4C8DC', crab:'#D4744E', tide:'#FAEFE9' },
   gold:  { skyTop:'#E8875A', skyMid:'#F2A968', skyLow:'#F8C983', sea:'#3E8CA0', foam:'#F6E4C9',
@@ -1811,8 +1811,8 @@ function onCollisions(ev){
     if(unlock){
       /* a brand-new creature: gold sparkle on its legend slot */
       const lx = SCENE_W/2 - LEGEND_GAP * (TIERS.length - 1) / 2 + nt * LEGEND_GAP;
-      burst(lx, LEGEND_Y, '#DCA72E', 12);
-      rings.push({ x: lx, y: LEGEND_Y, r: LEGEND_R, t: 0, color: '#DCA72E' });
+      burst(lx, LEGEND_Y, '#D5A43C', 12);
+      rings.push({ x: lx, y: LEGEND_Y, r: LEGEND_R, t: 0, color: '#D5A43C' });
     }
     sndMerge(nt + (combo - 1) * 2);
     if(nt >= SHAKE_TIER && !reduceMotion) shake = Math.max(shake, 6);
@@ -1933,7 +1933,7 @@ function burst(x, y, color, n){
   }
 }
 function celebrate(x, y){
-  const colors = ['#DC1015', '#DCA72E', '#5F9D96', '#EDE7DA'];
+  const colors = ['#DC1015', '#D5A43C', '#5F9D96', '#EDE7DA'];
   for(let i = 0; i < 40 && particles.length < MAX_PARTICLES; i++){
     const a = Math.random() * Math.PI * 2, sp = 2 + Math.random() * 5;
     particles.push({ x, y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp - 3, r: 2.5 + Math.random()*3.5,
@@ -2256,7 +2256,7 @@ function render(now){
     const gp = (now - goldFlashAt) / 550;
     ctx.save();
     ctx.globalAlpha = (1 - gp) * 0.7;
-    ctx.strokeStyle = '#DCA72E';
+    ctx.strokeStyle = '#D5A43C';
     ctx.lineWidth = 5 - gp * 3;
     vesselPath(-4 - gp * 8);
     ctx.stroke();
