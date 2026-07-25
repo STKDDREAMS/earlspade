@@ -1735,15 +1735,15 @@ function initSeaFilm(){
   const YBK  = [[0,.15],[2.5,.2],[6,.46],[11,.56],[16.5,.6],[18,.64],[19.5,.7],[21,.76],[22,.78]];
   const AMPK = [[0,2],[2.5,4.5],[6,14],[11,17],[16.5,18],[18,15],[19.5,10],[21,4],[22,1.6]];
   /* the break front's run down the line (fractions of W, monotonic) */
-  const BFK  = [[4.2,1.02],[4.5,.8],[8,.604],[12,.43],[12.8,.388],[16.5,.359],[17.4,.251],[18.5,.19],[20,.07],[20.6,-.08]];
+  const BFK  = [[3.3,1.02],[4.2,.72],[5.6,.63],[8,.53],[11.8,.42],[12.6,.39],[16.2,.357],[17.2,.31],[18.2,.24],[19.5,.12],[20.5,-.02],[20.9,-.08]];
   /* how hard the pitching section throws: feathering during the
      shred, full plunging tube for the barrel window */
-  const BDK  = [[3,.15],[11.5,.15],[12.6,1],[16.5,1],[17.5,.55],[19,.25],[20.5,.12]];
+  const BDK  = [[3,.12],[11.4,.12],[12.4,1],[16.2,1],[17,.4],[18,.15]];
   /* his line across the bay, and back out to the lineup */
-  const XSURF = [[0,.66],[2.5,.66],[3.2,.63],[12,.38],[12.8,.36],[16.5,.335],[17.2,.28],[18.2,.235],[19,.215],[19.25,.21],[20.5,.4],[21.8,.655],[22,.66]];
-  const YPADK = [[19.25,.68],[20.5,.45],[21.8,.16],[22,.15]];
+  const XSURF = [[0,.66],[2.5,.66],[3.1,.645],[4.5,.60],[5.6,.575],[11.8,.40],[12.6,.375],[16.2,.345],[16.9,.30],[17.7,.27],[17.9,.265],[19.5,.38],[21.8,.655],[22,.66]];
+  const YPADK = [[17.9,.52],[19.5,.42],[21.8,.16],[22,.15]];
   function tBreak(x){            /* when did the front pass column x */
-    if(x>=W*1.02) return 4.2;
+    if(x>=W*1.02) return 3.3;
     for(let i=1;i<BFK.length;i++){
       const x0=BFK[i-1][1]*W, x1=BFK[i][1]*W;
       if(x<=x0 && x>=x1) return lerp(BFK[i-1][0],BFK[i][0],(x0-x)/Math.max(0.001,x0-x1));
@@ -1755,27 +1755,28 @@ function initSeaFilm(){
     const aS = amp*Math.max(.22,1-Math.abs(x-xc)/(W*.62));
     let pose,yB,dim=false,air=false;
     if(t<2.5){ pose='paddle'; yB=yb-aS+((tick%6<3)?0:1); }
-    else if(t<3.2){ pose='popup'; yB=yb-2; }
-    else if(t<12){
-      if(t>=7.4 && t<8.6){
-        /* THE air: over the lip, board flashed, floating */
-        const u=(t-7.4)/1.2;
-        yB=(yb-aS-2)-Math.sin(Math.PI*u)*9;
+    else if(t<3.1){ pose='popup'; yB=yb-aS; }                      /* pops up AT the crest */
+    else if(t<4.5){ const u=(t-3.1)/1.4; pose='drive'; yB=lerp(yb-aS, yb-1, u*u); }  /* THE DROP-IN */
+    else if(t<5.6){ pose=t<4.9?'bottom':'drive'; yB=yb-1; }        /* sinks in, settles low */
+    else if(t<11.8){
+      if(t>=7.5 && t<8.7){
+        /* THE air: launches off the bottom, floats over the lip */
+        const u=(t-7.5)/1.2;
+        yB = lerp(yb-1, yb-aS-2, Math.min(1,u*2.4)) - Math.sin(Math.PI*u)*9;
         pose = u<0.33?'snapA':u<0.66?'snap':'snapC';
         air=true;
       } else {
-        /* silky sine carves — long flowing arcs, no snaps */
-        const ph=2*Math.PI*(t-3.2)/2.1, s=Math.sin(ph);
+        /* silky sine carves — starts smooth from the low line */
+        const ph=2*Math.PI*(t-5.6)/2.1, s=-Math.cos(ph);
         yB = yb-1-(s+1)*0.5*Math.max(2,aS-1);
-        pose = s>0.72?'snapA' : (Math.cos(ph)<0?'drive':'bottom');
+        pose = s>0.72?'snapA' : (Math.sin(ph)>0?'drive':'bottom');
       }
     }
-    else if(t<12.8){ pose='back'; yB=yb-3; }
-    else if(t<16.5){ pose='tube'; yB=yb-2; dim=true; }
-    else if(t<17.2){ pose='drive'; yB=yb-3; }
-    else if(t<18.2){ pose='arch'; yB=yb-2; }
-    else if(t<19){ pose='arch'; yB=yb-aS-(t-18.2)*12; }
-    else if(t<19.25){ return null; }               /* the splash */
+    else if(t<12.6){ pose='back'; yB=yb-3; }
+    else if(t<16.2){ pose='tube'; yB=yb-1; dim=true; }             /* fully under it */
+    else if(t<16.9){ pose='drive'; yB=yb-3; }                      /* pops out of the mouth */
+    else if(t<17.7){ pose='arch'; yB=yb-aS-(t-16.9)*10; }          /* kicks out right there */
+    else if(t<17.9){ return null; }                                /* the splash */
     else { pose='paddle'; yB=H*keyed(t,YPADK)+((tick%6<3)?0:1); }
     return {x:x, yB:yB, pose:pose, dim:dim, air:air};
   }
@@ -1812,10 +1813,10 @@ function initSeaFilm(){
       if(a<1.2) continue;
       const jit = a>6 ? hsh(x,5,0)%2 : 0;
       const crest = yb-a+jit, base = Math.min(H-1, yb+2), ci = crest|0;
-      const broken = t>4.2 && x>BF;
+      const broken = t>3.3 && x>BF;
       if(broken){
         const age = t - tBreak(x);
-        if(age>5.5) continue;
+        if(age>6.5) continue;
         if(age<0.55 && bd>0.5){
           /* just thrown: the tube — lip crown over the hollow,
              crumbling as it ages toward the train */
@@ -1831,29 +1832,32 @@ function initSeaFilm(){
           ctx.fillStyle='#F2F8F1'; ctx.fillRect(x,base,1,1);
           if(base+1<H){ ctx.fillStyle='#256B5C'; ctx.fillRect(x,base+1,1,1); }
         } else {
-          /* whitewater bore, aging: tall and violent when fresh, a
-             soft sinking wash when old */
-          const decay=Math.exp(-age/2.6);
+          /* whitewater bore aging into patches, then dashes, then sea:
+             two soft octaves keep the top rolling, never a flat slab */
+          const decay=Math.exp(-age/2.2);
           const drift=Math.min(5,age*1.1);
-          const s1=hsh((x>>3),21,0)%6, s2=hsh((x>>3)+1,21,0)%6, fr=(x&7)/8;
-          const hgt=Math.max(1.5, a*(0.16+0.66*decay)*(0.82+0.05*(s1*(1-fr)+s2*fr)));
-          const top=(yb+drift-hgt)|0, bb=Math.min(H-1,(yb+2+drift*0.5)|0);
-          if(age>4.5){
-            if(hsh(x,25,tick>>2)%3<1){ ctx.fillStyle='#DDEDE7'; ctx.fillRect(x,(yb+drift)|0,1,1); }
+          const o1=hsh((x>>4),21,0)%7, o1b=hsh((x>>4)+1,21,0)%7, f1=(x&15)/16;
+          const o2=hsh((x>>2),23,0)%3, o2b=hsh((x>>2)+1,23,0)%3, f2=(x&3)/4;
+          const und=(o1*(1-f1)+o1b*f1)*0.5+(o2*(1-f2)+o2b*f2)*0.7;
+          const hgt=Math.max(1, a*(0.10+0.62*decay)+und-1.5);
+          const patch=Math.max(0,Math.min(5,(age-1.6)*2.2));
+          if(hsh((x>>2),31,0)%7 < patch){
+            if(age<6 && hsh(x,25,tick>>2)%4<1){ ctx.fillStyle='#DDEDE7'; ctx.fillRect(x,(yb+drift)|0,1,1); }
           } else {
+            const top=(yb+drift-hgt)|0, bb=Math.min(H-1,(yb+2+drift*0.5)|0);
             for(let y=Math.max(0,top);y<=bb;y++){
-              if(age>2.5 && hsh(x>>1,y>>1,3)%4===0) continue;   /* breaking up */
-              ctx.fillStyle = y===top?'#FFFFFF':(y>=bb-1?'#B4D8CF':'#F2F8F1');
+              if(age>2.2 && hsh(x>>1,y>>1,3)%4===0) continue;
+              ctx.fillStyle = (y===top && age<1.4)?'#FFFFFF':(y>=bb-1?'#B4D8CF':'#F2F8F1');
               ctx.fillRect(x,y,1,1);
             }
             if(age<0.8 && hsh(x>>1,5,tick>>1)%3===0){ ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,Math.max(0,top-1-(hsh(x,9,tick)%2)),1,2); }
-            else if(hsh(x>>1,3,tick>>2)%6===0){ ctx.fillStyle='#DDEDE7'; ctx.fillRect(x,top+2+(hsh(x,3,1)%4),1,2); }
+            else if(age<2.5 && hsh(x>>1,3,tick>>2)%6===0){ ctx.fillStyle='#DDEDE7'; ctx.fillRect(x,top+2+(hsh(x,3,1)%4),1,2); }
           }
         }
       } else {
         /* unbroken: clean face, pitching harder as the front nears */
         const d = BF-x;
-        const qp = (t>4.2 && d<14) ? (1-d/14)*bd : 0;
+        const qp = (t>3.3 && d<14) ? (1-d/14)*bd : 0;
         if(qp>0.12){
           const lipH=1+((qp*4)|0);
           for(let y=ci;y<ci+lipH && y<=base;y++){
@@ -1887,7 +1891,7 @@ function initSeaFilm(){
       }
     }
     /* 6 — the eye of the tube, glowing in the freshest hollow */
-    const barrelOn = bd>0.5 && t>4.2 && BF>-20 && BF<W+20;
+    const barrelOn = bd>0.5 && t>3.3 && BF>-20 && BF<W+20;
     if(barrelOn){
       const ex=BF+amp*0.45, ey=yb-amp*0.42, rx=amp*0.4, ry=amp*0.26;
       for(let y=(ey-ry)|0;y<=(ey+ry)|0;y++)
@@ -1899,7 +1903,7 @@ function initSeaFilm(){
         }
     }
     /* 7 — the carving wake (skips his airtime) */
-    if((t>3.4 && t<12) || (t>16.6 && t<18.2)){
+    if(t>3.3 && t<11.8){
       for(let k=1;k<10;k++){
         const tp=t-k*0.085; if(tp<=3.3) break;
         const s=surfState(tp, keyed(tp,YBK)*H, keyed(tp,AMPK)*Math.min(1,H/52), W*(0.62-0.008*tp), tick);
@@ -1957,13 +1961,14 @@ function initSeaFilm(){
     }
     /* 10 — spray: soft feathers off the top carves, the ONE air's
        fan + landing, the exit blast, the kick-out splash */
-    for(const ta of [3.725,5.825,10.025]) burst(t,ta,W*keyed(ta,XSURF),yb-keyed(ta,AMPK)*Math.min(1,H/52)-2,7,(ta*10)|0,1.3);
-    burst(t,8.0,W*keyed(8.0,XSURF),yb-amp-8,20,808,2.4);
-    burst(t,8.55,W*keyed(8.55,XSURF),yb-3,10,855,1.6);
-    burst(t,16.55,W*0.31,yb-6,18,777,2.2);
-    burst(t,18.9,W*0.215,yb-2,12,555,1.8);
+    burst(t,4.5,W*keyed(4.5,XSURF),yb,6,45,1.1);
+    for(const ta of [6.125,10.325]) burst(t,ta,W*keyed(ta,XSURF),yb-keyed(ta,AMPK)*Math.min(1,H/52)-2,7,(ta*10)|0,1.3);
+    burst(t,8.1,W*keyed(8.1,XSURF),yb-amp-8,20,808,2.4);
+    burst(t,8.65,W*keyed(8.65,XSURF),yb-4,10,855,1.6);
+    burst(t,16.4,W*0.315,yb-6,20,777,2.3);
+    burst(t,17.6,W*0.272,yb-amp*0.6,12,555,1.8);
     /* 11 — his paddle strokes on the way back out */
-    if(t>19.4 && t<21.8 && (tick%5<2)){
+    if(t>18.2 && t<21.8 && (tick%5<2)){
       const s=surfState(t, yb, amp, xc, tick);
       if(s){ ctx.fillStyle='#F2F8F1'; ctx.fillRect((s.x-8)|0,(s.yB+1)|0,2,1); }
     }
