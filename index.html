@@ -175,13 +175,10 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
 .cart-body{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:.7rem var(--pad)}
 .cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.45rem;height:100%;text-align:center;padding:1.5rem;color:var(--ink)}
-.empty-scene{position:relative;width:200px;height:188px;margin-bottom:.6rem}
-.empty-skull{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);width:172px;height:172px;color:#B5895E}
-.empty-skull .skullmark{width:100%;height:100%;display:block}
-.mote{position:absolute;border-radius:50%;background:#D9B488;opacity:0}
-.mote.m1{left:150px;top:60px;width:5px;height:5px;animation:moteDrift 5.5s ease-in-out infinite}
-.mote.m2{left:168px;top:96px;width:4px;height:4px;animation:moteDrift 6.5s ease-in-out infinite 1.4s}
-.mote.m3{left:40px;top:120px;width:3px;height:3px;animation:moteDrift 7s ease-in-out infinite 2.6s}
+.empty-scene{position:relative;width:140px;height:130px;margin-bottom:.6rem;display:flex;align-items:center;justify-content:center}
+.empty-star{width:104px;height:98px;color:#C9885B;animation:emptyBob 2.8s steps(4,end) infinite}
+.empty-star .seastar{width:100%;height:100%;display:block;image-rendering:pixelated}
+@keyframes emptyBob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(3deg)}}
 .empty-title{font-family:var(--px);font-weight:400;font-size:.8rem;letter-spacing:.02em}
 .empty-sub{font-family:var(--px);font-size:.48rem;line-height:2;letter-spacing:.03em;color:var(--ink-soft);max-width:250px}
 .empty-cta{margin-top:1rem;background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:0;
@@ -189,9 +186,19 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   box-shadow:3px 3px 0 0 var(--sh);transition:transform .12s steps(2,end),box-shadow .12s steps(2,end)}
 .empty-cta:active{transform:translate(2px,2px);box-shadow:1px 1px 0 0 var(--sh)}
 @media(hover:hover){.empty-cta:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 0 var(--sh)}}
-@keyframes moteDrift{0%{opacity:0;transform:translate(0,0) scale(.6)}25%{opacity:.85}100%{opacity:0;transform:translate(10px,-30px) scale(1)}}
-
 .cart-line{display:flex;gap:.9rem;padding:1.1rem 0;border-bottom:2px dotted var(--line)}
+
+/* pairs with the tide — a quiet cross-sell under the cart lines */
+.cart-pair{padding:1.15rem 0 .2rem}
+.cart-pair-head{display:block;font-family:var(--px);font-size:.4rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.7rem}
+.pair-line{display:flex;align-items:center;gap:.75rem;padding:.55rem 0}
+.pair-line .thumb{position:relative;width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--paper-2);border:1.5px solid var(--line)}
+.pair-line .thumb .seastar{width:56%;height:56%;color:var(--ink);image-rendering:pixelated}
+.pair-line .pname{flex:1;min-width:0;font-family:var(--px);font-size:.44rem;letter-spacing:.05em;text-transform:uppercase;line-height:1.7}
+.pair-line .pprice{font-family:var(--px);font-size:.46rem;color:var(--ink-soft)}
+.pair-add{font-family:var(--px);font-size:.42rem;letter-spacing:.04em;text-transform:uppercase;background:var(--paper);color:var(--ink);border:2px solid var(--ink);padding:.5rem .6rem;cursor:pointer;box-shadow:2px 2px 0 0 var(--sh);border-radius:0;transition:transform .1s steps(2,end),box-shadow .1s steps(2,end)}
+.pair-add:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 var(--sh)}
+@media(hover:hover){.pair-add:hover{background:var(--ink);color:var(--paper)}}
 .cart-line .thumb{position:relative;width:68px;height:68px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center}
 .cart-line .thumb .seastar{width:52%;height:52%;color:var(--ink);image-rendering:pixelated}
@@ -973,6 +980,17 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #DC10
   .item:hover .item-name{background-size:100% 2px}
 }
 .item.sold{cursor:not-allowed}
+/* desktop quick add: a pixel + in the tile corner, hover/focus only —
+   phones keep the tap-to-open flow untouched */
+.tile-add{display:none;position:absolute;right:8px;bottom:8px;z-index:3;width:36px;height:36px;
+  align-items:center;justify-content:center;background:var(--ink);color:var(--paper);
+  border:2px solid var(--paper);font-family:var(--px);font-size:.62rem;line-height:1;
+  cursor:pointer;box-shadow:2px 2px 0 0 var(--sh);border-radius:0;padding:0}
+.tile-add:active{transform:translate(1px,1px);box-shadow:1px 1px 0 0 var(--sh)}
+@media(hover:hover){
+  .item:not(.sold):hover .tile-add,.item:not(.sold):focus-within .tile-add{display:flex}
+  .tile-add:hover{background:var(--pop)}
+}
 .item.sold .item-tile{background:var(--paper-2)}
 .item.sold .item-name,.item.sold .item-tile .ph{opacity:.4}
 .item.sold .item-name{background-size:0 1px!important}
@@ -1053,7 +1071,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #DC10
 @media (prefers-reduced-motion: reduce){
   .btn-buy::before,.checkout-btn::before,.shop-btn::before{animation:none;opacity:0}
   .drop-tag.live::before{animation:none}
-  .mote{animation:none!important;opacity:0}
 }
 
 /* FOOTER */
@@ -1455,6 +1472,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #DC10
   <div class="cart-body" id="cartBody"></div>
   <div class="cart-foot" id="cartFoot" style="display:none">
     <div class="cart-subtotal"><span class="label">Subtotal</span><i class="leader" aria-hidden="true"></i><span class="amt" id="cartSubtotal">$0</span></div>
+    <p class="cart-trust">one run only &mdash; when a piece sells out it doesn&rsquo;t come back</p>
     <p class="cart-trust">apple pay + google pay at checkout</p>
     <p class="cart-trust" id="coNote" hidden>checkout hiccuped &mdash; try again in a moment</p>
     <button class="checkout-btn" id="checkoutBtn" onclick="goToCheckout()"><span>Checkout</span></button>
@@ -1503,9 +1521,6 @@ const STARFISH = '<svg class="seastar" viewBox="0 0 16 15" shape-rendering="cris
 const SUN = '<svg class="seastar" viewBox="0 0 16 15" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="7" y="0" width="2" height="1" fill="currentColor"/><rect x="7" y="1" width="2" height="1" fill="currentColor"/><rect x="2" y="2" width="1" height="1" fill="currentColor"/><rect x="7" y="2" width="2" height="1" fill="currentColor"/><rect x="13" y="2" width="1" height="1" fill="currentColor"/><rect x="3" y="3" width="1" height="1" fill="currentColor"/><rect x="12" y="3" width="1" height="1" fill="currentColor"/><rect x="5" y="4" width="6" height="1" fill="currentColor"/><rect x="4" y="5" width="8" height="1" fill="currentColor"/><rect x="3" y="6" width="10" height="1" fill="currentColor"/><rect x="0" y="7" width="2" height="1" fill="currentColor"/><rect x="3" y="7" width="10" height="1" fill="currentColor"/><rect x="14" y="7" width="2" height="1" fill="currentColor"/><rect x="0" y="8" width="2" height="1" fill="currentColor"/><rect x="3" y="8" width="10" height="1" fill="currentColor"/><rect x="14" y="8" width="2" height="1" fill="currentColor"/><rect x="3" y="9" width="10" height="1" fill="currentColor"/><rect x="4" y="10" width="8" height="1" fill="currentColor"/><rect x="5" y="11" width="6" height="1" fill="currentColor"/><rect x="3" y="12" width="1" height="1" fill="currentColor"/><rect x="12" y="12" width="1" height="1" fill="currentColor"/><rect x="2" y="13" width="1" height="1" fill="currentColor"/><rect x="7" y="13" width="2" height="1" fill="currentColor"/><rect x="13" y="13" width="1" height="1" fill="currentColor"/><rect x="7" y="14" width="2" height="1" fill="currentColor"/></svg>';
 /* Pick a product's checkout mark by its icon field (defaults to starfish). */
 const PROD_SYMBOL = { star: STARFISH, sun: SUN };
-const SKULL = '<svg class="skullmark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
-  + '<path d="M94.5 61.6 L90.5 71.0 L85.1 74.5 L78.2 74.5 L69.6 69.3 L61.5 61.5 L60.9 57.8 L62.3 49.5 L68.7 40.2 L62.7 43.7 L57.8 49.4 L55.0 61.4 L43.9 61.8 L38.1 66.8 L23.4 71.9 L22.7 73.0 L24.8 74.5 L12.3 82.8 L14.6 83.0 L14.2 85.2 L17.9 86.7 L27.1 83.2 L30.2 83.3 L31.6 85.1 L23.5 85.8 L20.8 87.6 L14.3 87.3 L23.4 87.9 L26.0 85.7 L39.7 87.6 L55.1 82.1 L48.9 82.2 L52.6 78.5 L59.1 84.5 L51.2 84.9 L56.6 86.9 L43.4 87.9 L58.1 87.0 L53.2 84.8 L78.8 86.7 L68.7 88.7 L87.6 91.1 L70.7 88.6 L80.5 87.2 L77.9 85.6 L61.4 84.7 L66.9 77.1 L79.0 82.0 L89.0 80.1 L94.4 73.3 Z M68.2 68.3 L63.7 70.3 L63.2 73.8 L59.8 72.3 L66.3 76.9 L65.5 79.8 L62.5 82.9 L62.2 82.1 L61.2 84.4 L60.4 82.6 L63.3 79.2 L59.5 75.0 L60.3 77.7 L56.4 75.5 L58.0 77.3 L63.2 79.1 L59.7 84.1 L58.3 83.4 L58.2 79.0 L59.2 80.3 L58.6 82.9 L59.0 78.9 L61.4 80.5 L62.6 79.2 L54.4 77.4 L48.0 79.1 L47.1 80.5 L52.6 78.1 L49.5 80.4 L47.1 84.6 L44.7 84.1 L39.4 86.0 L26.6 82.7 L31.3 82.2 L32.9 84.2 L33.4 82.0 L31.0 80.9 L25.1 82.2 L19.1 86.4 L14.5 84.9 L16.0 81.6 L12.6 82.8 L13.0 81.5 L25.3 74.5 L20.2 79.3 L27.2 77.8 L16.2 83.1 L23.2 80.9 L29.4 76.4 L31.2 73.2 L23.5 73.6 L33.5 69.8 L24.0 73.1 L23.3 72.1 L39.6 66.5 L44.4 62.1 L59.0 62.1 L56.1 61.4 L59.8 60.9 L61.8 62.2 L60.9 62.3 L63.7 67.2 L62.9 63.0 Z M50.9 9.2 L44.9 10.4 L42.7 17.3 L37.2 13.6 L31.9 16.2 L37.3 16.4 L39.4 18.3 L33.2 20.2 L30.4 26.0 L38.1 22.5 L36.1 27.7 L37.2 31.9 L40.8 24.5 L41.8 25.6 L36.8 56.9 L34.7 56.0 L34.7 58.7 L32.8 57.6 L33.0 59.0 L30.5 58.6 L30.3 60.3 L23.5 59.3 L16.8 60.8 L8.0 59.0 L1.0 60.8 L30.6 61.3 L38.7 59.7 L54.1 59.8 L47.2 58.2 L46.7 54.4 L43.1 56.8 L44.2 46.3 L42.9 45.3 L44.4 41.1 L42.5 40.5 L43.3 27.5 L41.8 53.5 L43.2 58.6 L37.2 57.6 L41.3 27.1 L39.0 55.9 L42.4 27.3 L45.0 24.4 L47.9 32.5 L49.9 26.4 L47.1 20.8 L49.8 21.8 L50.9 20.5 L53.5 23.8 L54.6 22.7 L53.1 17.3 L47.2 16.3 Z M95.0 62.7 L93.9 68.7 L92.1 73.1 L93.9 69.9 L93.9 71.4 L93.3 73.4 L92.0 75.6 L90.2 77.6 L86.4 80.0 L82.5 80.8 L79.5 80.8 L75.5 80.0 L69.2 77.3 L65.9 75.2 L63.6 73.2 L63.7 71.3 L64.8 70.0 L66.4 69.0 L68.4 68.9 L73.5 72.7 L77.5 74.6 L81.5 75.4 L85.8 74.8 L88.7 73.3 L91.2 70.9 L93.5 66.9 L94.5 62.6 Z M68.9 40.5 L68.9 40.8 L67.5 41.3 L65.0 42.9 L62.3 45.7 L62.3 45.9 L62.5 45.9 L63.8 44.4 L64.8 44.0 L62.2 47.8 L60.8 51.0 L60.0 55.5 L60.0 58.3 L60.3 60.6 L57.7 60.4 L55.5 61.3 L55.3 60.7 L55.3 58.0 L55.7 55.4 L56.6 52.3 L58.1 49.4 L60.4 46.3 L62.9 43.8 L67.2 41.0 Z M55.8 70.9 L55.4 70.0 L54.2 68.9 L52.9 68.5 L51.4 68.5 L50.2 69.2 L49.1 70.1 L48.7 70.0 L46.9 70.0 L45.1 70.8 L44.5 71.0 L43.8 71.0 L43.5 71.2 L43.5 71.6 L43.7 71.8 L44.5 71.8 L47.0 70.5 L47.4 70.5 L47.5 70.4 L47.7 70.5 L48.4 70.5 L48.9 71.1 L49.1 71.1 L49.3 71.3 L48.8 71.9 L48.7 72.8 L48.8 72.9 L48.8 73.3 L49.4 74.4 L49.8 74.8 L50.9 75.4 L51.6 75.6 L52.7 75.6 L53.7 75.2 L54.9 74.3 L55.6 72.9 L55.7 71.9 L55.8 71.8 Z M62.3 60.2 L66.4 60.2 L71.3 61.3 L72.7 61.3 L74.9 60.7 L77.5 60.4 L83.9 62.2 L88.3 61.6 L92.6 60.7 L96.0 60.7 L99.0 61.2 L99.0 60.5 L95.1 59.8 L92.5 60.0 L87.3 61.5 L84.7 61.4 L79.2 59.8 L77.1 59.9 L74.2 60.5 L72.5 60.5 L68.3 59.4 L65.6 59.3 Z M49.4 9.3 L49.5 9.6 L49.3 9.8 L48.2 10.4 L47.9 10.8 L48.2 11.2 L48.6 11.3 L48.7 11.5 L46.8 12.9 L46.9 13.2 L47.5 13.4 L47.8 13.6 L47.5 13.8 L45.8 14.7 L45.5 15.0 L45.5 15.3 L46.5 15.7 L46.6 15.9 L44.7 17.6 L43.8 19.0 L43.5 19.2 L43.4 18.7 L43.5 18.6 L43.6 17.3 L44.2 14.9 L44.5 14.2 L43.9 15.0 L43.6 15.7 L43.4 15.9 L43.4 16.1 L43.2 16.3 L43.1 16.2 L43.1 15.0 L43.3 14.5 L43.4 13.6 L43.9 12.3 L44.3 11.6 L45.3 10.7 L46.0 10.2 L47.2 9.6 L48.0 9.3 Z M43.9 19.6 L44.7 18.5 L46.7 17.2 L47.9 16.6 L48.2 16.6 L48.7 16.3 L49.5 16.3 L49.6 16.2 L49.8 16.3 L50.7 16.3 L51.3 16.6 L52.2 17.1 L53.4 18.2 L54.0 19.4 L54.2 20.0 L54.3 21.2 L54.2 21.4 L54.2 21.8 L54.0 21.9 L53.8 21.2 L53.5 20.7 L53.5 20.5 L53.1 20.0 L52.5 19.8 L51.8 20.2 L51.5 19.6 L50.7 18.8 L50.5 18.8 L50.2 19.2 L50.1 19.9 L49.8 20.0 L49.3 19.5 L48.7 19.3 L48.5 19.1 L48.2 19.0 L47.8 19.0 L47.7 19.1 L46.2 19.0 L45.4 19.3 L45.0 19.3 L44.0 19.8 Z M44.7 20.5 L45.3 20.5 L45.4 20.6 L45.7 20.6 L46.0 20.8 L46.5 20.9 L46.9 21.4 L47.0 21.4 L47.7 22.0 L47.7 22.1 L48.3 22.8 L49.1 24.3 L49.2 24.9 L49.4 25.3 L49.4 25.7 L49.5 25.8 L49.4 25.9 L49.5 26.2 L49.5 27.1 L49.4 27.2 L49.5 27.3 L49.4 27.4 L49.4 28.0 L49.3 28.1 L49.2 28.9 L49.1 29.0 L49.0 29.5 L48.7 29.9 L48.6 29.8 L48.6 29.0 L48.7 28.9 L48.6 28.8 L48.6 28.4 L48.4 28.2 L48.4 28.1 L48.0 27.9 L47.8 28.0 L47.5 28.0 L47.4 27.9 L47.5 27.5 L47.7 27.4 L47.8 26.7 L47.9 26.6 L47.8 26.4 L47.9 26.3 L47.9 25.8 L47.5 25.4 L46.9 25.4 L46.6 25.6 L46.4 25.5 L46.4 24.7 L46.3 24.6 L46.3 24.0 L46.2 23.9 L46.1 23.0 L45.9 22.7 L45.9 22.5 L45.6 21.9 L45.0 21.2 L45.0 21.1 L44.6 20.8 L44.6 20.6 Z M41.3 19.8 L41.2 20.0 L40.7 20.0 L40.6 20.1 L40.2 20.1 L40.1 20.2 L39.6 20.3 L38.3 21.0 L38.1 20.9 L38.2 20.7 L37.8 20.3 L37.3 20.3 L36.6 21.0 L36.2 21.7 L36.0 22.3 L35.8 22.5 L35.3 21.8 L35.1 21.6 L34.7 21.5 L34.3 22.0 L33.7 23.1 L33.6 23.1 L33.2 22.7 L32.8 22.7 L32.6 22.8 L31.6 24.0 L31.4 23.9 L31.5 23.8 L31.6 23.2 L31.9 22.7 L31.9 22.5 L32.4 21.9 L32.6 21.5 L33.1 20.9 L33.1 20.8 L34.2 20.0 L35.5 19.3 L35.8 19.3 L36.2 19.1 L36.6 19.1 L36.7 19.0 L38.7 19.0 L38.8 19.1 L39.3 19.1 L39.4 19.2 L40.6 19.4 L41.1 19.6 Z M41.9 20.9 L42.0 21.0 L42.0 21.2 L41.3 22.0 L40.6 23.3 L40.5 23.9 L40.1 24.5 L40.0 25.1 L39.9 25.2 L39.5 24.9 L39.0 25.0 L38.8 25.3 L38.8 25.6 L38.7 25.7 L38.7 26.2 L38.6 26.3 L38.6 26.6 L38.5 26.7 L38.5 27.1 L38.4 27.2 L38.4 27.4 L38.3 27.5 L38.1 27.3 L37.5 27.3 L37.2 28.0 L37.2 28.4 L37.1 28.6 L37.1 29.0 L37.0 29.1 L37.0 29.7 L36.8 30.0 L36.6 29.7 L36.6 28.3 L36.5 28.2 L36.5 27.6 L36.6 27.5 L36.6 26.9 L36.7 26.8 L36.8 26.0 L37.6 24.2 L37.8 24.0 L38.1 23.5 L38.5 23.1 L38.5 23.0 L39.2 22.3 L39.3 22.3 L39.6 22.0 L40.2 21.7 L40.5 21.5 L41.3 21.0 L41.5 21.0 L41.6 20.9 L41.8 21.0 Z M33.2 15.7 L34.3 14.8 L35.1 14.4 L35.4 14.4 L35.9 14.2 L36.7 14.2 L36.8 14.0 L37.0 14.2 L37.9 14.2 L38.4 14.4 L38.7 14.4 L39.2 14.7 L39.4 14.7 L39.8 14.9 L40.0 15.1 L40.3 15.2 L41.5 16.3 L42.3 17.9 L42.3 18.2 L42.4 18.3 L42.2 18.4 L41.4 17.7 L40.2 17.1 L39.9 17.1 L39.8 17.0 L39.2 17.0 L39.1 16.9 L38.7 17.0 L38.6 16.8 L38.9 16.2 L38.9 16.0 L38.7 15.8 L38.4 15.8 L38.3 15.7 L37.6 15.7 L37.5 15.8 L37.0 15.8 L36.9 15.9 L36.5 15.9 L36.3 16.0 L36.2 15.9 L36.3 15.5 L35.9 15.1 L35.0 15.1 L33.6 15.8 L33.4 15.8 Z M49.4 73.7 L49.5 73.6 L49.6 73.7 L49.9 73.7 L50.1 73.6 L51.5 73.6 L51.6 73.5 L51.7 73.5 L51.8 73.6 L52.1 73.6 L52.2 73.7 L52.5 73.7 L52.7 74.0 L52.8 74.0 L53.4 74.6 L53.4 74.7 L53.5 74.8 L53.6 74.8 L53.7 74.9 L53.4 75.2 L53.3 75.2 L53.2 75.3 L53.0 75.3 L52.9 75.4 L51.7 75.4 L51.6 75.5 L51.5 75.5 L51.4 75.4 L51.4 75.3 L51.3 75.2 L51.2 75.2 L51.1 75.1 L51.0 75.1 L50.9 75.0 L50.8 75.0 L50.7 74.9 L50.6 74.9 L50.4 74.7 L50.3 74.7 L49.9 74.4 L49.8 74.4 L49.5 74.1 L49.5 74.0 L49.4 73.8 Z M53.1 78.4 L53.2 78.3 L54.1 78.3 L54.2 78.4 L54.6 78.4 L54.7 78.5 L55.0 78.5 L55.1 78.6 L55.2 78.6 L55.4 78.9 L55.5 78.9 L55.8 79.2 L55.9 79.2 L56.1 79.4 L56.1 79.5 L56.4 79.8 L56.4 79.9 L56.5 80.0 L56.5 80.1 L56.6 80.2 L56.6 80.4 L56.7 80.5 L56.7 80.7 L56.8 80.8 L56.8 80.9 L56.7 81.0 L56.6 81.0 L56.5 80.9 L56.3 80.9 L56.2 80.8 L56.1 80.8 L56.0 80.7 L55.9 80.7 L55.8 80.6 L55.7 80.6 L55.6 80.5 L55.4 80.5 L55.3 80.4 L55.2 80.4 L55.1 80.3 L55.0 80.3 L54.9 80.2 L54.7 80.2 L54.6 80.1 L54.5 80.1 L54.4 80.0 L54.3 80.0 L54.1 79.8 L54.0 79.8 L53.9 79.7 L53.7 79.7 L53.6 79.6 L53.6 79.5 L53.5 79.4 L53.5 79.3 L53.4 79.2 L53.4 79.1 L53.3 79.0 L53.3 78.9 L53.1 78.6 Z M23.4 80.3 L23.4 80.4 L23.3 80.5 L23.2 80.5 L23.0 80.7 L22.9 80.7 L22.7 80.9 L22.6 80.9 L22.5 81.0 L22.4 81.0 L22.3 81.2 L22.2 81.2 L22.1 81.3 L22.0 81.3 L21.9 81.4 L21.8 81.4 L21.6 81.6 L21.4 81.6 L21.2 81.7 L21.1 81.7 L20.9 81.9 L20.8 81.9 L20.7 82.0 L20.6 82.0 L20.3 82.2 L20.1 82.2 L19.8 82.4 L19.6 82.4 L19.5 82.5 L19.3 82.5 L19.2 82.6 L19.0 82.6 L18.6 82.8 L18.3 82.8 L18.2 82.9 L17.9 82.9 L17.8 83.0 L17.6 83.0 L17.5 83.1 L17.3 82.9 L17.7 82.5 L17.8 82.5 L18.1 82.2 L18.2 82.2 L18.4 82.0 L18.5 82.0 L18.7 81.8 L18.8 81.8 L19.0 81.7 L19.1 81.7 L19.2 81.6 L19.3 81.6 L19.4 81.5 L19.5 81.5 L19.6 81.4 L19.7 81.4 L19.8 81.3 L19.9 81.3 L20.2 81.0 L20.4 81.0 L20.5 80.9 L20.6 80.9 L20.7 80.8 L20.9 80.8 L21.0 80.7 L21.4 80.7 L21.5 80.6 L21.8 80.6 L21.9 80.5 L22.2 80.5 L22.3 80.4 L22.7 80.4 L22.8 80.3 L23.0 80.3 L23.1 80.2 L23.3 80.2 Z M45.7 55.6 L45.8 55.6 L45.9 55.7 L45.7 55.9 L45.6 56.2 L45.4 56.4 L45.4 56.5 L45.1 56.8 L45.1 57.0 L45.0 57.1 L45.0 57.4 L44.9 57.5 L44.9 58.2 L45.1 58.4 L45.8 58.4 L45.9 58.5 L45.8 58.6 L45.9 58.7 L45.9 58.9 L46.0 59.0 L46.6 59.0 L46.7 58.9 L46.9 58.9 L47.4 58.6 L47.7 58.6 L47.8 58.7 L47.7 58.8 L47.7 59.2 L47.4 59.5 L47.3 59.4 L46.8 59.4 L46.7 59.3 L46.2 59.3 L46.1 59.2 L45.6 59.2 L45.5 59.1 L45.0 59.1 L44.9 59.0 L44.4 59.0 L44.3 58.9 L43.9 58.9 L43.8 58.8 L43.4 58.8 L43.3 58.7 L43.3 58.5 L43.4 58.4 L43.4 58.3 L43.6 58.1 L43.6 58.0 L43.9 57.7 L43.9 57.6 L44.3 57.1 L44.3 57.0 L45.3 56.1 L45.3 56.0 Z M25.1 77.9 L25.0 78.0 L24.8 78.0 L24.7 78.1 L24.5 78.1 L24.4 78.2 L24.1 78.2 L24.0 78.3 L23.8 78.3 L23.6 78.4 L23.3 78.4 L23.2 78.5 L22.9 78.5 L22.8 78.6 L22.5 78.6 L22.4 78.8 L22.0 78.8 L21.9 78.9 L21.5 78.9 L21.4 79.0 L21.1 79.0 L21.0 79.1 L20.8 79.1 L20.7 79.2 L20.5 79.2 L20.4 79.1 L20.4 79.0 L20.7 78.6 L20.8 78.6 L21.4 78.1 L21.5 78.1 L22.0 77.6 L22.1 77.6 L22.4 77.3 L22.5 77.3 L22.9 76.9 L23.0 76.9 L23.3 76.6 L23.4 76.6 L23.5 76.5 L23.6 76.5 L23.8 76.6 L23.6 76.7 L23.6 77.1 L24.2 77.6 L24.4 77.6 L24.5 77.7 L24.9 77.7 Z M38.8 85.8 L38.8 86.0 L38.7 86.1 L38.7 86.4 L38.6 86.5 L38.6 86.8 L38.5 86.9 L38.5 87.0 L38.3 87.2 L38.1 87.2 L37.9 87.3 L37.6 87.3 L37.5 87.4 L37.4 87.4 L37.2 87.2 L37.0 87.2 L36.9 87.3 L36.8 87.3 L36.7 87.4 L36.6 87.4 L36.5 87.5 L36.4 87.5 L36.3 87.4 L36.2 87.4 L36.1 87.3 L36.1 86.8 L36.2 86.7 L36.2 86.4 L36.3 86.3 L36.3 86.1 L36.4 86.0 L36.4 85.8 L36.5 85.7 L36.6 85.7 L36.8 86.0 L37.3 86.0 L37.5 85.7 L37.6 85.7 L37.7 85.8 L37.7 86.1 L37.6 86.2 L37.6 86.4 L37.5 86.5 L37.5 86.7 L37.4 86.8 L37.4 87.0 L37.4 86.9 L37.5 86.8 L37.5 86.6 L37.6 86.5 L37.6 86.3 L37.7 86.2 L37.7 86.0 L37.8 85.8 L37.7 85.7 L38.1 85.4 L38.2 85.4 L38.3 85.3 L38.4 85.3 L38.6 85.5 L38.6 85.6 Z M34.5 84.6 L34.7 84.8 L34.7 85.1 L34.6 85.2 L34.6 85.3 L34.5 85.4 L34.5 85.6 L34.4 85.7 L34.4 86.0 L34.3 86.1 L34.3 86.4 L34.2 86.5 L34.2 86.8 L33.9 87.1 L33.7 87.1 L33.6 87.0 L33.5 87.0 L33.2 86.8 L33.1 86.8 L32.8 86.5 L32.8 86.3 L32.9 86.2 L32.9 85.7 L33.0 85.6 L33.0 85.2 L33.1 85.1 L33.6 85.1 L33.8 84.9 L33.9 84.9 L34.0 84.8 L34.2 84.8 L34.3 84.7 L34.4 84.7 Z M34.4 64.1 L34.4 64.2 L34.5 64.4 L34.8 64.4 L34.9 64.5 L35.4 64.5 L35.5 64.6 L38.6 64.6 L38.7 64.5 L39.0 64.5 L39.1 64.4 L39.2 64.4 L39.2 64.2 L39.1 64.1 L39.0 64.1 L38.9 64.0 L38.4 64.0 L38.3 63.9 L37.5 63.9 L37.4 63.8 L35.3 63.8 L35.2 63.9 L34.8 63.9 L34.7 64.0 L34.5 64.0 Z M34.8 85.3 L35.1 85.6 L35.2 85.6 L35.3 85.7 L35.4 85.6 L35.6 85.6 L35.8 85.5 L35.9 85.5 L36.1 85.3 L36.2 85.4 L36.2 86.2 L36.1 86.3 L36.1 86.4 L36.0 86.5 L36.0 86.9 L35.6 87.2 L35.4 87.2 L35.3 87.3 L34.8 87.3 L34.7 87.2 L34.6 87.2 L34.4 87.0 L34.4 86.5 L34.5 86.4 L34.5 86.1 L34.6 86.0 L34.6 85.7 L34.7 85.6 L34.7 85.4 Z M56.8 68.1 L56.4 68.1 L56.5 68.4 L56.7 68.6 L56.7 68.7 L56.9 69.0 L56.9 69.4 L57.0 69.5 L57.0 69.8 L57.1 69.9 L57.1 71.0 L57.0 71.1 L57.0 71.8 L56.9 71.9 L56.9 72.2 L56.8 72.3 L56.8 72.6 L56.7 72.7 L56.7 72.8 L56.6 72.9 L56.6 73.1 L56.5 73.2 L56.2 74.0 L56.0 74.2 L56.0 74.3 L55.7 74.6 L55.7 74.7 L55.4 75.0 L55.4 75.1 L54.3 76.1 L55.2 75.4 L55.3 75.4 L55.9 74.8 L55.9 74.7 L56.3 74.3 L56.3 74.2 L56.7 73.6 L56.7 73.5 L56.9 73.2 L56.9 73.0 L57.1 72.7 L57.1 72.4 L57.3 72.3 L57.3 72.0 L57.4 71.9 L57.4 71.6 L57.5 71.4 L57.5 69.9 L57.4 69.8 L57.4 69.4 L57.3 69.3 L57.3 68.8 L57.1 68.7 L57.1 68.5 Z M43.1 84.6 L43.4 84.9 L43.4 85.2 L43.3 85.3 L43.3 85.7 L43.2 85.8 L43.2 86.0 L43.1 86.1 L43.1 86.3 L42.6 86.7 L42.5 86.7 L42.4 86.8 L42.3 86.8 L42.2 86.9 L41.8 86.9 L41.7 86.8 L41.6 86.8 L41.5 86.7 L41.5 86.6 L41.6 86.5 L41.6 86.3 L41.7 86.2 L41.7 85.7 L41.9 85.5 L42.0 85.5 L42.1 85.4 L42.2 85.4 L42.7 84.9 L42.7 84.8 L43.0 84.6 Z M44.6 84.3 L44.7 84.4 L44.7 84.5 L44.8 84.6 L44.8 84.7 L44.9 84.8 L44.9 85.1 L44.8 85.2 L44.8 85.3 L44.7 85.4 L44.7 85.5 L44.6 85.6 L44.6 85.7 L44.5 85.8 L44.5 86.0 L44.1 86.4 L43.9 86.4 L43.8 86.5 L43.4 86.5 L43.3 86.4 L43.3 86.2 L43.4 86.1 L43.4 85.5 L43.5 85.4 L43.5 85.0 L43.6 84.9 L43.9 84.9 L44.1 84.7 L44.2 84.7 L44.3 84.6 L44.3 84.5 L44.5 84.3 Z M48.8 67.2 L49.0 67.2 L49.1 67.1 L49.2 67.1 L49.3 67.0 L49.4 67.0 L49.5 66.9 L49.6 66.9 L49.9 66.6 L50.2 66.6 L50.3 66.5 L50.5 66.5 L50.6 66.4 L50.8 66.4 L50.9 66.3 L51.1 66.3 L51.2 66.2 L51.5 66.2 L51.6 66.1 L53.2 66.1 L53.3 66.2 L53.7 66.2 L53.8 66.3 L53.9 66.3 L54.0 66.4 L54.1 66.4 L54.2 66.5 L54.3 66.5 L54.6 66.8 L55.0 66.8 L55.0 66.6 L54.7 66.4 L54.6 66.4 L54.5 66.3 L54.4 66.3 L54.1 66.1 L53.9 66.1 L53.8 66.0 L53.5 66.0 L53.4 65.9 L52.9 65.9 L52.8 65.8 L51.7 65.8 L51.6 65.9 L51.1 65.9 L51.0 66.0 L50.7 66.0 L50.6 66.1 L50.4 66.1 L50.3 66.2 L50.1 66.2 L49.9 66.3 L49.7 66.3 L49.6 66.4 L49.5 66.4 L49.4 66.5 L49.3 66.5 L49.2 66.6 L49.1 66.6 L48.8 67.0 Z M35.4 80.2 L35.1 80.5 L35.1 80.6 L35.2 80.7 L35.2 80.9 L35.3 81.0 L35.3 81.2 L35.4 81.3 L35.4 81.4 L35.5 81.5 L35.5 81.6 L35.6 81.6 L35.8 81.7 L36.0 81.7 L36.1 81.8 L36.0 81.9 L36.0 82.0 L36.1 82.0 L36.3 81.8 L36.4 81.8 L36.6 81.6 L36.6 81.5 L36.7 81.4 L36.7 81.3 L36.8 81.2 L36.8 80.9 L36.7 80.8 L36.7 80.7 L36.3 80.3 L36.1 80.3 L36.0 80.2 Z M40.2 85.3 L40.5 85.5 L40.5 85.7 L40.3 85.8 L40.3 86.1 L40.2 86.2 L40.2 86.4 L40.1 86.5 L40.1 86.7 L40.0 86.8 L40.0 87.0 L39.8 87.2 L39.6 87.2 L39.5 87.3 L39.4 87.2 L39.0 87.2 L38.7 86.9 L38.8 86.8 L38.8 86.6 L38.9 86.5 L38.9 86.2 L39.1 86.0 L39.2 86.1 L39.5 86.1 L40.0 85.5 L40.1 85.5 L40.1 85.4 Z M40.9 85.0 L41.0 85.0 L41.5 85.5 L41.6 85.5 L41.7 85.6 L41.7 86.0 L41.6 86.1 L41.6 86.3 L41.5 86.4 L41.5 86.6 L41.4 86.7 L41.4 86.8 L41.3 86.9 L41.2 86.9 L41.1 87.0 L40.9 87.0 L40.8 86.9 L40.6 86.9 L40.3 86.7 L40.5 86.6 L40.5 86.4 L40.6 86.3 L40.6 86.0 L40.7 85.8 L40.7 85.5 L40.5 85.3 L40.5 85.2 L40.6 85.1 L40.8 85.1 Z M63.9 83.7 L67.0 83.7 L67.1 83.6 L67.4 83.6 L67.5 83.4 L67.5 83.2 L67.4 83.1 L67.4 83.0 L67.3 83.0 L67.2 82.9 L67.1 82.9 L67.0 82.8 L66.5 82.8 L66.4 82.7 L66.0 82.7 L65.9 82.6 L65.0 82.6 L65.2 82.6 L65.3 82.7 L65.5 82.7 L65.6 82.8 L65.7 82.8 L65.8 82.9 L65.9 82.9 L66.0 83.0 L66.0 83.1 L65.9 83.2 L65.8 83.2 L65.6 83.4 L65.3 83.4 L65.2 83.6 L64.6 83.6 L64.5 83.7 Z M32.1 84.6 L32.5 85.0 L32.8 85.0 L32.9 85.1 L32.9 85.6 L32.8 85.7 L32.8 86.3 L32.6 86.5 L32.4 86.5 L32.3 86.4 L32.2 86.4 L32.1 86.3 L32.1 86.2 L31.9 86.0 L31.9 85.7 L31.8 85.6 L31.8 85.2 L31.9 85.1 L31.9 84.8 Z M35.3 56.9 L35.6 57.3 L35.6 57.4 L36.0 57.7 L36.0 57.8 L36.1 57.9 L36.1 58.0 L36.2 58.1 L36.2 58.2 L36.3 58.3 L36.3 58.5 L36.4 58.6 L36.2 58.8 L35.9 58.8 L35.8 58.9 L35.4 58.9 L35.3 59.0 L35.2 59.0 L35.1 58.9 L35.1 58.8 L35.2 58.7 L35.2 58.2 L35.3 58.1 L35.3 57.9 L35.2 57.8 L35.2 57.0 Z M45.7 72.7 L45.5 72.9 L46.2 73.6 L46.2 73.7 L46.3 73.8 L46.3 74.0 L46.4 74.1 L46.4 74.9 L46.6 74.9 L46.8 74.7 L46.8 74.6 L46.9 74.5 L46.9 73.6 L46.7 73.4 L46.7 73.3 L46.4 73.0 L46.3 73.0 L46.2 72.9 L46.1 72.9 L46.0 72.8 L45.9 72.8 L45.8 72.7 Z M45.7 84.7 L45.9 84.9 L46.0 84.9 L46.1 85.0 L46.1 85.7 L46.0 85.8 L45.8 85.8 L45.7 86.0 L45.4 86.0 L45.3 86.1 L45.0 86.1 L44.9 86.0 L44.8 86.0 L44.7 85.8 L44.7 85.7 L44.9 85.5 L44.9 85.4 L45.0 85.3 L45.0 85.1 L45.1 85.0 L45.1 84.9 L45.3 84.8 L45.4 84.8 L45.5 84.7 Z M36.3 62.5 L36.5 62.5 L36.6 62.4 L36.7 62.5 L39.5 62.5 L39.6 62.4 L39.8 62.4 L39.8 62.3 L39.7 62.3 L39.6 62.2 L37.2 62.2 L37.1 62.3 L36.8 62.3 L36.7 62.4 L36.5 62.4 L36.4 62.5 Z M47.1 84.7 L47.2 84.8 L47.2 85.1 L47.1 85.2 L47.1 85.3 L46.9 85.5 L46.8 85.5 L46.7 85.6 L46.3 85.6 L46.1 85.4 L46.2 85.3 L46.2 85.2 L46.3 85.1 L46.3 84.9 L46.4 84.8 L46.9 84.8 L47.0 84.7 Z M30.8 83.4 L31.0 83.4 L31.1 83.6 L31.2 83.6 L31.8 84.2 L31.8 84.3 L31.7 84.4 L31.7 84.6 L31.6 84.7 L31.5 84.7 L31.4 84.6 L31.3 84.6 L31.0 84.3 L31.0 84.2 L30.8 84.1 L30.8 83.8 L30.7 83.7 L30.7 83.6 Z" fill="currentColor" fill-rule="evenodd"/>'
-  + '</svg>';
 
 
 /* ===== DROPS ====================================================
@@ -1653,7 +1668,7 @@ function renderDrops(){
         ? colors.slice(0,2).map((c,ci)=>`<div class="item-tile-photo${ci?' alt':''}" style="background-image:url('${c.img}')"></div>`).join('')
         : `<img loading="lazy" decoding="async" class="ph" src="${LOGO}" alt="">`;
       return `<a class="item${it.soldout?' sold':''} r"${open} style="transition-delay:${delay}s">
-          <div class="item-tile"><span class="item-num">no. ${num}</span>${tileMedia}${it.soldout?'<div class="tile-soldout"><svg class="tile-soldout-mark" viewBox="0 0 100 100" aria-hidden="true"><g fill="currentColor"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#EFECE3"/></svg><span class="tile-soldout-stamp">sold out</span></div>':''}</div>
+          <div class="item-tile"><span class="item-num">no. ${num}</span>${tileMedia}${it.soldout?'<div class="tile-soldout"><svg class="tile-soldout-mark" viewBox="0 0 100 100" aria-hidden="true"><g fill="currentColor"><circle cx="50" cy="22" r="17"/><circle cx="74.2" cy="36" r="17"/><circle cx="74.2" cy="64" r="17"/><circle cx="50" cy="78" r="17"/><circle cx="25.8" cy="64" r="17"/><circle cx="25.8" cy="36" r="17"/></g><circle cx="50" cy="50" r="14.5" fill="#EFECE3"/></svg><span class="tile-soldout-stamp">sold out</span></div>':`<button class="tile-add" aria-label="Add ${it.name} to cart" onclick="quickAddTile(event,'${it.id}',this)">+</button>`}</div>
           <div class="item-row"><span class="item-name">${it.name}</span><i class="leader" aria-hidden="true"></i>${tail}</div>
         </a>`;
     }).join('');
@@ -2384,24 +2399,62 @@ function renderCartBody(){
   const ids = Object.keys(CART);
   if(ids.length === 0){
     body.innerHTML = `<div class="cart-empty">
-        <div class="empty-scene">
-          <span class="empty-skull">${SKULL}</span>
-          <span class="mote m1"></span><span class="mote m2"></span><span class="mote m3"></span>
-        </div>
-        <h3 class="empty-title">Nothing here yet</h3>
-        <p class="empty-sub">Quiet as a desert out here &mdash; go find something you love.</p>
-        <button class="empty-cta" onclick="closeCart()">Start Shopping</button>
+        <div class="empty-scene"><span class="empty-star">${STARFISH}</span></div>
+        <h3 class="empty-title">Nothing in the net yet</h3>
+        <p class="empty-sub">the sea series is live &mdash; numbered by hand, one run only.</p>
+        <button class="empty-cta" onclick="goSeries()">See the Sea Series</button>
       </div>`;
     foot.style.display = 'none';
     document.getElementById('cartCount').textContent = '';
     return;
   }
-  body.innerHTML = ids.map(id => lineHTML(id, CART[id])).join('');
+  /* pairs with the tide: up to two live pieces not already in the cart —
+     adding one re-renders the drawer, so it climbs up into the lines
+     and the next candidate takes its place */
+  const pool = [];
+  DROPS.forEach(d => d.items.forEach(it => { if(!it.soldout && !CART[it.id]) pool.push(it); }));
+  const picks = pool.slice(0, 2);
+  const pairHTML = picks.length ? `<div class="cart-pair"><span class="cart-pair-head">pairs with the tide</span>` +
+    picks.map(it => `<div class="pair-line" data-id="${it.id}">
+        <div class="thumb">${PROD_SYMBOL[it.icon] || STARFISH}</div>
+        <span class="pname">${it.name}</span>
+        <span class="pprice">${it.price}</span>
+        <button class="pair-add" aria-label="Add ${it.name} to cart" onclick="addToCart('${it.id}',1)">+ add</button>
+      </div>`).join('') + `</div>` : '';
+  body.innerHTML = ids.map(id => lineHTML(id, CART[id])).join('') + pairHTML;
   foot.style.display = 'block';
   const count = cartCount();
   document.getElementById('cartCount').textContent = `(${count} ${count===1?'item':'items'})`;
   const subtotal = cartSubtotal();
   document.getElementById('cartSubtotal').textContent = `$${subtotal.toFixed(2).replace(/\.00$/,'')}`;
+}
+
+/* Empty-cart CTA: land the shopper on the open Sea Series, not just
+   back where they were. toggleDrop already glides to the products;
+   if the series is open we glide there ourselves. */
+function goSeries(){
+  closeCart();
+  const sec = document.querySelectorAll('.drop')[0];
+  if(!sec) return;
+  if(!sec.classList.contains('open')){ toggleDrop(0); return; }
+  const items = sec.querySelector('.items');
+  if(!items) return;
+  const y = items.getBoundingClientRect().top + window.scrollY - 14;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    window.scrollTo({top:y,left:0,behavior:'instant'});
+  }else{
+    glideTo(y, 750);
+  }
+}
+
+/* Desktop quick add from the tile corner: adds without opening the
+   drawer (the badge bump says it landed), so browsing never breaks. */
+function quickAddTile(ev, id, btn){
+  ev.preventDefault(); ev.stopPropagation();
+  addToCart(id, 1);
+  btn.classList.add('ok'); btn.innerHTML = '&#10003;';
+  clearTimeout(btn._t);
+  btn._t = setTimeout(() => { btn.classList.remove('ok'); btn.textContent = '+'; }, 900);
 }
 
 function openCart(){
