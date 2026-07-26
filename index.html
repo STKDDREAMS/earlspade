@@ -1736,13 +1736,13 @@ function initSeaFilm(){
   const YBK  = [[0,.15],[2.5,.2],[6,.46],[11,.56],[16.5,.6],[18,.64],[19.5,.7],[21,.76],[22,.78]];
   const AMPK = [[0,2],[2.5,4.5],[6,14],[11,17],[16.5,18],[18,15],[19.5,10],[21,4],[22,1.6]];
   /* the break front's run down the line (fractions of W, monotonic) */
-  const BFK  = [[3.3,1.02],[4.2,.72],[5.6,.63],[8,.53],[11.8,.42],[12.6,.39],[16.2,.357],[17.2,.31],[18.2,.24],[19.5,.12],[20.5,-.02],[20.9,-.08]];
+  const BFK  = [[3.3,1.02],[4.2,.72],[5.6,.63],[8,.53],[12.5,.41],[13,.375],[14.2,.36],[17.2,.19],[19,.02],[19.6,-.08]];
   /* how hard the pitching section throws: feathering during the
      shred, full plunging tube for the barrel window */
-  const BDK  = [[3,.12],[11.4,.12],[12.4,1],[16.2,1],[17,.4],[18,.15]];
+  const BDK  = [[3,.3],[12.3,.4],[13,1],[14.4,1],[15.4,.5],[18,.35],[20.5,.25]];
   /* his line across the bay, and back out to the lineup */
-  const XSURF = [[0,.66],[2.5,.66],[3.1,.645],[4.5,.60],[5.6,.575],[11.8,.40],[12.6,.375],[16.2,.345],[16.9,.30],[17.7,.27],[17.9,.265],[19.5,.38],[21.8,.655],[22,.66]];
-  const YPADK = [[17.9,.52],[19.5,.42],[21.8,.16],[22,.15]];
+  const XSURF = [[0,.66],[2.5,.66],[3.1,.645],[4.5,.60],[5.6,.575],[12.5,.40],[13,.385],[14.2,.36],[17.2,.135],[17.9,.115],[18.1,.11],[19.5,.32],[21.2,.655],[22,.66]];
+  const YPADK = [[18.1,.5],[19.5,.38],[21.2,.16],[22,.15]];
   function tBreak(x){            /* when did the front pass column x */
     if(x>=W*1.02) return 3.3;
     for(let i=1;i<BFK.length;i++){
@@ -1753,13 +1753,13 @@ function initSeaFilm(){
   }
   function surfState(t, yb, amp, xc, tick){
     const x = W*keyed(t,XSURF);
-    const aS = amp*Math.max(.22,1-Math.abs(x-xc)/(W*.62));
+    const aS = amp*Math.max(0,1-Math.abs(x-xc)/(W*.5));
     let pose,yB,dim=false,air=false;
     if(t<2.5){ pose='paddle'; yB=yb-aS+((tick%6<3)?0:1); }
     else if(t<3.1){ pose='popup'; yB=yb-aS; }                      /* pops up AT the crest */
     else if(t<4.5){ const u=(t-3.1)/1.4; pose='drive'; yB=lerp(yb-aS, yb-1, u*u); }  /* THE DROP-IN */
     else if(t<5.6){ pose=t<4.9?'bottom':'drive'; yB=yb-1; }        /* sinks in, settles low */
-    else if(t<11.8){
+    else if(t<12.5){
       if(t>=7.5 && t<8.7){
         /* THE air: launches off the bottom, floats over the lip */
         const u=(t-7.5)/1.2;
@@ -1773,12 +1773,11 @@ function initSeaFilm(){
         pose = s>0.72?'snapA' : (Math.sin(ph)>0?'drive':'bottom');
       }
     }
-    else if(t<12.6){ pose='back'; yB=yb-3; }
-    else if(t<12.9){ pose='tube'; yB=yb-1; }                       /* ducks as the curtain falls */
-    else if(t<16.2){ return null; }                                /* BEHIND the wave — gone */
-    else if(t<16.9){ pose='drive'; yB=yb-3; }                      /* pops out of the mouth */
-    else if(t<17.7){ pose='arch'; yB=yb-aS-(t-16.9)*10; }          /* kicks out right there */
-    else if(t<17.9){ return null; }                                /* the splash */
+    else if(t<13.0){ pose='back'; yB=yb-3; }
+    else if(t<14.2){ return null; }                    /* a brief moment UNDER the breaking edge */
+    else if(t<17.2){ pose = t<15.2?'drive':'loose'; yB=yb-2; }   /* re-emerges, rides to the end */
+    else if(t<17.9){ pose='arch'; yB=yb-aS-(t-17.2)*10; }        /* kicks out where the wave stops */
+    else if(t<18.1){ return null; }                              /* the splash */
     else { pose='paddle'; yB=H*keyed(t,YPADK)+((tick%6<3)?0:1); }
     return {x:x, yB:yB, pose:pose, dim:dim, air:air};
   }
@@ -1812,7 +1811,7 @@ function initSeaFilm(){
     const BF = W*keyed(t,BFK);
     const bd = keyed(t,BDK);
     for(let x=0;x<W;x++){
-      const a = amp*Math.max(.22,1-Math.abs(x-xc)/(W*.62));
+      const a = amp*Math.max(0,1-Math.abs(x-xc)/(W*.5));
       if(a<1.2) continue;
       const j1=hsh((x>>4),51,0)%5, j1b=hsh((x>>4)+1,51,0)%5, g1=(x&15)/16;
       const jit = a>6 ? (j1*(1-g1)+j1b*g1)*0.4 : 0;
@@ -1829,7 +1828,8 @@ function initSeaFilm(){
           const o1=hsh((x>>4),21,0)%7, o1b=hsh((x>>4)+1,21,0)%7, f1=(x&15)/16;
           const o2=hsh((x>>2),23,0)%3, o2b=hsh((x>>2)+1,23,0)%3, f2=(x&3)/4;
           const und=(o1*(1-f1)+o1b*f1)*0.5+(o2*(1-f2)+o2b*f2)*0.7;
-          const hgt=Math.max(1, a*(0.10+0.62*decay)+und-1.5);
+          let hgt=Math.max(1, a*(0.10+0.62*decay)+und-1.5);
+          if(age<0.7) hgt=Math.max(hgt, a*(1.0+0.22*bd*Math.sin(Math.PI*age/0.7)));
           const patch=Math.max(0,Math.min(5,(age-1.6)*2.2));
           if(hsh((x>>2),31,0)%7 < patch){
             if(age<6 && hsh(x,25,tick>>2)%4<1){ ctx.fillStyle='#DDEDE7'; ctx.fillRect(x,(yb+drift)|0,1,1); }
@@ -1846,120 +1846,48 @@ function initSeaFilm(){
         }
       }
       else {
-        /* unbroken: clean face, pitching harder as the front nears */
-        const d = BF-x;
-        const qp = (t>3.3 && d<14) ? (1-d/14)*bd : 0;
-        if(qp>0.12){
-          const lipH=1+((qp*4)|0);
-          for(let y=ci;y<ci+lipH && y<=base;y++){
-            ctx.fillStyle = y===ci?'#FFFFFF':'#F2F8F1';
-            ctx.fillRect(x,y,1,1);
+        /* unbroken face. Near the front the wave JACKS — stands up
+           taller with dense feather and hooking white lip tips — so
+           the breaking edge is a sculpted rise, never a flat cut. */
+        const dF = BF-x;
+        const nearBreak = t>3.3 && dF>=0 && dF<10;
+        const aJ = nearBreak ? a*(1+(1-dF/10)*(0.10+0.14*bd)) : a;
+        const crestJ = yb-aJ+jit, baseJ = Math.min(H-1, yb+2), cj = crestJ|0;
+        for(let y=cj;y<=baseJ;y++){
+          const rel=(y-crestJ)/Math.max(1,baseJ-crestJ);
+          ctx.fillStyle = rel<.12?'#D8EEE4':rel<.3?'#9FD6C4':rel<.52?'#63B8A2':rel<.75?'#3E9682':'#2A7A68';
+          ctx.fillRect(x,y,1,1);
+        }
+        if(aJ>6 && baseJ-1>cj){ ctx.fillStyle='#1F6656'; ctx.fillRect(x,baseJ-1,1,1);
+          if(aJ>10 && baseJ-2>cj) ctx.fillRect(x,baseJ-2,1,1); }
+        if(aJ>5){
+          if(nearBreak){
+            ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,cj,1,1);
+            ctx.fillStyle='#F2F8F1'; ctx.fillRect(x,cj+1,1,1);
+            if(dF<3){ ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,Math.max(0,cj-1),1,1); }
+            if(hsh(x,2,tick)%3<1){ ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,Math.max(0,cj-2),1,1); }
+          } else if(hsh((x>>2),1,tick>>1)%3<1){
+            ctx.fillStyle=hsh(x,2,tick)%3?'#F2F8F1':'#FFFFFF'; ctx.fillRect(x,cj,1,1);
+            if(hsh(x,3,tick)%4<1) ctx.fillRect(x,cj-1,1,1);
           }
-          const hol=(qp*a*0.55)|0;
-          for(let y=ci+lipH;y<=base;y++){
-            const inHol = y<ci+lipH+hol;
-            const rel=(y-crest)/Math.max(1,base-crest);
-            ctx.fillStyle = inHol ? (qp>0.6?'#1F5A4C':'#2E7F6E')
-              : (rel<.42?'#5FB09A':rel<.7?'#2F8571':'#1F6656');
-            ctx.fillRect(x,y,1,1);
-          }
-          if(base+1<H){ ctx.fillStyle='#256B5C'; ctx.fillRect(x,base+1,1,1); }
-        } else {
-          for(let y=ci;y<=base;y++){
-            const rel=(y-crest)/Math.max(1,base-crest);
-            ctx.fillStyle = rel<.12?'#D8EEE4':rel<.3?'#9FD6C4':rel<.52?'#63B8A2':rel<.75?'#3E9682':'#2A7A68';
-            ctx.fillRect(x,y,1,1);
-          }
-          if(a>6 && base-1>ci){ ctx.fillStyle='#1F6656'; ctx.fillRect(x,base-1,1,1);
-            if(a>10 && base-2>ci) ctx.fillRect(x,base-2,1,1); }
-          if(a>5){
-            if(hsh((x>>2),1,tick>>1)%3<1){ ctx.fillStyle=hsh(x,2,tick)%3?'#F2F8F1':'#FFFFFF'; ctx.fillRect(x,ci,1,1);
-              if(hsh(x,3,tick)%4<1) ctx.fillRect(x,ci-1,1,1); }
-            if(a>9 && hsh(x,4,0)%4<2){ ctx.fillStyle='#2E7F6E'; ctx.fillRect(x,ci+2,1,1); }
-            if(hsh(x,9,0)%13<1 && base-ci>4){ const off=base-2-(((tick>>1)+(x&7))%Math.max(2,base-ci-2));
-              ctx.fillStyle='#9BD4C4'; ctx.fillRect(x,off|0,1,2); }
-            if(base+1<H){ ctx.fillStyle='#2E7F6E'; ctx.fillRect(x,base+1,1,1); }
-            if(base+2<H){ ctx.fillStyle='#256B5C'; ctx.fillRect(x,base+2,1,1); }
-            if(hsh(x,13,tick>>2)%7<2 && base+3<H){ ctx.fillStyle='#EFF7F1'; ctx.fillRect(x,base+3,1,1); }
-          }
+          if(aJ>9 && hsh(x,4,0)%4<2 && !nearBreak){ ctx.fillStyle='#2E7F6E'; ctx.fillRect(x,cj+2,1,1); }
+          if(hsh(x,9,0)%13<1 && baseJ-cj>4){ const off=baseJ-2-(((tick>>1)+(x&7))%Math.max(2,baseJ-cj-2));
+            ctx.fillStyle='#9BD4C4'; ctx.fillRect(x,off|0,1,2); }
+          if(baseJ+1<H){ ctx.fillStyle='#2E7F6E'; ctx.fillRect(x,baseJ+1,1,1); }
+          if(baseJ+2<H){ ctx.fillStyle='#256B5C'; ctx.fillRect(x,baseJ+2,1,1); }
+          if(hsh(x,13,tick>>2)%7<2 && baseJ+3<H){ ctx.fillStyle='#EFF7F1'; ctx.fillRect(x,baseJ+3,1,1); }
         }
       }
     }
     const barrelOn = bd>0.5 && t>3.3 && BF>-20 && BF<W+20;
     /* 7 — the carving wake (skips his airtime) */
-    if(t>3.3 && t<11.8){
+    if((t>3.3 && t<12.5) || (t>14.3 && t<17.1)){
       for(let k=1;k<10;k++){
         const tp=t-k*0.085; if(tp<=3.3) break;
         const s=surfState(tp, keyed(tp,YBK)*H, keyed(tp,AMPK)*Math.min(1,H/52), W*(0.62-0.008*tp), tick);
         if(!s || s.air) continue;
         ctx.fillStyle = k<4?'#FFFFFF':k<7?'#F2F8F1':'#B4D8CF';
         ctx.fillRect((s.x+6)|0,(s.yB+1)|0,2,1);
-      }
-    }
-    /* 8 — THE CURL: one round C of water. The shell is the lip
-       wrapping over the top — it SWEEPS over in real time as the
-       wave throws (formation animated by the shell's end angle) —
-       with the dark hollow inside, the lit eye deep in it, drips
-       falling from the roof, and boiling foam where the tip lands.
-       Drawn before the surfer: he hides inside, then bursts through. */
-    if(barrelOn){
-      const g = Math.min(1,(bd-0.5)*2.2);
-      const r = amp*0.58, cyC = yb-amp*0.44, cxC = BF + r*0.7;
-      const endA = 30 + g*190;                    /* lip wraps 30deg -> 220deg */
-      const x0=Math.max(0,(cxC-r-1)|0), x1=Math.min(W-1,(cxC+r+1)|0);
-      const y0=Math.max(0,(cyC-r-1)|0), y1=Math.min(H-1,(cyC+r+1)|0);
-      for(let y=y0;y<=y1;y++)
-        for(let x=x0;x<=x1;x++){
-          const dx=x-cxC, dy=cyC-y;
-          const d=Math.hypot(dx,dy);
-          if(d>r) continue;
-          let ang=Math.atan2(dy,dx)*180/Math.PI; if(ang<0) ang+=360;
-          const shellTh = 3.2+1.6*Math.max(0,Math.sin(ang*Math.PI/180));
-          if(d>r-shellTh){
-            if(ang<=endA || ang>=332){
-              const sd=r-d;
-              const churn=((y-tick)%3+3)%3;      /* water streams along the shell */
-              ctx.fillStyle = sd<1?'#FFFFFF':(churn===0?'#FFFFFF':churn===1?'#F2F8F1':'#E7F1EA');
-              ctx.fillRect(x,y,1,1);
-            }
-          } else {
-            const inOpen = ang>215 && ang<335 && d>r*0.35;
-            if(!inOpen && g>0.25){
-              ctx.fillStyle = dx>r*0.15?'#1F5A4C':'#2A7A68';
-              ctx.fillRect(x,y,1,1);
-            }
-          }
-        }
-      /* the eye — light at the end of the tunnel */
-      if(g>0.6){
-        const ex=cxC+r*0.34, ey=cyC+r*0.06, rx=Math.max(1,r*0.32), ry=Math.max(1,r*0.26);
-        for(let y=(ey-ry)|0;y<=(ey+ry)|0;y++)
-          for(let x=(ex-rx)|0;x<=(ex+rx)|0;x++){
-            if(x<0||x>=W||y<0||y>=H) continue;
-            const dd=Math.hypot((x-ex)/rx,(y-ey)/ry);
-            if(dd<=1){ ctx.fillStyle=dd<.55?'#9AD6C2':'#6FBFA8'; ctx.fillRect(x,y,1,1); }
-          }
-      }
-      /* drips off the roof of the tube */
-      for(let k=0;k<3;k++){
-        const xd=(cxC - r*0.45 + k*r*0.32)|0;
-        if(xd>=0 && xd<W && hsh(k,7,tick)%3===0){
-          ctx.fillStyle='#DDEDE7';
-          ctx.fillRect(xd,Math.max(0,(cyC-r*0.4)|0),1,2+(hsh(k,9,tick)%3));
-        }
-      }
-      /* the tip lands here: boiling foam */
-      if(g>0.7){
-        const tipA=Math.min(endA,220)*Math.PI/180;
-        const tx=(cxC+r*Math.cos(tipA))|0, ty=(cyC-r*Math.sin(tipA))|0;
-        for(let x=Math.max(0,tx-4);x<=Math.min(W-1,tx+4);x++){
-          const fh=2+(hsh(x,41,tick>>1)%3);
-          const yEnd=Math.min(H-1,(yb+2)|0);
-          for(let y=Math.max(0,ty-1);y<=Math.min(yEnd,ty+fh);y++){
-            ctx.fillStyle=hsh(x,y,tick)%4?'#F2F8F1':'#FFFFFF';
-            ctx.fillRect(x,y,1,1);
-          }
-        }
       }
     }
     /* 9 — the surfer (nothing draws over him when he's visible) */
@@ -1979,10 +1907,10 @@ function initSeaFilm(){
     for(const ta of [6.125,10.325]) burst(t,ta,W*keyed(ta,XSURF),yb-keyed(ta,AMPK)*Math.min(1,H/52)-2,7,(ta*10)|0,1.3);
     burst(t,8.1,W*keyed(8.1,XSURF),yb-amp-8,20,808,2.4);
     burst(t,8.65,W*keyed(8.65,XSURF),yb-4,10,855,1.6);
-    burst(t,16.4,W*0.315,yb-6,20,777,2.3);
-    burst(t,17.6,W*0.272,yb-amp*0.6,12,555,1.8);
+    burst(t,14.25,W*0.355,yb-5,10,777,1.6);
+    burst(t,17.75,W*0.118,yb-2,12,555,1.6);
     /* 11 — his paddle strokes on the way back out */
-    if(t>18.2 && t<21.8 && (tick%5<2)){
+    if(t>18.3 && t<21.0 && (tick%5<2)){
       const s=surfState(t, yb, amp, xc, tick);
       if(s){ ctx.fillStyle='#F2F8F1'; ctx.fillRect((s.x-8)|0,(s.yB+1)|0,2,1); }
     }
