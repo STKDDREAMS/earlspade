@@ -1821,25 +1821,7 @@ function initSeaFilm(){
       if(broken){
         const age = t - tBreak(x);
         if(age>6.5) continue;
-        if(age<0.55 && bd>0.5){
-          /* just thrown: the tube — lip crown over the hollow,
-             crumbling as it ages toward the train */
-          const crumble=age/0.55;
-          const crH=(crumble*(base-ci)*0.45)|0;
-          ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,ci,1,1);
-          ctx.fillStyle='#F2F8F1'; ctx.fillRect(x,ci+1,1,2+crH);
-          const mid=(ci+3+(base-ci)*0.5)|0;
-          for(let y=ci+3+crH;y<=base-1;y++){
-            ctx.fillStyle = y<mid?'#1F5A4C':'#2A7A68';
-            ctx.fillRect(x,y,1,1);
-          }
-          ctx.fillStyle='#F2F8F1'; ctx.fillRect(x,base,1,1);
-          if(base+1<H){ ctx.fillStyle='#256B5C'; ctx.fillRect(x,base+1,1,1); }
-          if(hsh(x,29,tick>>1)%5===0){
-            const dl=2+(hsh(x,33,tick)%Math.max(2,((base-ci)*0.5)|0));
-            ctx.fillStyle='#DDEDE7'; ctx.fillRect(x,ci+3+crH,1,Math.min(dl,H-1-(ci+3+crH)));
-          }
-        } else {
+        {
           /* whitewater bore aging into patches, then dashes, then sea:
              two soft octaves keep the top rolling, never a flat slab */
           const decay=Math.exp(-age/2.2);
@@ -1862,7 +1844,8 @@ function initSeaFilm(){
             else if(age<2.5 && hsh(x>>1,3,tick>>2)%6===0){ ctx.fillStyle='#DDEDE7'; ctx.fillRect(x,top+2+(hsh(x,3,1)%4),1,2); }
           }
         }
-      } else {
+      }
+      else {
         /* unbroken: clean face, pitching harder as the front nears */
         const d = BF-x;
         const qp = (t>3.3 && d<14) ? (1-d/14)*bd : 0;
@@ -1902,18 +1885,7 @@ function initSeaFilm(){
         }
       }
     }
-    /* 6 — the eye of the tube, glowing in the freshest hollow */
     const barrelOn = bd>0.5 && t>3.3 && BF>-20 && BF<W+20;
-    if(barrelOn){
-      const ex=BF+amp*0.45, ey=yb-amp*0.42, rx=amp*0.4, ry=amp*0.26;
-      for(let y=(ey-ry)|0;y<=(ey+ry)|0;y++)
-        for(let x=(ex-rx)|0;x<=(ex+rx)|0;x++){
-          if(x<0||x>=W||y<0||y>=H) continue;
-          if(x<=BF || t-tBreak(x)>=0.55) continue;
-          const dd=Math.hypot((x-ex)/Math.max(1,rx),(y-ey)/Math.max(1,ry));
-          if(dd<=1){ ctx.fillStyle=dd<.55?'#9AD6C2':'#6FBFA8'; ctx.fillRect(x,y,1,1); }
-        }
-    }
     /* 7 — the carving wake (skips his airtime) */
     if(t>3.3 && t<11.8){
       for(let k=1;k<10;k++){
@@ -1924,35 +1896,69 @@ function initSeaFilm(){
         ctx.fillRect((s.x+6)|0,(s.yB+1)|0,2,1);
       }
     }
-    /* 8 — the falling lip curtain (BEFORE him: he hides behind it,
-       and bursts through it on the way out). The curtain streams
-       downward every tick; its foot boils and sways. */
+    /* 8 — THE CURL: one round C of water. The shell is the lip
+       wrapping over the top — it SWEEPS over in real time as the
+       wave throws (formation animated by the shell's end angle) —
+       with the dark hollow inside, the lit eye deep in it, drips
+       falling from the roof, and boiling foam where the tip lands.
+       Drawn before the surfer: he hides inside, then bursts through. */
     if(barrelOn){
       const g = Math.min(1,(bd-0.5)*2.2);
-      const xM = BF+1;
-      const cTop = (yb-amp)|0;
-      const fall = (amp+2)*g;
-      for(let j=0;j<fall;j++){
-        const y = cTop+j; if(y<0||y>=H) continue;
-        const u = j/Math.max(1,amp+1);
-        const xo = (xM - u*u*amp*0.5)|0;
-        const th = 2 + ((u*2.5)|0);
-        const stream = ['#F2F8F1','#FFFFFF','#E9F3EC'][(((j-tick)%3)+3)%3];
-        for(let i=0;i<th;i++){
-          const x = xo-i; if(x<0||x>=W) continue;
-          ctx.fillStyle = i===th-1?'#FFFFFF':(i===0?'#B4D8CF':stream);
-          ctx.fillRect(x,y,1,1);
+      const r = amp*0.58, cyC = yb-amp*0.44, cxC = BF + r*0.7;
+      const endA = 30 + g*190;                    /* lip wraps 30deg -> 220deg */
+      const x0=Math.max(0,(cxC-r-1)|0), x1=Math.min(W-1,(cxC+r+1)|0);
+      const y0=Math.max(0,(cyC-r-1)|0), y1=Math.min(H-1,(cyC+r+1)|0);
+      for(let y=y0;y<=y1;y++)
+        for(let x=x0;x<=x1;x++){
+          const dx=x-cxC, dy=cyC-y;
+          const d=Math.hypot(dx,dy);
+          if(d>r) continue;
+          let ang=Math.atan2(dy,dx)*180/Math.PI; if(ang<0) ang+=360;
+          const shellTh = 3.2+1.6*Math.max(0,Math.sin(ang*Math.PI/180));
+          if(d>r-shellTh){
+            if(ang<=endA || ang>=332){
+              const sd=r-d;
+              const churn=((y-tick)%3+3)%3;      /* water streams along the shell */
+              ctx.fillStyle = sd<1?'#FFFFFF':(churn===0?'#FFFFFF':churn===1?'#F2F8F1':'#E7F1EA');
+              ctx.fillRect(x,y,1,1);
+            }
+          } else {
+            const inOpen = ang>215 && ang<335 && d>r*0.35;
+            if(!inOpen && g>0.25){
+              ctx.fillStyle = dx>r*0.15?'#1F5A4C':'#2A7A68';
+              ctx.fillRect(x,y,1,1);
+            }
+          }
+        }
+      /* the eye — light at the end of the tunnel */
+      if(g>0.6){
+        const ex=cxC+r*0.34, ey=cyC+r*0.06, rx=Math.max(1,r*0.32), ry=Math.max(1,r*0.26);
+        for(let y=(ey-ry)|0;y<=(ey+ry)|0;y++)
+          for(let x=(ex-rx)|0;x<=(ex+rx)|0;x++){
+            if(x<0||x>=W||y<0||y>=H) continue;
+            const dd=Math.hypot((x-ex)/rx,(y-ey)/ry);
+            if(dd<=1){ ctx.fillStyle=dd<.55?'#9AD6C2':'#6FBFA8'; ctx.fillRect(x,y,1,1); }
+          }
+      }
+      /* drips off the roof of the tube */
+      for(let k=0;k<3;k++){
+        const xd=(cxC - r*0.45 + k*r*0.32)|0;
+        if(xd>=0 && xd<W && hsh(k,7,tick)%3===0){
+          ctx.fillStyle='#DDEDE7';
+          ctx.fillRect(xd,Math.max(0,(cyC-r*0.4)|0),1,2+(hsh(k,9,tick)%3));
         }
       }
-      if(g>0.55){
-        const foot=(xM - amp*0.5 + (tick%2))|0;
-        for(let x=Math.max(0,foot-4);x<=Math.min(W-1,foot+4);x++){
+      /* the tip lands here: boiling foam */
+      if(g>0.7){
+        const tipA=Math.min(endA,220)*Math.PI/180;
+        const tx=(cxC+r*Math.cos(tipA))|0, ty=(cyC-r*Math.sin(tipA))|0;
+        for(let x=Math.max(0,tx-4);x<=Math.min(W-1,tx+4);x++){
           const fh=2+(hsh(x,41,tick>>1)%3);
-          for(let y=Math.max(0,(yb-fh)|0);y<=Math.min(H-1,(yb+1)|0);y++){
-            ctx.fillStyle = hsh(x,y,tick)%4?'#F2F8F1':'#FFFFFF';
+          const yEnd=Math.min(H-1,(yb+2)|0);
+          for(let y=Math.max(0,ty-1);y<=Math.min(yEnd,ty+fh);y++){
+            ctx.fillStyle=hsh(x,y,tick)%4?'#F2F8F1':'#FFFFFF';
             ctx.fillRect(x,y,1,1);
           }
-          if(hsh(x,43,tick)%6===0){ ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,Math.max(0,(yb-fh-1-(hsh(x,47,tick)%2))|0),1,1); }
         }
       }
     }
