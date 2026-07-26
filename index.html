@@ -1702,8 +1702,9 @@ function initSeaFilm(){
   let ctx, W = 0, H = 0, raf = 0, playing = false, rz = 0, t0 = performance.now(), lastTick = -1;
   function sizes(){
     const r = cv.getBoundingClientRect();
-    W = Math.min(640, Math.max(96, Math.round(r.width/3)));
-    H = Math.max(28, Math.round(r.height/3));
+    const S = r.width < 520 ? 2 : 3;   /* denser buffer on phones: keeps wave-vs-surfer proportions */
+    W = Math.min(640, Math.max(96, Math.round(r.width/S)));
+    H = Math.max(28, Math.round(r.height/S));
     cv.width = W; cv.height = H;
     ctx = cv.getContext('2d');
   }
@@ -1831,6 +1832,10 @@ function initSeaFilm(){
           }
           ctx.fillStyle='#F2F8F1'; ctx.fillRect(x,base,1,1);
           if(base+1<H){ ctx.fillStyle='#256B5C'; ctx.fillRect(x,base+1,1,1); }
+          if(hsh(x,29,tick>>1)%5===0){
+            const dl=2+(hsh(x,33,tick)%Math.max(2,((base-ci)*0.5)|0));
+            ctx.fillStyle='#DDEDE7'; ctx.fillRect(x,ci+3+crH,1,Math.min(dl,H-1-(ci+3+crH)));
+          }
         } else {
           /* whitewater bore aging into patches, then dashes, then sea:
              two soft octaves keep the top rolling, never a flat slab */
@@ -1920,37 +1925,28 @@ function initSeaFilm(){
     if(barrelOn){
       const g = Math.min(1,(bd-0.5)*2.2);
       const xM = BF+1;
-      const arcR = amp*1.05*g;
-      let lx=0;
-      for(let u=0;u<=1.0001;u+=0.07){
-        const px=(xM - u*u*arcR*0.72)|0;
-        const py=((yb-amp) + u*(amp+2)*0.97)|0;
-        if(px<0||px>=W||py<0||py>=H) continue;
-        ctx.fillStyle = u<0.3?'#FFFFFF':'#F2F8F1';
-        ctx.fillRect(px,py,2,2);
-        if(u>0.25&&u<0.8){ ctx.fillStyle='#B4D8CF'; ctx.fillRect(px+2,py,1,2); }
-        lx=px;
-      }
-      if(g>0.5){
-        const fx0=Math.max(0,lx-5), fx1=Math.min(W-1,lx+7);
-        for(let x=fx0;x<=fx1;x++){
-          const u=(x-fx0)/Math.max(1,fx1-fx0);
-          const fh=(2+4*Math.sin(Math.PI*u)*g)|0;
-          const top=Math.max(0,(yb-fh)|0);
-          for(let y=top;y<=Math.min(H-1,(yb+2)|0);y++){
-            ctx.fillStyle = y===top?'#FFFFFF':'#F2F8F1';
-            ctx.fillRect(x,y,1,1);
-          }
-          if(hsh(x>>1,9,tick>>1)%4===0){ ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,top-1,1,1); }
+      const cTop = (yb-amp)|0;
+      const fall = (amp+2)*g;         /* how far the tongue has fallen */
+      for(let j=0;j<fall;j++){
+        const y = cTop+j; if(y<0||y>=H) continue;
+        const u = j/Math.max(1,amp+1);
+        const xo = (xM - u*u*amp*0.5)|0;
+        const th = 2 + ((u*2.5)|0);
+        for(let i=0;i<th;i++){
+          const x = xo-i; if(x<0||x>=W) continue;
+          ctx.fillStyle = i===th-1?'#FFFFFF':(i===0?'#B4D8CF':'#F2F8F1');
+          ctx.fillRect(x,y,1,1);
         }
       }
-      if(g>0.8){
-        for(let k=0;k<3;k++){
-          const xd=(xM+2+k*amp*0.28)|0;
-          if(xd<0||xd>=W-1) continue;
-          const top=(yb-amp*0.72)|0, len=(amp*0.5+(hsh(k,5,tick>>2)%3))|0;
-          ctx.fillStyle=k%2?'#B4D8CF':'#DDEDE7';
-          ctx.fillRect(xd,Math.max(0,top),1,Math.min(len,H-top-1));
+      /* the tongue's foot boils where it lands — small, attached */
+      if(g>0.55){
+        const foot=(xM - amp*0.5)|0;
+        for(let x=Math.max(0,foot-4);x<=Math.min(W-1,foot+4);x++){
+          const fh=2+(hsh(x,41,tick>>1)%3);
+          for(let y=Math.max(0,(yb-fh)|0);y<=Math.min(H-1,(yb+1)|0);y++){
+            ctx.fillStyle = hsh(x,y,tick)%4?'#F2F8F1':'#FFFFFF';
+            ctx.fillRect(x,y,1,1);
+          }
         }
       }
       for(let k=0;k<9;k++){
