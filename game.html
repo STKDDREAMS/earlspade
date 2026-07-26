@@ -170,12 +170,41 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block;
   background:var(--gold);box-shadow:2px 2px 0 0 rgba(22,20,18,.25)}
 .dialog .big-score{font-size:1.1rem;color:var(--red);margin-bottom:.8rem;font-variant-numeric:tabular-nums}
 .dialog .sub{font-size:.4rem;color:var(--ink-soft);line-height:2;margin-bottom:.75rem}
-.lb{margin:0 0 .85rem;text-align:left}
-.lb-row{display:flex;align-items:baseline;gap:.5rem;font-size:.42rem;line-height:2.3;color:var(--ink)}
-.lb-row .rk{width:1.6em;color:var(--ink-soft)}
+/* ===== THE DEEP TEN — the board is a window into the sea. Foam hem
+   up top, stepped water bands going deeper, a sandy seabed with kelp,
+   coral, a shell and a shy starfish; bubbles drift up behind the
+   names. All hand-pixelled SVG tiles in the cove's day palette. ===== */
+.lb{margin:0 0 .85rem;text-align:left;position:relative;overflow:hidden;
+  border:2px solid var(--ink);box-shadow:2px 2px 0 0 rgba(22,20,18,.25);
+  padding:.8rem .5rem 1.35rem;
+  background-color:#3FB8AC;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='10'%3E%3Cg fill='%23EFF8F1'%3E%3Crect width='32' height='2'/%3E%3Crect y='2' width='5' height='1'/%3E%3Crect x='9' y='2' width='8' height='2'/%3E%3Crect x='11' y='4' width='4' height='1'/%3E%3Crect x='21' y='2' width='5' height='1'/%3E%3Crect x='28' y='2' width='4' height='2'/%3E%3C/g%3E%3Cg fill='%239ADFD4'%3E%3Crect y='3' width='5' height='1'/%3E%3Crect x='5' y='2' width='4' height='1'/%3E%3Crect x='9' y='4' width='2' height='1'/%3E%3Crect x='13' y='5' width='3' height='1'/%3E%3Crect x='21' y='3' width='5' height='1'/%3E%3Crect x='26' y='2' width='2' height='1'/%3E%3C/g%3E%3Cg fill='%2363CCBE'%3E%3Crect x='3' y='6' width='4' height='1'/%3E%3Crect x='18' y='7' width='5' height='1'/%3E%3Crect x='27' y='5' width='3' height='1'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='14'%3E%3Cg fill='%23F0D9A0'%3E%3Crect y='10' width='96' height='4'/%3E%3Crect x='4' y='9' width='8' height='1'/%3E%3Crect x='28' y='8' width='12' height='2'/%3E%3Crect x='56' y='9' width='10' height='1'/%3E%3Crect x='80' y='9' width='7' height='1'/%3E%3C/g%3E%3Cg fill='%23D9BB79'%3E%3Crect x='9' y='12' width='2' height='1'/%3E%3Crect x='25' y='11' width='2' height='1'/%3E%3Crect x='47' y='12' width='2' height='1'/%3E%3Crect x='69' y='11' width='2' height='1'/%3E%3Crect x='88' y='12' width='2' height='1'/%3E%3C/g%3E%3Cg fill='%2355AC64'%3E%3Crect x='8' y='1' width='2' height='2'/%3E%3Crect x='7' y='3' width='2' height='1'/%3E%3Crect x='10' y='4' width='2' height='1'/%3E%3Crect x='75' y='5' width='2' height='1'/%3E%3C/g%3E%3Cg fill='%233B854D'%3E%3Crect x='7' y='4' width='2' height='1'/%3E%3Crect x='8' y='5' width='2' height='2'/%3E%3Crect x='9' y='7' width='2' height='2'/%3E%3Crect x='8' y='9' width='2' height='1'/%3E%3Crect x='5' y='7' width='2' height='1'/%3E%3Crect x='74' y='6' width='2' height='2'/%3E%3Crect x='75' y='8' width='2' height='2'/%3E%3C/g%3E%3Cg fill='%23F2707A'%3E%3Crect x='38' y='6' width='1' height='4'/%3E%3Crect x='40' y='4' width='2' height='6'/%3E%3Crect x='43' y='6' width='1' height='4'/%3E%3C/g%3E%3Cg fill='%23F8A2AA'%3E%3Crect x='38' y='5' width='1' height='1'/%3E%3Crect x='40' y='3' width='2' height='1'/%3E%3Crect x='43' y='5' width='1' height='1'/%3E%3C/g%3E%3Cg fill='%23D5A43C'%3E%3Crect x='60' y='8' width='3' height='1'/%3E%3Crect x='61' y='7' width='1' height='3'/%3E%3C/g%3E%3Crect x='20' y='8' width='3' height='2' fill='%23EFF8F1'/%3E%3Crect x='21' y='8' width='1' height='2' fill='%239ADFD4'/%3E%3Crect x='50' y='8' width='4' height='2' fill='%23C8A468'/%3E%3Crect x='50' y='8' width='4' height='1' fill='%23D9BB79'/%3E%3C/svg%3E"),
+    linear-gradient(180deg,#3FB8AC 0,#3FB8AC 32%,#38ACA6 32%,#38ACA6 56%,#2E9AA0 56%,#2E9AA0 78%,#28868E 78%);
+  background-repeat:repeat-x,repeat-x,no-repeat;
+  background-position:0 0,0 100%,0 0;
+  background-size:64px 20px,192px 28px,100% 100%;
+  image-rendering:pixelated}
+/* bubbles rise the whole time the board is open (the global
+   reduced-motion rule simply parks them in place) */
+.lb::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='48'%3E%3Cg fill='%23C6E4E1'%3E%3Crect x='5' y='6' width='1' height='1'/%3E%3Crect x='6' y='7' width='1' height='1'/%3E%3Crect x='5' y='8' width='1' height='1'/%3E%3Crect x='10' y='30' width='1' height='1'/%3E%3Crect x='9' y='31' width='1' height='1'/%3E%3Crect x='11' y='31' width='1' height='1'/%3E%3Crect x='10' y='32' width='1' height='1'/%3E%3Crect x='14' y='43' width='1' height='1'/%3E%3Crect x='13' y='44' width='1' height='1'/%3E%3Crect x='15' y='44' width='1' height='1'/%3E%3Crect x='14' y='45' width='1' height='1'/%3E%3C/g%3E%3Crect x='4' y='7' width='1' height='1' fill='%23EFF8F1'/%3E%3Crect x='16' y='18' width='2' height='2' fill='%239ADFD4'/%3E%3Crect x='19' y='40' width='1' height='1' fill='%23EFF8F1'/%3E%3Crect x='2' y='26' width='1' height='1' fill='%239ADFD4'/%3E%3C/svg%3E") repeat 0 0/48px 96px;
+  animation:lbBubbles 12s linear infinite}
+@keyframes lbBubbles{to{background-position:0 -96px}}
+.lb-row{position:relative;z-index:1;display:flex;align-items:center;gap:.45rem;
+  min-height:19px;font-size:.42rem;line-height:1.5;color:#F4F1E9;
+  padding:.14rem .2rem;text-shadow:1px 1px 0 rgba(22,20,18,.5)}
+.lb-row .rk{flex:none;width:20px;display:flex;justify-content:center;color:#9ADFD4}
+.lb-row .rk svg{display:block}
 .lb-row .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lb-row .sc{font-variant-numeric:tabular-nums}
-.lb-row.me{color:var(--red)}
+.lb-row .sc{font-variant-numeric:tabular-nums;color:#FFE9AE}
+/* your line on the board: a dark water band with gold type */
+.lb-row.me{background:rgba(22,20,18,.3)}
+.lb-row.me .rk,.lb-row.me .nm,.lb-row.me .sc{color:#F2CC70}
+/* the sunken cup — hand-pixelled crest above THE DEEP TEN */
+.board-crest{display:flex;justify-content:center;margin:.05rem 0 .6rem}
+.board-crest svg{display:block}
 .lb-note{font-size:.38rem;color:var(--ink-soft);line-height:2;margin-bottom:.8rem}
 .name-row{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.85rem}
 /* Full pixel treatment on the inputs — but NEVER under 16px, or iOS
@@ -448,6 +477,54 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 
     <!-- THE BOARD — mid-game leaderboard -->
     <div class="dialog" id="boardDialog" role="dialog" aria-modal="true" aria-label="Leaderboard">
+      <!-- the sunken cup: the trophy went down with the ship — kelp,
+           coral and the fish keep it company on the seabed -->
+      <div class="board-crest" aria-hidden="true">
+        <svg width="138" height="72" viewBox="0 0 46 24" shape-rendering="crispEdges">
+          <g fill="#F0D9A0"><rect x="8" y="19" width="30" height="1"/><rect x="5" y="20" width="36" height="1"/><rect x="2" y="21" width="42" height="3"/></g>
+          <g fill="#D9BB79"><rect x="10" y="22" width="2" height="1"/><rect x="20" y="22" width="2" height="1"/><rect x="26" y="21" width="2" height="1"/><rect x="31" y="22" width="2" height="1"/><rect x="38" y="22" width="2" height="1"/></g>
+          <g fill="#161412">
+            <rect x="16" y="2" width="14" height="1"/>
+            <rect x="16" y="3" width="1" height="5"/><rect x="29" y="3" width="1" height="5"/>
+            <rect x="13" y="3" width="3" height="1"/><rect x="12" y="4" width="1" height="3"/><rect x="13" y="7" width="3" height="1"/>
+            <rect x="30" y="3" width="3" height="1"/><rect x="33" y="4" width="1" height="3"/><rect x="30" y="7" width="3" height="1"/>
+            <rect x="17" y="8" width="1" height="1"/><rect x="28" y="8" width="1" height="1"/>
+            <rect x="18" y="9" width="1" height="1"/><rect x="27" y="9" width="1" height="1"/>
+            <rect x="19" y="10" width="1" height="1"/><rect x="26" y="10" width="1" height="1"/>
+            <rect x="20" y="11" width="1" height="4"/><rect x="25" y="11" width="1" height="4"/>
+            <rect x="18" y="15" width="1" height="1"/><rect x="27" y="15" width="1" height="1"/>
+            <rect x="16" y="16" width="1" height="2"/><rect x="29" y="16" width="1" height="2"/>
+            <rect x="16" y="18" width="14" height="1"/>
+          </g>
+          <rect x="17" y="3" width="12" height="1" fill="#F2CC70"/>
+          <g fill="#D5A43C">
+            <rect x="17" y="4" width="12" height="3"/>
+            <rect x="21" y="11" width="1" height="4"/>
+            <rect x="19" y="15" width="8" height="1"/><rect x="17" y="16" width="12" height="1"/>
+          </g>
+          <g fill="#C4922A">
+            <rect x="17" y="7" width="12" height="1"/>
+            <rect x="13" y="4" width="1" height="3"/><rect x="32" y="4" width="1" height="3"/>
+            <rect x="18" y="8" width="10" height="1"/><rect x="19" y="9" width="8" height="1"/><rect x="20" y="10" width="6" height="1"/>
+            <rect x="22" y="11" width="3" height="4"/>
+          </g>
+          <rect x="18" y="4" width="1" height="2" fill="#FFF2C4"/>
+          <rect x="17" y="17" width="12" height="1" fill="#DC1015"/>
+          <rect x="12" y="2" width="2" height="1" fill="#55AC64"/><rect x="11" y="3" width="1" height="2" fill="#3B854D"/>
+          <g fill="#55AC64"><rect x="5" y="8" width="2" height="1"/><rect x="5" y="9" width="2" height="1"/><rect x="4" y="10" width="2" height="1"/><rect x="7" y="11" width="2" height="1"/><rect x="40" y="12" width="2" height="1"/><rect x="41" y="13" width="2" height="1"/></g>
+          <g fill="#3B854D"><rect x="4" y="11" width="2" height="1"/><rect x="5" y="12" width="2" height="2"/><rect x="6" y="14" width="2" height="2"/><rect x="5" y="16" width="2" height="2"/><rect x="4" y="18" width="2" height="1"/><rect x="2" y="14" width="2" height="1"/><rect x="41" y="14" width="2" height="1"/><rect x="40" y="15" width="2" height="2"/><rect x="41" y="17" width="2" height="2"/></g>
+          <g fill="#F2707A"><rect x="32" y="14" width="1" height="4"/><rect x="34" y="12" width="2" height="6"/><rect x="37" y="14" width="1" height="4"/><rect x="32" y="18" width="6" height="1"/></g>
+          <g fill="#F8A2AA"><rect x="32" y="13" width="1" height="1"/><rect x="34" y="11" width="2" height="1"/><rect x="37" y="13" width="1" height="1"/></g>
+          <rect x="9" y="17" width="3" height="1" fill="#D5A43C"/><rect x="10" y="16" width="1" height="3" fill="#D5A43C"/>
+          <rect x="3" y="4" width="5" height="2" fill="#DC1015"/>
+          <g fill="#B00D12"><rect x="5" y="3" width="2" height="1"/><rect x="4" y="6" width="3" height="1"/><rect x="2" y="4" width="1" height="2"/><rect x="1" y="3" width="1" height="1"/><rect x="1" y="6" width="1" height="1"/></g>
+          <g fill="#D5A43C"><rect x="38" y="5" width="3" height="2"/><rect x="37" y="6" width="1" height="1"/></g>
+          <g fill="#C4922A"><rect x="38" y="7" width="3" height="1"/><rect x="41" y="5" width="1" height="1"/><rect x="41" y="7" width="1" height="1"/></g>
+          <g fill="#63CCBE"><rect x="22" y="0" width="2" height="2"/><rect x="26" y="1" width="1" height="1"/><rect x="19" y="0" width="1" height="1"/></g>
+          <rect x="22" y="0" width="1" height="1" fill="#EFF8F1"/>
+          <g fill="#161412"><rect x="6" y="4" width="1" height="1"/><rect x="38" y="6" width="1" height="1"/></g>
+        </svg>
+      </div>
       <h2>THE DEEP TEN</h2>
       <div class="lb-note" id="bdStatus">loading the board&hellip;</div>
       <div class="lb" id="bdList" style="display:none"></div>
