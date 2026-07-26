@@ -1715,13 +1715,13 @@ function initSeaFilm(){
     for(let i=1;i<k.length;i++) if(t<=k[i][0]) return lerp(k[i-1][1],k[i][1],(t-k[i-1][0])/(k[i][0]-k[i-1][0]));
     return k[k.length-1][1];
   }
-  function stamp(name,x0,y0,dim){
+  function stamp(name,x0,y0,dim,mir){
     const rows = SEAF.poses[name]; if(!rows) return;
     x0|=0; y0|=0;
-    for(let j=0;j<rows.length;j++){ const row=rows[j];
-      for(let i=0;i<row.length;i++){ const ch=row[i]; if(ch==='.') continue;
+    for(let j=0;j<rows.length;j++){ const row=rows[j]; const L=row.length;
+      for(let i=0;i<L;i++){ const ch=row[i]; if(ch==='.') continue;
         ctx.fillStyle = dim ? (DIM[ch]||SEAF.pal[ch]) : SEAF.pal[ch];
-        ctx.fillRect(x0+i, y0+j, 1, 1);
+        ctx.fillRect(x0+(mir?L-1-i:i), y0+j, 1, 1);
       }}
   }
   function burst(t,t0b,x0,y0,n,seed,spread){
@@ -1734,15 +1734,15 @@ function initSeaFilm(){
   }
   /* ---- the wave's life ---- */
   const YBK  = [[0,.15],[2.5,.2],[6,.46],[11,.56],[16.5,.6],[18,.64],[19.5,.7],[21,.76],[22,.78]];
-  const AMPK = [[0,2],[2.5,4.5],[6,14],[11,17],[16.5,18],[18,15],[19.5,10],[21,4],[22,1.6]];
+  const AMPK = [[0,0],[1.5,2.2],[2.5,4.5],[6,14],[11,17],[16.5,18],[18,15],[19.5,10],[20.6,4],[21.2,0],[22,0]];
   /* the break front's run down the line (fractions of W, monotonic) */
   const BFK  = [[3.3,1.02],[4.2,.72],[5.6,.63],[8,.53],[12.5,.41],[13,.375],[14.2,.36],[17.2,.19],[19,.02],[19.6,-.08]];
   /* how hard the pitching section throws: feathering during the
      shred, full plunging tube for the barrel window */
   const BDK  = [[3,.3],[12.3,.4],[13,1],[14.4,1],[15.4,.5],[18,.35],[20.5,.25]];
   /* his line across the bay, and back out to the lineup */
-  const XSURF = [[0,.66],[2.5,.66],[3.1,.645],[4.5,.60],[5.6,.575],[12.5,.40],[13,.385],[14.2,.36],[17.2,.135],[17.9,.115],[18.1,.11],[19.5,.32],[21.2,.655],[22,.66]];
-  const YPADK = [[18.1,.5],[19.5,.38],[21.2,.16],[22,.15]];
+  const XSURF = [[0,.66],[2.5,.66],[3.1,.645],[4.5,.60],[5.6,.575],[12.5,.40],[13,.385],[14.2,.36],[17.2,.135],[18.05,.115],[18.35,.115],[19.5,.32],[21.2,.655],[22,.66]];
+  const YPADK = [[18.35,.64],[19.5,.4],[21.2,.16],[22,.15]];
   function tBreak(x){            /* when did the front pass column x */
     if(x>=W*1.02) return 3.3;
     for(let i=1;i<BFK.length;i++){
@@ -1754,7 +1754,7 @@ function initSeaFilm(){
   function surfState(t, yb, amp, xc, tick){
     const x = W*keyed(t,XSURF);
     const aS = amp*Math.max(0,1-Math.abs(x-xc)/(W*.5));
-    let pose,yB,dim=false,air=false;
+    let pose,yB,dim=false,air=false,behind=false,mir=false;
     if(t<2.5){ pose='paddle'; yB=yb-aS+((tick%6<3)?0:1); }
     else if(t<3.1){ pose='popup'; yB=yb-aS; }                      /* pops up AT the crest */
     else if(t<4.5){ const u=(t-3.1)/1.4; pose='drive'; yB=lerp(yb-aS, yb-1, u*u); }  /* THE DROP-IN */
@@ -1770,16 +1770,18 @@ function initSeaFilm(){
         /* silky sine carves — starts smooth from the low line */
         const ph=2*Math.PI*(t-5.6)/2.1, s=-Math.cos(ph);
         yB = yb-1-(s+1)*0.5*Math.max(2,aS-1);
-        pose = s>0.72?'snapA' : (Math.sin(ph)>0?'drive':'bottom');
+        pose = Math.sin(ph)>0?'drive':'bottom';
       }
     }
     else if(t<13.0){ pose='back'; yB=yb-3; }
-    else if(t<14.2){ return null; }                    /* a brief moment UNDER the breaking edge */
-    else if(t<17.2){ pose = t<15.2?'drive':'loose'; yB=yb-2; }   /* re-emerges, rides to the end */
-    else if(t<17.9){ pose='arch'; yB=yb-aS-(t-17.2)*10; }        /* kicks out where the wave stops */
-    else if(t<18.1){ return null; }                              /* the splash */
-    else { pose='paddle'; yB=H*keyed(t,YPADK)+((tick%6<3)?0:1); }
-    return {x:x, yB:yB, pose:pose, dim:dim, air:air};
+    else if(t<14.2){ pose='tube'; yB=yb-2; behind=true; }  /* the crown rolls OVER him */
+    else if(t<17.2){ pose = ((t*1.7)|0)%2?'bottom':'drive'; yB=yb-2; }  /* cruising out */
+    else if(t<17.5){ pose='arch'; yB=yb-aS-(t-17.2)*12; }        /* throws it over the back */
+    else if(t<17.8){ pose='snapC'; yB=yb-aS-3.6+(t-17.5)*2; }    /* rotating out, floating */
+    else if(t<18.05){ pose='snapC'; yB=lerp(yb-aS-3, yb+1, (t-17.8)/0.25); }  /* falling */
+    else if(t<18.35){ return null; }                             /* in the splash */
+    else { pose='paddle'; mir = t<21.2; yB=H*keyed(t,YPADK)+((tick%6<3)?0:1); }
+    return {x:x, yB:yB, pose:pose, dim:dim, air:air, behind:behind, mir:mir};
   }
   function render(t){
     const tick = Math.floor(t*FPS);
@@ -1788,7 +1790,7 @@ function initSeaFilm(){
     for(let y=0;y<H;y++){ ctx.fillStyle=stops[Math.min(stops.length-1,(y/H*stops.length)|0)]; ctx.fillRect(0,y,W,1); }
     /* 2 — drifting highlight dashes */
     for(let L=0;L<2;L++){
-      const n=Math.round(W/13), sp=L?3.1:1.5;
+      const n=Math.round(W/13), sp=(L?2:1)*W/LOOP;   /* whole laps per loop: seamless */
       for(let i=0;i<n;i++){ const s=hsh(i,L,7);
         const y=2+(s%(H-6));
         const x=(((s>>>8)%W)+t*sp)%W|0;
@@ -1798,9 +1800,9 @@ function initSeaFilm(){
     }
     /* 3 — glints */
     for(let i=0;i<6;i++){ const s=hsh(i,99,1);
-      if(((tick+(s%40))%40)<4){ ctx.fillStyle='#F2F8F1'; ctx.fillRect((s>>>6)%W,1+(s>>>16)%5,2,1); } }
+      if(((tick+(s%44))%44)<4){ ctx.fillStyle='#F2F8F1'; ctx.fillRect((s>>>6)%W,1+(s>>>16)%5,2,1); } }
     /* 4 — the next set, far out */
-    const fy=(2+((t*0.85)%9))|0;
+    const fy=(2+((t*(9*2/LOOP))%9))|0;
     ctx.fillStyle='#C7E5D8';
     for(let x=0;x<W;x+=7){ const s=hsh(x,3,5); if(s%5<2) ctx.fillRect(x,fy+(s%2),3+(s>>>4)%3,1); }
     /* 5 — THE WAVE: every column is at its own stage of the break */
@@ -1810,6 +1812,8 @@ function initSeaFilm(){
     const xc = W*(0.62-0.008*t);
     const BF = W*keyed(t,BFK);
     const bd = keyed(t,BDK);
+    const sf = surfState(t, yb, amp, xc, tick);
+    if(sf && sf.behind){ const an=ANCH[sf.pose]; stamp(sf.pose, sf.x-an[1]/2, sf.yB-an[0], false, sf.mir); }
     for(let x=0;x<W;x++){
       const a = amp*Math.max(0,1-Math.abs(x-xc)/(W*.5));
       if(a<1.2) continue;
@@ -1818,7 +1822,8 @@ function initSeaFilm(){
       const crest = yb-a+jit, base = Math.min(H-1, yb+2), ci = crest|0;
       const broken = t>3.3 && x>BF;
       if(broken){
-        const age = t - tBreak(x);
+        let age = t - tBreak(x);
+        age *= 1 + Math.max(0, t-19)*0.9;   /* the calming sea clears itself */
         if(age>6.5) continue;
         {
           /* whitewater bore aging into patches, then dashes, then sea:
@@ -1890,9 +1895,8 @@ function initSeaFilm(){
         ctx.fillRect((s.x+6)|0,(s.yB+1)|0,2,1);
       }
     }
-    /* 9 — the surfer (nothing draws over him when he's visible) */
-    const sf = surfState(t, yb, amp, xc, tick);
-    if(sf){ const an=ANCH[sf.pose]; stamp(sf.pose, sf.x-an[1]/2, sf.yB-an[0], sf.dim); }
+    /* 9 — the surfer (in front of the wave, nothing over him) */
+    if(sf && !sf.behind){ const an=ANCH[sf.pose]; stamp(sf.pose, sf.x-an[1]/2, sf.yB-an[0], false, sf.mir); }
     /* 9b — spray plume ripping off the lip */
     if(barrelOn){
       for(let k=0;k<12;k++){
@@ -1908,7 +1912,12 @@ function initSeaFilm(){
     burst(t,8.1,W*keyed(8.1,XSURF),yb-amp-8,20,808,2.4);
     burst(t,8.65,W*keyed(8.65,XSURF),yb-4,10,855,1.6);
     burst(t,14.25,W*0.355,yb-5,10,777,1.6);
-    burst(t,17.75,W*0.118,yb-2,12,555,1.6);
+    burst(t,18.05,W*0.115,yb-1,16,555,1.9);
+    { const u=(t-18.05)/0.5;
+      if(u>0 && u<1){ const rx=(u*9)|0, ry=Math.max(1,(u*3)|0), sx=(W*0.115)|0, sy=(yb+1)|0;
+        for(let a2=0;a2<360;a2+=20){ const rd=a2*Math.PI/180;
+          const x=(sx+rx*Math.cos(rd))|0, y=(sy+ry*Math.sin(rd))|0;
+          if(x>=0&&x<W&&y>=0&&y<H&&hsh(a2,3,tick)%3){ ctx.fillStyle='#EFF7F1'; ctx.fillRect(x,y,1,1); } } } }
     /* 11 — his paddle strokes on the way back out */
     if(t>18.3 && t<21.0 && (tick%5<2)){
       const s=surfState(t, yb, amp, xc, tick);
