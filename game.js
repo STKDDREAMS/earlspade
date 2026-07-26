@@ -2540,12 +2540,75 @@ function rivalTick(){
     ? '#' + place + ' · ' + (ahead.score - score) + ' BEHIND ' + String(ahead.name).slice(0, 10).toUpperCase()
     : '#1 — THE DEEP IS YOURS';
 }
+/* ===== RANK MEDALS — the top three hold pixel treasure instead of a
+   number: a golden scallop, a silver starfish, a bronze crab. Drawn
+   from tiny pixel maps so they stay in the game's hand-pixelled style
+   (runs of the same letter merge into one rect). */
+function medalSvg(rows, pal, w){
+  const cols = rows[0].length;
+  let s = '<svg width="' + w + '" height="' + Math.round(w * rows.length / cols) +
+    '" viewBox="0 0 ' + cols + ' ' + rows.length + '" shape-rendering="crispEdges" aria-hidden="true">';
+  rows.forEach((row, y) => {
+    for(let x = 0; x < row.length; x++){
+      const c = row[x];
+      if(c === '.') continue;
+      let x2 = x;
+      while(x2 + 1 < row.length && row[x2 + 1] === c) x2++;
+      s += '<rect x="' + x + '" y="' + y + '" width="' + (x2 - x + 1) + '" height="1" fill="' + pal[c] + '"/>';
+      x = x2;
+    }
+  });
+  return s + '</svg>';
+}
+const MEDALS = [
+  /* 1st — the golden scallop */
+  medalSvg([
+    '.II..II..II.',
+    'IHHIIHHIIHHI',
+    'IHHDGGGGDGDI',
+    'IHHDGGGGDGDI',
+    '.IHDGGGGDGI.',
+    '..IDGGGGDI..',
+    '...IGGGGI...',
+    '....IIII....',
+    '....IGGI....',
+    '....IIII....',
+  ], { I:'#161412', H:'#F2CC70', G:'#D5A43C', D:'#C4922A' }, 16),
+  /* 2nd — the silver starfish */
+  medalSvg([
+    '.....II.....',
+    '....ISMI....',
+    '....ISMI....',
+    'IIIISSMMIIII',
+    'ISSSSSMMMMXI',
+    '.ISSSSMMMXI.',
+    '..ISSSMMXI..',
+    '..ISMIIMXI..',
+    '.ISMI..IXXI.',
+    '.IMI....IXI.',
+    '..I......I..',
+  ], { I:'#161412', S:'#EAF0F4', M:'#BCC9D2', X:'#8FA0AC' }, 16),
+  /* 3rd — the bronze crab */
+  medalSvg([
+    '.II......II.',
+    'IhhI....IhhI',
+    '.IhI....IhI.',
+    '..I......I..',
+    '..IIIIIIII..',
+    '.IbbIbbIbbI.',
+    '.ImmmmmmmmI.',
+    '..IIIIIIII..',
+    '.I..I..I..I.',
+  ], { I:'#161412', h:'#E2A968', b:'#C98C48', m:'#A96D33' }, 16),
+];
 function renderBoardInto(listEl, rows, meName){
   listEl.innerHTML = '';
   rows.forEach(r => {
     const div = document.createElement('div');
     div.className = 'lb-row' + (meName && r.name === meName ? ' me' : '');
-    const rk = document.createElement('span'); rk.className = 'rk'; rk.textContent = r.rank;
+    const rk = document.createElement('span'); rk.className = 'rk';
+    if(MEDALS[r.rank - 1]) rk.innerHTML = MEDALS[r.rank - 1];
+    else rk.textContent = r.rank;
     const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = r.name;
     const sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = r.score;
     div.append(rk, nm, sc);
